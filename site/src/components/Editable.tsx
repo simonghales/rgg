@@ -181,7 +181,7 @@ const EditableInner: React.FC<{
         const combined = {
             ...defaultProps,
             ...appliedProps,
-            ...props,
+            ...initialProps,
         }
 
         if (parentOverrideProps) {
@@ -194,7 +194,7 @@ const EditableInner: React.FC<{
 
         return combined
 
-    }, [props, modifiedProps, parentOverrideProps, appliedProps, defaultProps])
+    }, [initialProps, modifiedProps, parentOverrideProps, appliedProps, defaultProps])
 
     const {registerChildren: register} = useContext(EditableChildrenContext)
     const [subChildren, setSubChildren] = useState<Children>({})

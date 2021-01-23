@@ -20,3 +20,6 @@ Component's default prop value is overridden by the prop -> value set on Editabl
 Applying a change should remove prop={value} from the <Editable> instance and instead set it as a the default value for
 useProp.
 
+-
+
+fix up sub component apply / reset logic
