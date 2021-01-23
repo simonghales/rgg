@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`babel-plugin-react-engine 1. babel-plugin-react-engine: 1. babel-plugin-react-engine 1`] = `
+"
+import { Overrides, Text } from '@jsxui/react'
+
+function App() {
+  return (
+    <Overrides
+      value={[
+        <Text color=\\"tomato\\" variants={{ hover: { color: 'papayawhip' } }} />,
+      ]}
+    >
+      <Text>Hello World</Text>
+    </Overrides>
+  )
+}
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+var _jsxuiFileName = \\"/Users/simonhales/WebstormProjects/engine/babel-plugin-react-engine/src/__fixtures__/simple.js\\";
+import { Overrides, Text } from '@jsxui/react';
+
+function App() {
+  return <Overrides value={[[Text, {
+    color: \\"tomato\\",
+    variants: {
+      hover: {
+        color: 'papayawhip'
+      }
+    }
+  }]]} __jsxuiSource={{
+    fileName: _jsxuiFileName,
+    lineNumber: 5,
+    columnNumber: 5
+  }}>
+      <Text __jsxuiSource={{
+      fileName: _jsxuiFileName,
+      lineNumber: 10,
+      columnNumber: 7
+    }}>Hello World</Text>
+    </Overrides>;
+}
+"
+`;
+
+exports[`babel-plugin-react-engine 2. babel-plugin-react-engine: 2. babel-plugin-react-engine 1`] = `
+"
+import { Overrides, Text } from '@jsxui/react'
+
+const overrides = [
+  <Text color=\\"tomato\\" variants={{ hover: { color: 'papayawhip' } }} />,
+]
+
+function App() {
+  return (
+    <Overrides value={overrides}>
+      <Text>Hello World</Text>
+    </Overrides>
+  )
+}
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+var _jsxuiFileName = \\"/Users/simonhales/WebstormProjects/engine/babel-plugin-react-engine/src/__fixtures__/variable.js\\";
+import { Overrides, Text } from '@jsxui/react';
+const overrides = [[Text, {
+  color: \\"tomato\\",
+  variants: {
+    hover: {
+      color: 'papayawhip'
+    }
+  },
+  __jsxuiSource: {
+    fileName: _jsxuiFileName,
+    lineNumber: 4,
+    columnNumber: 3
+  }
+}]];
+
+function App() {
+  return <Overrides value={overrides} __jsxuiSource={{
+    fileName: _jsxuiFileName,
+    lineNumber: 9,
+    columnNumber: 5
+  }}>
+      <Text __jsxuiSource={{
+      fileName: _jsxuiFileName,
+      lineNumber: 10,
+      columnNumber: 7
+    }}>Hello World</Text>
+    </Overrides>;
+}
+"
+`;

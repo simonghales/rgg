@@ -1,0 +1,22 @@
+within useProp hook, instantiate the actual field value for the editor, not within Editable
+
+so need default values for instances, when you change the value, and apply the update, it only affects those still
+using the default value
+
+so essentially
+
+<Editable>
+    <Component/>
+</Editable>
+
+Component is only using default values passed into the useProp() hook
+
+<Editable prop={value}>
+    <Component/>
+</Editable>
+
+Component's default prop value is overridden by the prop -> value set on Editable
+
+Applying a change should remove prop={value} from the <Editable> instance and instead set it as a the default value for
+useProp.
+

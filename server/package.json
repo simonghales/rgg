@@ -1,0 +1,65 @@
+{
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch --target node",
+    "serve": "ts-node-dev src/index.ts",
+    "build": "tsdx build --target node",
+    "test": "tsdx test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "server",
+  "author": "Simon Hales",
+  "module": "dist/server.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/server.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/server.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.9.1",
+    "husky": "^4.3.8",
+    "size-limit": "^4.9.1",
+    "ts-node-dev": "^1.1.1",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.1.0",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "@codemod/core": "^1.1.0",
+    "@tinyhttp/app": "^1.1.10",
+    "@types/cors": "^2.8.9",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "prettier": "^2.2.1"
+  }
+}
