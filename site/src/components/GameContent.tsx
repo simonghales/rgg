@@ -46,7 +46,7 @@ const Parent: React.FC = () => {
 const GameContent: React.FC = () => {
     return (
         <>
-            <Editable y={1} x={0} z={0} __override={{
+            <Editable y={1} x={0} z={0} __id={"x:z"} __override={{
                 Child: {
                     y: 0.5,
                     __id: 'c',
@@ -60,7 +60,7 @@ const GameContent: React.FC = () => {
             }}>
                 <Parent/>
             </Editable>
-            <Editable __override={{
+            <Editable __id={"x:y"} __override={{
                 Child: {
                     y: -0.5,
                     __id: 'c',

@@ -1,4 +1,5 @@
 import create from "zustand";
+import { persist } from "zustand/middleware"
 import {useEffect} from "react";
 
 export type PropsState = {
@@ -13,6 +14,10 @@ type ComponentChildrenState = {
 }
 
 type ComponentState = {
+    overriddenState: {
+        [key: string]: boolean,
+    },
+    initialState: PropsState,
     modifiedState: PropsState,
     childrenState: ComponentChildrenState,
 }
@@ -34,9 +39,11 @@ type StoreState = {
     sharedComponents: SharedComponentsState,
 }
 
-export const useComponentsStore = create<StoreState>(set => ({
+export const useComponentsStore = create<StoreState>(persist(set => ({
     components: {},
     sharedComponents: {},
+}), {
+    name: 'components-store'
 }))
 
 export const getSharedComponentState = (state: StoreState, id: string): SharedComponentState => {
@@ -50,20 +57,18 @@ export const useSharedComponentState = (id: string): SharedComponentState => {
     return useComponentsStore(state => getSharedComponentState(state, id))
 }
 
-export const getComponentState = (state: StoreState, key: string): ComponentState => {
-    const component = state.components[key]
+export const getComponentStateFromComponents = (state: ComponentsState, key: string): ComponentState => {
+    const component = state[key]
     return component ?? {
+        overriddenState: {},
+        initialState: {},
         modifiedState: {},
         childrenState: {},
     }
 }
 
-export const getComponentStateFromComponents = (state: ComponentsState, key: string): ComponentState => {
-    const component = state[key]
-    return component ?? {
-        modifiedState: {},
-        childrenState: {},
-    }
+export const getComponentState = (state: StoreState, key: string): ComponentState => {
+    return getComponentStateFromComponents(state.components, key)
 }
 
 const traverseChildrenState = (id: string, props: PropsState, childrenState: ComponentChildrenState) => {
@@ -124,6 +129,42 @@ export const useSetComponentChildrenState = (id: string, internalProps: Internal
 
 }
 
+const deleteChildState = (childrenState: ComponentChildrenState, id: string, propKey: string) => {
+    Object.entries(childrenState).forEach(([childId, value]) => {
+        if (childId === id) {
+            delete value.props[propKey]
+        } else {
+            deleteChildState(value.childrenState, id, propKey)
+        }
+    })
+}
+
+export const resetInheritedComponentProp = (id: string, parentPath: string[], propKey: string) => {
+    useComponentsStore.setState(state => {
+
+        const updatedComponents = {
+            ...state.components,
+        }
+
+        parentPath.forEach((parentId: string) => {
+            const component = getComponentState(state, parentId)
+            const childrenState = {
+                ...component.childrenState,
+            }
+            deleteChildState(childrenState, id, propKey)
+            updatedComponents[parentId] = {
+                ...component,
+                childrenState,
+            }
+        })
+
+        return {
+            ...state,
+            components: updatedComponents,
+        }
+    })
+}
+
 export const useInheritedComponentState = (id: string, parentPath: string[]): PropsState => {
     const components = useComponentsStore(state => state.components)
     let props: PropsState = {}
@@ -134,7 +175,61 @@ export const useInheritedComponentState = (id: string, parentPath: string[]): Pr
     return props
 }
 
-export const useComponentState = (key: string): ComponentState => {
+export const setComponentOverridenState = (key: string, update: PropsState | ((state: PropsState) => PropsState)) => {
+
+    const handleUpdate = (state: PropsState) => {
+        if (typeof update === "function") {
+            return update(state)
+        } else {
+            return update
+        }
+    }
+
+    useComponentsStore.setState(state => {
+        const component = getComponentState(state, key)
+        return {
+            components: {
+                ...state.components,
+                [key]: {
+                    ...component,
+                    overriddenState: handleUpdate(component.overriddenState)
+                }
+            }
+        }
+    })
+
+}
+
+export const setComponentInitialState = (key: string, update: PropsState | ((state: PropsState) => PropsState)) => {
+
+    const handleUpdate = (state: PropsState) => {
+        if (typeof update === "function") {
+            return update(state)
+        } else {
+            return update
+        }
+    }
+
+    useComponentsStore.setState(state => {
+        const component = getComponentState(state, key)
+        return {
+            components: {
+                ...state.components,
+                [key]: {
+                    ...component,
+                    initialState: handleUpdate(component.initialState)
+                }
+            }
+        }
+    })
+}
+
+export const useComponentState = (key: string, props: PropsState): ComponentState => {
+
+    useEffect(() => {
+        setComponentInitialState(key, props)
+    }, [])
+
     return useComponentsStore(state => getComponentState(state, key))
 }
 
