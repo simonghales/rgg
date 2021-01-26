@@ -13,6 +13,13 @@ import shallow from "zustand/shallow";
 import EditPanel from "./EditPanel";
 import {isEqual} from "lodash-es";
 import {proxy, subscribe, useProxy} from "valtio";
+import {
+    PropsState,
+    setComponentModifiedState,
+    useComponentState,
+    useInheritedComponentState, useSetComponentChildrenState,
+    useSharedComponentState
+} from "../state/components";
 
 let idCount = 0
 
@@ -34,7 +41,6 @@ type State = {
         [key: string]: any,
     },
     parentPath: string[],
-    parentOverrideProps?: InternalProps,
     registerDefaultProp: (key: string, value: any) => void,
 }
 
@@ -78,9 +84,8 @@ const useIsSelected = (uid: string) => {
     return true
 }
 
-const useAppliedProps = (uid: string) => {
-    const {appliedProps} = useEditContext()
-    return appliedProps[uid]
+const useAppliedProps = (id: string) => {
+    return useSharedComponentState(id).appliedState
 }
 
 const getInstanceId = (children: any) => {
@@ -103,17 +108,20 @@ const EditableInner: React.FC<{
     const name = (children as any).type.name
 
     const id = __id ?? getInstanceId(children)
+    useSetComponentChildrenState(uid, __override ?? {})
 
-    console.log('id', id)
+    const componentState = useComponentState(uid)
 
-    const {parentPath, parentOverrideProps} = useContext(EditableContext)
+    const modifiedProps = componentState.modifiedState
+    const setModifiedProps = (update: PropsState | ((state: PropsState) => PropsState)) => setComponentModifiedState(uid, update)
+
+    const {parentPath} = useContext(EditableContext)
     const {
         registerEditable,
         updateEditing
     } = useEditContext()
-    const [modifiedProps, setModifiedProps] = useState<{
-        [key: string]: any,
-    }>({})
+
+    const inheritedProps = useInheritedComponentState(id, parentPath)
 
     const clearPropValue = useCallback((key: string) => {
         setInitialProps(state => {
@@ -146,24 +154,6 @@ const EditableInner: React.FC<{
     }, [setModifiedProps])
 
     const appliedProps = useAppliedProps(id)
-    const previousAppliedPropsRef = useRef<{
-        [key: string]: any,
-    }>({})
-
-    // useEffect(() => {
-    //
-    //     if (!appliedProps) return
-    //
-    //     Object.entries(appliedProps).forEach(([key, value]) => {
-    //         if (previousAppliedPropsRef.current[key] && previousAppliedPropsRef.current[key] === value) {
-    //             return
-    //         }
-    //         updateProp(key, value)
-    //     })
-    //
-    //     previousAppliedPropsRef.current = appliedProps
-    //
-    // }, [appliedProps])
 
     const [defaultProps, setDefaultProps] = useState<{
         [key: string]: any,
@@ -182,10 +172,7 @@ const EditableInner: React.FC<{
             ...defaultProps,
             ...appliedProps,
             ...initialProps,
-        }
-
-        if (parentOverrideProps) {
-            applyProps(id, parentOverrideProps, combined)
+            ...inheritedProps,
         }
 
         Object.entries(modifiedProps).forEach(([key, value]) => {
@@ -194,16 +181,14 @@ const EditableInner: React.FC<{
 
         return combined
 
-    }, [initialProps, modifiedProps, parentOverrideProps, appliedProps, defaultProps])
+    }, [initialProps, modifiedProps, inheritedProps, appliedProps, defaultProps])
 
     const {registerChildren: register} = useContext(EditableChildrenContext)
     const [subChildren, setSubChildren] = useState<Children>({})
 
     useLayoutEffect(() => {
 
-        const unregister = register(uid, id, name)
-
-        return unregister
+        return register(uid, id, name)
 
     }, [])
 
@@ -257,7 +242,6 @@ const EditableInner: React.FC<{
     return (
         <EditableContext.Provider value={{
             props: combinedProps,
-            parentOverrideProps: __override ?? parentOverrideProps,
             parentPath: parentPath.concat([uid]),
             registerDefaultProp,
         }}>

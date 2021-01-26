@@ -3,6 +3,7 @@ import EditMenu from "./EditMenu";
 import ComponentsMenu from "./ComponentsMenu";
 import styled from "styled-components";
 import EditPanel from "./EditPanel";
+import {setComponentAppliedState} from "../state/components";
 
 type SourceData = {
     columnNumber: number,
@@ -94,14 +95,10 @@ const EditProvider: React.FC = ({children}) => {
     }>({})
 
     const applyProp = useCallback((id: string, key: string, value: any) => {
-        setAppliedProps(state => {
-            const existingData = state[id] ?? {}
+        setComponentAppliedState(id, state => {
             return {
                 ...state,
-                [id]: {
-                    ...existingData,
-                    [key]: value,
-                }
+                [key]: value,
             }
         })
     }, [])
