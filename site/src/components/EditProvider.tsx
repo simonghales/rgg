@@ -175,6 +175,7 @@ const EditProvider: React.FC = ({children}) => {
     })
 
     const selectComponent = useCallback((uid: string, id: string, parentPath?: string[]) => {
+        console.log('selectComponent', uid, id, parentPath)
         setSelectedComponents({
             uid,
             id,
@@ -202,6 +203,7 @@ const EditProvider: React.FC = ({children}) => {
         updateProp: (key: string, value: any) => void,
         clearPropValue: (key: string) => void,
     ) => {
+        console.log('updateEditing: props', props)
         setEditing({
             name,
             props,

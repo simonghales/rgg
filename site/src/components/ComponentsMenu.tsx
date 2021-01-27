@@ -3,20 +3,28 @@ import styled, {css} from "styled-components";
 import {Children, useEditContext} from "./EditProvider";
 import {isEqual} from "lodash-es";
 import {cssButtonReset} from "../ui/buttons";
+import {useRegisteredComponents} from "../state/editor";
+import {addTempComponent} from "../state/tempComponents";
+import {useComponentsStore, useInitialComponentsStore} from "../state/components";
 
 const StyledContainer = styled.div`
   width: 220px;
   background-color: #161617;
   color: white;
   padding: 16px;
-  
+`
+
+const StyledHeader = styled.header`
+  display: flex;
+  align-items: flex-end;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  padding-left: 8px;
+
   h3 {
-    margin-top: 8px;
-    margin-bottom: 16px;
     font-weight: 700;
     font-size: 13px;
     color: #9494b7;
-    padding-left: 8px;
   }
   
 `
@@ -110,11 +118,12 @@ const Component: React.FC<{
 }> = ({name, uid, id, components, parentPath = [], child = false}) => {
 
     const {selectComponent} = useEditContext()
-    const selected = useIsSelected(uid, parentPath)
+    const parentBasedUid = `${uid}:${parentPath.join(':')}`
+    const selected = useIsSelected(parentBasedUid, parentPath)
 
     return (
         <StyledComponent>
-            <StyledButton onClick={() => selectComponent(uid, id, parentPath)} selected={selected} child={child}>
+            <StyledButton onClick={() => selectComponent(parentBasedUid, id, parentPath)} selected={selected} child={child}>
                 {name}
             </StyledButton>
             {
@@ -137,11 +146,22 @@ const Component: React.FC<{
 const ComponentsMenu: React.FC<{
     components: Children
 }> = ({components}) => {
+    const registeredComponents = useRegisteredComponents()
+
+    const addComponent = () => {
+        const components = Object.keys(registeredComponents)
+        if (components.length === 0) return
+        addTempComponent(components[0])
+    }
+
     return (
         <StyledContainer>
-            <header>
+            <StyledHeader>
                 <h3>Scene</h3>
-            </header>
+                <button onClick={addComponent}>
+                    Add component
+                </button>
+            </StyledHeader>
             <StyledComponentsList>
                 {
                     Object.entries(components).map(([uid, {id, name, children}]) => (

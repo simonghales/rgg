@@ -2,6 +2,7 @@ import React, {useContext} from "react"
 import {Canvas} from "react-three-fiber";
 import EditProvider, {Context, EditableChildrenContext, useEditContext} from "./EditProvider";
 import GameContent from "./GameContent";
+import Scene from "./Scene";
 
 
 const Game: React.FC = () => {
@@ -11,7 +12,9 @@ const Game: React.FC = () => {
         <Canvas>
             <Context.Provider value={context}>
                 <EditableChildrenContext.Provider value={editableContext}>
-                    <GameContent/>
+                    <Scene>
+                        <GameContent/>
+                    </Scene>
                 </EditableChildrenContext.Provider>
             </Context.Provider>
         </Canvas>

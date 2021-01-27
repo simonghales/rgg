@@ -1,4 +1,5 @@
 import React, {
+    Children,
     createContext,
     useCallback,
     useContext,
@@ -8,30 +9,25 @@ import React, {
     useRef,
     useState
 } from "react"
-import {Children, EditableChildrenContext, useEditContext} from "./EditProvider";
+import {Children as SubChildren, EditableChildrenContext, useEditContext} from "./EditProvider";
 import shallow from "zustand/shallow";
 import EditPanel from "./EditPanel";
 import {isEqual} from "lodash-es";
 import {proxy, subscribe, useProxy} from "valtio";
 import {
-    PropsState, resetInheritedComponentProp, setComponentInitialState,
+    PropsState,
     setComponentModifiedState, setComponentOverridenState,
     useComponentState,
-    useInheritedComponentState, useSetComponentChildrenState,
+    useInheritedComponentState, useInitialComponentState, useSetComponentChildrenState,
     useSharedComponentState
 } from "../state/components";
-
-let idCount = 0
+import {generateUuid} from "../utils/ids";
 
 const getUid = (id?: string) => {
     if (id) {
-        const split = id.split(':')
-        if (split.length > 1) {
-            return split[1]
-        }
+        return id
     }
-    idCount += 1
-    return idCount.toString()
+    return generateUuid()
 }
 
 const getInstanceId = (children: any) => {
@@ -42,10 +38,7 @@ const getInstanceId = (children: any) => {
 
 const getId = (id: string = '', children: any) => {
     if (id) {
-        const split = id.split(':')
-        if (split.length > 0) {
-            return split[0]
-        }
+        return id
     }
     return getInstanceId(children)
 }
@@ -113,29 +106,35 @@ const useAppliedProps = (id: string) => {
 const EditableInner: React.FC<{
     [key: string]: any,
     __id?: string,
+    __type?: string,
     __override?: InternalProps,
     __customSource?: any,
     children: any,
-}> = ({children, __customSource, __id, __override, ...props}) => {
+}> = ({children, __customSource, __id, __type, __override, ...props}) => {
 
     const [uid] = useState(() => getUid(__id))
+    const {parentPath} = useContext(EditableContext)
+    const parentBasedUid = `${uid}:${parentPath.join(':')}`
 
     const name = (children as any).type.name
 
-    const id = getId(__id, children)
-    useSetComponentChildrenState(uid, __override ?? {})
+    const id = getId(__type, children)
+    useSetComponentChildrenState(parentBasedUid, __override ?? {})
 
-    const componentState = useComponentState(uid, props)
+    const componentState = useComponentState(parentBasedUid)
+    const initialComponentState = useInitialComponentState(parentBasedUid, props)
 
     const overriddenProps = componentState.overriddenState ?? {}
 
     const modifiedProps = componentState.modifiedState ?? {}
-    const setModifiedProps = (update: PropsState | ((state: PropsState) => PropsState)) => setComponentModifiedState(uid, update)
+    const setModifiedProps = (update: PropsState | ((state: PropsState) => PropsState)) => setComponentModifiedState(parentBasedUid, update)
 
-    const initialProps = componentState.initialState ?? {}
-    const setInitialProps = (update: PropsState | ((state: PropsState) => PropsState)) => setComponentInitialState(uid, update)
+    const initialProps = initialComponentState.initialState ?? {}
 
-    const {parentPath} = useContext(EditableContext)
+    // Children.forEach(children, (element) => {
+    //     console.log('element', element)
+    // })
+
     const {
         registerEditable,
         updateEditing
@@ -144,19 +143,19 @@ const EditableInner: React.FC<{
     const inheritedProps = useInheritedComponentState(id, parentPath)
 
     const clearPropValue = useCallback((key: string) => {
-        setComponentOverridenState(uid, state => {
+        setComponentOverridenState(parentBasedUid, state => {
             return {
                 ...state,
                 [key]: true,
             }
         })
-        setInitialProps(state => {
-            const updatedState = {
-                ...state,
-            }
-            delete updatedState[key]
-            return updatedState
-        })
+        // setInitialProps(state => {
+        //     const updatedState = {
+        //         ...state,
+        //     }
+        //     delete updatedState[key]
+        //     return updatedState
+        // })
         setModifiedProps(state => {
             const updatedState = {
                 ...state,
@@ -164,14 +163,14 @@ const EditableInner: React.FC<{
             delete updatedState[key]
             return updatedState
         })
-        resetInheritedComponentProp(id, parentPath, key)
+        // resetInheritedComponentProp(id, parentPath, key)
     }, [id, parentPath])
 
     useEffect(() => {
 
-        return registerEditable(uid, __customSource)
+        return registerEditable(parentBasedUid, __customSource)
 
-    }, [uid])
+    }, [parentBasedUid])
 
     const updateProp = useCallback((key: string, value: any) => {
         setModifiedProps(state => ({
@@ -221,7 +220,7 @@ const EditableInner: React.FC<{
     }, [initialProps, modifiedProps, inheritedProps, appliedProps, defaultProps, overriddenProps])
 
     const {registerChildren: register} = useContext(EditableChildrenContext)
-    const [subChildren, setSubChildren] = useState<Children>({})
+    const [subChildren, setSubChildren] = useState<SubChildren>({})
 
     useLayoutEffect(() => {
 
@@ -257,7 +256,7 @@ const EditableInner: React.FC<{
         }
     }, [])
 
-    const isSelected = useIsSelected(uid)
+    const isSelected = useIsSelected(parentBasedUid)
 
     const transmittedProps = useRef({})
 
@@ -266,11 +265,13 @@ const EditableInner: React.FC<{
     }, [isSelected])
 
     useEffect(() => {
-
         if (isSelected) {
+            console.log('isSelected')
             if (!shallow(combinedProps, transmittedProps.current)) {
                 transmittedProps.current = combinedProps
                 updateEditing(name, combinedProps, updateProp, clearPropValue)
+            } else {
+                console.log('combinedProps', combinedProps)
             }
         }
 

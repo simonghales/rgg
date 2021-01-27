@@ -17,9 +17,7 @@ type ComponentState = {
     overriddenState: {
         [key: string]: boolean,
     },
-    initialState: PropsState,
     modifiedState: PropsState,
-    childrenState: ComponentChildrenState,
 }
 
 type ComponentsState = {
@@ -34,12 +32,30 @@ type SharedComponentsState = {
     [id: string]: SharedComponentState
 }
 
+type InitialComponentState = {
+    initialState: PropsState,
+    childrenState: ComponentChildrenState,
+}
+
+type InitialComponentsState = {
+    [key: string]: InitialComponentState
+}
+
 type StoreState = {
     components: ComponentsState,
     sharedComponents: SharedComponentsState,
 }
 
+type InitialComponentsStoreState = {
+    initialComponents: InitialComponentsState,
+}
+
+export const useInitialComponentsStore = create<InitialComponentsStoreState>(() => ({
+    initialComponents: {},
+}))
+
 export const useComponentsStore = create<StoreState>(persist(set => ({
+    initialComponents: {},
     components: {},
     sharedComponents: {},
 }), {
@@ -65,6 +81,18 @@ export const getComponentStateFromComponents = (state: ComponentsState, key: str
         modifiedState: {},
         childrenState: {},
     }
+}
+
+export const getComponentStateFromInitialComponents = (state: InitialComponentsState, key: string): InitialComponentState => {
+    const component = state[key]
+    return component ?? {
+        initialState: {},
+        childrenState: {},
+    }
+}
+
+export const getInitialComponentState = (state: InitialComponentsStoreState, key: string): InitialComponentState => {
+    return getComponentStateFromInitialComponents(state.initialComponents, key)
 }
 
 export const getComponentState = (state: StoreState, key: string): ComponentState => {
@@ -112,12 +140,12 @@ export const useSetComponentChildrenState = (id: string, internalProps: Internal
 
     useEffect(() => {
         const childrenState: ComponentChildrenState = mapInternalProps(internalProps)
-        useComponentsStore.setState(state => {
-            const component = getComponentState(state, id)
+        useInitialComponentsStore.setState(state => {
+            const component = getInitialComponentState(state, id)
             return {
                 ...state,
-                components: {
-                    ...state.components,
+                initialComponents: {
+                    ...state.initialComponents,
                     [id]: {
                         ...component,
                         childrenState,
@@ -129,47 +157,47 @@ export const useSetComponentChildrenState = (id: string, internalProps: Internal
 
 }
 
-const deleteChildState = (childrenState: ComponentChildrenState, id: string, propKey: string) => {
-    Object.entries(childrenState).forEach(([childId, value]) => {
-        if (childId === id) {
-            delete value.props[propKey]
-        } else {
-            deleteChildState(value.childrenState, id, propKey)
-        }
-    })
-}
+// const deleteChildState = (childrenState: ComponentChildrenState, id: string, propKey: string) => {
+//     Object.entries(childrenState).forEach(([childId, value]) => {
+//         if (childId === id) {
+//             delete value.props[propKey]
+//         } else {
+//             deleteChildState(value.childrenState, id, propKey)
+//         }
+//     })
+// }
 
-export const resetInheritedComponentProp = (id: string, parentPath: string[], propKey: string) => {
-    useComponentsStore.setState(state => {
-
-        const updatedComponents = {
-            ...state.components,
-        }
-
-        parentPath.forEach((parentId: string) => {
-            const component = getComponentState(state, parentId)
-            const childrenState = {
-                ...component.childrenState,
-            }
-            deleteChildState(childrenState, id, propKey)
-            updatedComponents[parentId] = {
-                ...component,
-                childrenState,
-            }
-        })
-
-        return {
-            ...state,
-            components: updatedComponents,
-        }
-    })
-}
+// export const resetInheritedComponentProp = (id: string, parentPath: string[], propKey: string) => {
+//     useComponentsStore.setState(state => {
+//
+//         const updatedComponents = {
+//             ...state.components,
+//         }
+//
+//         parentPath.forEach((parentId: string) => {
+//             const component = getComponentState(state, parentId)
+//             const childrenState = {
+//                 ...component.childrenState,
+//             }
+//             deleteChildState(childrenState, id, propKey)
+//             updatedComponents[parentId] = {
+//                 ...component,
+//                 childrenState,
+//             }
+//         })
+//
+//         return {
+//             ...state,
+//             components: updatedComponents,
+//         }
+//     })
+// }
 
 export const useInheritedComponentState = (id: string, parentPath: string[]): PropsState => {
-    const components = useComponentsStore(state => state.components)
+    const components = useInitialComponentsStore(state => state.initialComponents)
     let props: PropsState = {}
     parentPath.slice().reverse().forEach((parentId: string) => {
-        const component = getComponentStateFromComponents(components, parentId)
+        const component = getComponentStateFromInitialComponents(components, parentId)
         props = traverseChildrenState(id, props, component.childrenState)
     })
     return props
@@ -210,11 +238,11 @@ export const setComponentInitialState = (key: string, update: PropsState | ((sta
         }
     }
 
-    useComponentsStore.setState(state => {
-        const component = getComponentState(state, key)
+    useInitialComponentsStore.setState(state => {
+        const component = getInitialComponentState(state, key)
         return {
-            components: {
-                ...state.components,
+            initialComponents: {
+                ...state.initialComponents,
                 [key]: {
                     ...component,
                     initialState: handleUpdate(component.initialState)
@@ -224,13 +252,17 @@ export const setComponentInitialState = (key: string, update: PropsState | ((sta
     })
 }
 
-export const useComponentState = (key: string, props: PropsState): ComponentState => {
+export const useComponentState = (key: string): ComponentState => {
+    return useComponentsStore(state => getComponentState(state, key))
+}
+
+export const useInitialComponentState = (key: string, props: PropsState): InitialComponentState => {
 
     useEffect(() => {
         setComponentInitialState(key, props)
     }, [])
 
-    return useComponentsStore(state => getComponentState(state, key))
+    return useInitialComponentsStore(state => getInitialComponentState(state, key))
 }
 
 export const setComponentModifiedState = (key: string, update: PropsState | ((state: PropsState) => PropsState)) => {

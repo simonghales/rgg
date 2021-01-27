@@ -122,6 +122,8 @@ const EditPanel: React.FC<{
     clearPropValue: (key: string) => void,
 }> = ({uid, id, props, name, updateProp, clearPropValue}) => {
 
+    console.log('edit panel', uid, id, props)
+
     const {portal, applyProp} = useEditContext()
 
     const onChange = useCallback((key: string, value: any) => {

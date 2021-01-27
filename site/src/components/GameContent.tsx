@@ -1,6 +1,7 @@
 import React from "react"
 import Editable, {useProp} from "./Editable";
 import {Box} from "@react-three/drei";
+import {registerComponent} from "../state/editor";
 
 const Child: React.FC<{
     scale: number,
@@ -43,10 +44,12 @@ const Parent: React.FC = () => {
     )
 }
 
+registerComponent('Parent', () => <Parent/>)
+
 const GameContent: React.FC = () => {
     return (
         <>
-            <Editable y={1} x={0} z={0} __id={"x:z"} __override={{
+            <Editable y={1} x={0} z={0} __id={"z"} __override={{
                 Child: {
                     y: 0.5,
                     __id: 'c',
@@ -60,7 +63,7 @@ const GameContent: React.FC = () => {
             }}>
                 <Parent/>
             </Editable>
-            <Editable __id={"x:y"} __override={{
+            <Editable __id={"y"} __override={{
                 Child: {
                     y: -0.5,
                     __id: 'c',
