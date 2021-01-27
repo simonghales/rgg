@@ -54,13 +54,20 @@ export const useInitialComponentsStore = create<InitialComponentsStoreState>(() 
     initialComponents: {},
 }))
 
+
 export const useComponentsStore = create<StoreState>(persist(set => ({
-    initialComponents: {},
     components: {},
     sharedComponents: {},
 }), {
     name: 'components-store'
 }))
+
+export const resetComponentsStore = () => {
+    useComponentsStore.setState({
+        components: {},
+        sharedComponents: {},
+    })
+}
 
 export const getSharedComponentState = (state: StoreState, id: string): SharedComponentState => {
     const component = state.sharedComponents[id]

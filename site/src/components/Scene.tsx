@@ -12,7 +12,7 @@ const SceneTempComponents: React.FC = () => {
                 const children = registeredComponents[componentKey].createFunction()
                 return (
                     <React.Fragment key={id}>
-                        <Editable __id={id}>
+                        <Editable __id={id} __tempComponent>
                             {children}
                         </Editable>
                     </React.Fragment>

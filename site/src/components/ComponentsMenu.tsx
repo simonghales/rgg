@@ -2,24 +2,29 @@ import React, {useContext} from "react"
 import styled, {css} from "styled-components";
 import {Children, useEditContext} from "./EditProvider";
 import {isEqual} from "lodash-es";
-import {cssButtonReset} from "../ui/buttons";
+import {cssButtonReset, StyledSmallButton} from "../ui/buttons";
 import {useRegisteredComponents} from "../state/editor";
-import {addTempComponent} from "../state/tempComponents";
-import {useComponentsStore, useInitialComponentsStore} from "../state/components";
+import {addTempComponent, resetTempComponentsStore} from "../state/tempComponents";
+import {resetComponentsStore, useComponentsStore, useInitialComponentsStore} from "../state/components";
+import {COLORS} from "../ui/colors";
 
 const StyledContainer = styled.div`
   width: 220px;
   background-color: #161617;
   color: white;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
 `
 
 const StyledHeader = styled.header`
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   margin-top: 8px;
   margin-bottom: 16px;
   padding-left: 8px;
+  position: relative;
 
   h3 {
     font-weight: 700;
@@ -29,9 +34,18 @@ const StyledHeader = styled.header`
   
 `
 
+const StyledButtonWrapper = styled.div`
+  position: absolute;
+  bottom: -6px;
+  right: 0;
+`
+
 const StyledComponentsList = styled.ul`
+  flex: 1;
+  overflow-y: auto;
   margin-left: -8px;
   margin-right: -8px;
+  padding-bottom: 16px;
 
     > li {
         margin-top: 4px;
@@ -62,7 +76,7 @@ const cssNotSelected = css`
 `
 
 const cssSelected = css`
-  background-color: #3e3ca2;
+  background-color: ${COLORS.purple};
   color: white;
 `
 
@@ -84,7 +98,7 @@ const StyledButton = styled.button<{
   border-radius: 7px;
   cursor: pointer;
   transition: all 250ms ease;
-  color: #9494b7;
+  color: ${COLORS.lightPurple};
   font-weight: 700;
   
   font-size: 14.5px;
@@ -97,6 +111,10 @@ const StyledButton = styled.button<{
   
   ${props => props.selected ? cssSelected : cssNotSelected};
   
+`
+
+const StyledFooter = styled.footer`
+  margin-top: 16px;
 `
 
 const useIsSelected = (uid: string, parentPath: string[] = []) => {
@@ -154,13 +172,20 @@ const ComponentsMenu: React.FC<{
         addTempComponent(components[0])
     }
 
+    const discardChanges = () => {
+        resetComponentsStore()
+        resetTempComponentsStore()
+    }
+
     return (
         <StyledContainer>
             <StyledHeader>
                 <h3>Scene</h3>
-                <button onClick={addComponent}>
-                    Add component
-                </button>
+                <StyledButtonWrapper>
+                    <StyledSmallButton onClick={addComponent}>
+                        Add component
+                    </StyledSmallButton>
+                </StyledButtonWrapper>
             </StyledHeader>
             <StyledComponentsList>
                 {
@@ -171,6 +196,11 @@ const ComponentsMenu: React.FC<{
                     ))
                 }
             </StyledComponentsList>
+            <StyledFooter>
+                <StyledSmallButton onClick={discardChanges}>
+                    Discard changes
+                </StyledSmallButton>
+            </StyledFooter>
         </StyledContainer>
     )
 }

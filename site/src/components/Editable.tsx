@@ -105,12 +105,13 @@ const useAppliedProps = (id: string) => {
 
 const EditableInner: React.FC<{
     [key: string]: any,
+    __tempComponent?: boolean,
     __id?: string,
     __type?: string,
     __override?: InternalProps,
     __customSource?: any,
     children: any,
-}> = ({children, __customSource, __id, __type, __override, ...props}) => {
+}> = ({children, __customSource, __id, __type, __override, __tempComponent, ...props}) => {
 
     const [uid] = useState(() => getUid(__id))
     const {parentPath} = useContext(EditableContext)
@@ -119,7 +120,7 @@ const EditableInner: React.FC<{
     const name = (children as any).type.name
 
     const id = getId(__type, children)
-    useSetComponentChildrenState(parentBasedUid, __override ?? {})
+    useSetComponentChildrenState(uid, __override ?? {})
 
     const componentState = useComponentState(parentBasedUid)
     const initialComponentState = useInitialComponentState(parentBasedUid, props)
@@ -140,7 +141,7 @@ const EditableInner: React.FC<{
         updateEditing
     } = useEditContext()
 
-    const inheritedProps = useInheritedComponentState(id, parentPath)
+    const inheritedProps = useInheritedComponentState(uid, parentPath)
 
     const clearPropValue = useCallback((key: string) => {
         setComponentOverridenState(parentBasedUid, state => {

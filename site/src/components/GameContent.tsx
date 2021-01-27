@@ -1,4 +1,5 @@
 import React from "react"
+import { a, useSpring } from '@react-spring/three'
 import Editable, {useProp} from "./Editable";
 import {Box} from "@react-three/drei";
 import {registerComponent} from "../state/editor";
@@ -7,29 +8,43 @@ const Child: React.FC<{
     scale: number,
 }> = ({children, scale}) => {
 
-    const x = useProp('x', 0)
-    const y = useProp('y', 0)
-    const z = useProp('z', 0)
+    const xProp = useProp('x', 0)
+    const yProp = useProp('y', 0)
+    const zProp = useProp('z', 0)
+
+    const {x, y, z} = useSpring({
+        x: Number(xProp),
+        y: Number(yProp),
+        z: Number(zProp),
+    })
 
     return (
-        <group position={[x, y, z]} scale={[scale, scale, scale]}>
-            <Box>
-                <meshBasicMaterial color={"red"} />
-            </Box>
-            {children}
-        </group>
+        <a.group position-x={x} position-y={y} position-z={z} scale={[scale, scale, scale]}>
+            <group>
+                <Box>
+                    <meshBasicMaterial color={"red"} />
+                </Box>
+                {children}
+            </group>
+        </a.group>
     )
 
 }
 
 const Parent: React.FC = () => {
 
-    const x = useProp('x', 0)
-    const y = useProp('y', 0)
-    const z = useProp('z', 0)
+    const xProp = useProp('x', 0)
+    const yProp = useProp('y', 0)
+    const zProp = useProp('z', 0)
+
+    const {x, y, z} = useSpring({
+        x: Number(xProp),
+        y: Number(yProp),
+        z: Number(zProp),
+    })
 
     return (
-        <group position={[x, y, z]}>
+        <a.group position-x={x} position-y={y} position-z={z}>
             <Box>
                 <meshBasicMaterial color={"blue"} />
             </Box>
@@ -40,11 +55,15 @@ const Parent: React.FC = () => {
                     </Editable>
                 </Child>
             </Editable>
-        </group>
+        </a.group>
     )
 }
 
-registerComponent('Parent', () => <Parent/>)
+registerComponent({
+    name: 'Parent',
+    key: 'parent',
+    create: () => <Parent/>
+})
 
 const GameContent: React.FC = () => {
     return (
@@ -55,7 +74,7 @@ const GameContent: React.FC = () => {
                     __id: 'c',
                     __props: {
                         Child: {
-                            y: 1,
+                            y: 2,
                             __id: 'd',
                         }
                     },

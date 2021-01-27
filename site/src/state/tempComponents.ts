@@ -18,6 +18,12 @@ export const useTempComponentsStore = create<StoreState>(persist(() => ({
     name: 'temp-components-store'
 }))
 
+export const resetTempComponentsStore = () => {
+    useTempComponentsStore.setState({
+        tempComponents: {},
+    })
+}
+
 export const useTempComponents = () => {
     return useTempComponentsStore(state => state.tempComponents)
 }

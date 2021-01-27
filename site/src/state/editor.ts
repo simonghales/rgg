@@ -18,8 +18,15 @@ export const useRegisteredComponents = () => {
     return useRegisterStore(state => state.registeredComponents)
 }
 
-export const registerComponent = (name: string, createFunction: () => any) => {
-    const key = generateUuid()
+export const registerComponent = ({
+                                    name,
+                                    key,
+                                    create,
+                                  }: {
+                                    name: string,
+                                    key: string,
+                                    create: () => any,
+}) => {
     useRegisterStore.setState(state => {
         return {
             ...state,
@@ -27,7 +34,7 @@ export const registerComponent = (name: string, createFunction: () => any) => {
                 ...state.registeredComponents,
                 [key]: {
                     name,
-                    createFunction,
+                    createFunction: create,
                 }
             }
         }
