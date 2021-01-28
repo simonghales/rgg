@@ -35,7 +35,13 @@ type State = {
         [key: string]: {
             [key: string]: any,
         }
-    }
+    },
+    hoveredComponent: {
+        uid: string,
+        id: string,
+        parentPath?: string[],
+    },
+    setHoveredComponent: (uid: string, id: string, parentPath?: string[]) => void,
 }
 
 export const Context = createContext<State>(null as unknown as State)
@@ -164,6 +170,24 @@ const EditProvider: React.FC = ({children}) => {
         }
     }, [])
 
+    const [hoveredComponent, setHoveredComponentState] = useState<{
+        uid: string,
+        id: string,
+        parentPath?: string[],
+    }>({
+        uid: '',
+        id: '',
+        parentPath: [],
+    })
+
+    const setHoveredComponent = useCallback((uid: string, id: string, parentPath?: string[]) => {
+        setHoveredComponentState({
+            uid,
+            id,
+            parentPath,
+        })
+    }, [])
+
     const [selectedComponents, setSelectedComponents] = useState<{
         uid: string,
         id: string,
@@ -175,7 +199,6 @@ const EditProvider: React.FC = ({children}) => {
     })
 
     const selectComponent = useCallback((uid: string, id: string, parentPath?: string[]) => {
-        console.log('selectComponent', uid, id, parentPath)
         setSelectedComponents({
             uid,
             id,
@@ -223,6 +246,8 @@ const EditProvider: React.FC = ({children}) => {
             updateEditing,
             applyProp,
             appliedProps,
+            setHoveredComponent,
+            hoveredComponent,
         }}>
             <EditableChildrenContext.Provider value={{
                 registerChildren,

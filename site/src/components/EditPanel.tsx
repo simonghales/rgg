@@ -122,8 +122,6 @@ const EditPanel: React.FC<{
     clearPropValue: (key: string) => void,
 }> = ({uid, id, props, name, updateProp, clearPropValue}) => {
 
-    console.log('edit panel', uid, id, props)
-
     const {portal, applyProp} = useEditContext()
 
     const onChange = useCallback((key: string, value: any) => {
@@ -147,24 +145,36 @@ const EditPanel: React.FC<{
             </header>
             <ul>
                 {
-                    Object.entries(props).filter(([key]) => !filteredKeys.includes(key)).map(([key, value]) => (
-                        <li key={key}>
-                            <StyledInputWrapper>
-                                <header>
-                                    <p>
-                                        {key}
-                                    </p>
-                                    <StyledInputOptions>
-                                        <button onClick={() => onApply(key, value)}>apply</button>
-                                        <button onClick={() => onReset(key)}>reset</button>
-                                    </StyledInputOptions>
-                                </header>
-                                <div>
-                                    <input type="number" value={value} onChange={(event) => onChange(key, event.target.value)} />
-                                </div>
-                            </StyledInputWrapper>
-                        </li>
-                    ))
+                    Object.entries(props).filter(([key]) => !filteredKeys.includes(key)).map(([key, value]) => {
+                        let type = "text"
+                        if (typeof value == "number") {
+                            type = "number"
+                        }
+                        return (
+                            <li key={key}>
+                                <StyledInputWrapper>
+                                    <header>
+                                        <p>
+                                            {key}
+                                        </p>
+                                        <StyledInputOptions>
+                                            <button onClick={() => onApply(key, value)}>apply</button>
+                                            <button onClick={() => onReset(key)}>reset</button>
+                                        </StyledInputOptions>
+                                    </header>
+                                    <div>
+                                        <input type={type} value={value} onChange={(event) => {
+                                            let updatedValue: any = event.target.value
+                                            if (type === 'number') {
+                                                updatedValue = Number(updatedValue)
+                                            }
+                                            onChange(key, updatedValue)
+                                        }} />
+                                    </div>
+                                </StyledInputWrapper>
+                            </li>
+                        )
+                    })
                 }
             </ul>
         </StyledContainer>

@@ -1,50 +1,47 @@
-import React from "react"
+import React, {useEffect, useRef} from "react"
 import { a, useSpring } from '@react-spring/three'
 import Editable, {useProp} from "./Editable";
 import {Box} from "@react-three/drei";
 import {registerComponent} from "../state/editor";
+import {useEditableWidget} from "../misc";
+import {Group} from "three";
 
 const Child: React.FC<{
     scale: number,
 }> = ({children, scale}) => {
 
-    const xProp = useProp('x', 0)
-    const yProp = useProp('y', 0)
-    const zProp = useProp('z', 0)
+    const x = useProp('x', 0)
+    const y = useProp('y', 0)
+    const z = useProp('z', 0)
 
-    const {x, y, z} = useSpring({
-        x: Number(xProp),
-        y: Number(yProp),
-        z: Number(zProp),
-    })
+    const groupRef = useRef<Group>()
+    useEditableWidget(groupRef)
 
     return (
-        <a.group position-x={x} position-y={y} position-z={z} scale={[scale, scale, scale]}>
-            <group>
-                <Box>
-                    <meshBasicMaterial color={"red"} />
-                </Box>
-                {children}
-            </group>
-        </a.group>
+        <group position={[x, y, z]} scale={[scale, scale, scale]} ref={groupRef}>
+            <Box>
+                <meshBasicMaterial color={"red"} />
+            </Box>
+            {children}
+        </group>
     )
 
 }
 
 const Parent: React.FC = () => {
 
-    const xProp = useProp('x', 0)
-    const yProp = useProp('y', 0)
-    const zProp = useProp('z', 0)
+    const x = useProp('x', 0)
+    const y = useProp('y', 0)
+    const z = useProp('z', 0)
 
-    const {x, y, z} = useSpring({
-        x: Number(xProp),
-        y: Number(yProp),
-        z: Number(zProp),
-    })
+    const groupRef = useRef<Group>()
+    useEditableWidget(groupRef)
 
     return (
-        <a.group position-x={x} position-y={y} position-z={z}>
+        <group position={[x, y, z]} ref={groupRef}>
+            <Box position={[0.5, 0.5, 0.5]} scale={[0.5, 0.5, 0.5]}>
+                <meshBasicMaterial color={"green"} />
+            </Box>
             <Box>
                 <meshBasicMaterial color={"blue"} />
             </Box>
@@ -55,7 +52,7 @@ const Parent: React.FC = () => {
                     </Editable>
                 </Child>
             </Editable>
-        </a.group>
+        </group>
     )
 }
 
@@ -66,6 +63,7 @@ registerComponent({
 })
 
 const GameContent: React.FC = () => {
+    return null
     return (
         <>
             <Editable y={1} x={0} z={0} __id={"z"} __override={{
@@ -95,6 +93,13 @@ const GameContent: React.FC = () => {
                 }
             }}>
                 <Parent/>
+            </Editable>
+            <Editable x={0} y={0.5} z={0} __id={"q"}>
+                <Child scale={0.75}>
+                    <Editable y={0.5} x={0.5} z={0.25} __id={"d"}>
+                        <Child scale={0.5}/>
+                    </Editable>
+                </Child>
             </Editable>
         </>
     )

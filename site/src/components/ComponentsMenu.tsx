@@ -66,11 +66,15 @@ const StyledComponent = styled.div`
 
 `
 
+const cssHovered = css`
+    background-color: rgba(0,0,0,0.25);
+`
+
 const cssNotSelected = css`
 
   &:focus,
   &:hover {
-    background-color: rgba(0,0,0,0.25);
+    ${cssHovered};
   }
   
 `
@@ -86,6 +90,7 @@ const cssChild = css`
 `
 
 const StyledButton = styled.button<{
+    hovered: boolean,
     selected: boolean,
     child: boolean,
 }>`
@@ -109,6 +114,7 @@ const StyledButton = styled.button<{
     outline: none;
   }
   
+  ${props => props.hovered ? cssHovered : ''};
   ${props => props.selected ? cssSelected : cssNotSelected};
   
 `
@@ -126,6 +132,15 @@ const useIsSelected = (uid: string, parentPath: string[] = []) => {
     return true
 }
 
+const useIsHovered = (uid: string, parentPath: string[] = []) => {
+    const {hoveredComponent} = useEditContext()
+    if (uid !== hoveredComponent.uid) return false
+    if (hoveredComponent.parentPath) {
+        return isEqual(parentPath, hoveredComponent.parentPath)
+    }
+    return true
+}
+
 const Component: React.FC<{
     name: string,
     uid: string,
@@ -135,13 +150,26 @@ const Component: React.FC<{
     child?: boolean,
 }> = ({name, uid, id, components, parentPath = [], child = false}) => {
 
-    const {selectComponent} = useEditContext()
+    const {selectComponent, setHoveredComponent} = useEditContext()
     const parentBasedUid = `${uid}:${parentPath.join(':')}`
     const selected = useIsSelected(parentBasedUid, parentPath)
+    const hovered = useIsHovered(parentBasedUid, parentPath)
+
+    const onClick = () => {
+        selectComponent(parentBasedUid, id, parentPath)
+    }
+
+    const onMouseEnter = () => {
+        setHoveredComponent(parentBasedUid, id, parentPath)
+    }
+
+    const onMouseLeave = () => {
+        setHoveredComponent('', '', [])
+    }
 
     return (
         <StyledComponent>
-            <StyledButton onClick={() => selectComponent(parentBasedUid, id, parentPath)} selected={selected} child={child}>
+            <StyledButton onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} hovered={hovered} selected={selected} child={child}>
                 {name}
             </StyledButton>
             {

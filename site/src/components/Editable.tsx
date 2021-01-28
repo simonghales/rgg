@@ -1,6 +1,6 @@
 import React, {
     Children,
-    createContext,
+    createContext, MutableRefObject,
     useCallback,
     useContext,
     useEffect,
@@ -22,6 +22,9 @@ import {
     useSharedComponentState
 } from "../state/components";
 import {generateUuid} from "../utils/ids";
+import {Box3, BoxHelper, Group} from "three";
+import {useHelper} from "@react-three/drei";
+import {TransformControls} from "./TransformControls";
 
 const getUid = (id?: string) => {
     if (id) {
@@ -56,13 +59,15 @@ type State = {
         [key: string]: any,
     },
     parentPath: string[],
-    registerDefaultProp: (key: string, value: any) => void,
+    registerDefaultProp: (key: string, value: any, type: string) => void,
+    setEditableWidgetGroupRefFn: (ref: MutableRefObject<Group | undefined>) => void,
 }
 
-const EditableContext = createContext<State>({
+export const EditableContext = createContext<State>({
     props: {},
     parentPath: [],
     registerDefaultProp: () => {},
+    setEditableWidgetGroupRefFn: () => {},
 })
 
 const applyProps = (uid: string, nestedProps: InternalProps, combinedProps: {
@@ -79,11 +84,11 @@ const applyProps = (uid: string, nestedProps: InternalProps, combinedProps: {
     })
 }
 
-export const useProp = (key: string, defaultValue?: any) => {
+export const useProp = (key: string, defaultValue?: any, type: string = 'string') => {
     const {props, registerDefaultProp} = useContext(EditableContext)
 
     useEffect(() => {
-        registerDefaultProp(key, defaultValue)
+        registerDefaultProp(key, defaultValue, type)
     }, [])
 
     return props[key] ?? defaultValue
@@ -95,6 +100,16 @@ const useIsSelected = (uid: string) => {
     if (uid !== selectedComponents.uid) return false
     if (selectedComponents.parentPath) {
         return isEqual(parentPath, selectedComponents.parentPath)
+    }
+    return true
+}
+
+const useIsHovered = (uid: string) => {
+    const {parentPath} = useContext(EditableContext)
+    const {hoveredComponent} = useEditContext()
+    if (uid !== hoveredComponent.uid) return false
+    if (hoveredComponent.parentPath) {
+        return isEqual(parentPath, hoveredComponent.parentPath)
     }
     return true
 }
@@ -186,7 +201,7 @@ const EditableInner: React.FC<{
         [key: string]: any,
     }>({})
 
-    const registerDefaultProp = useCallback((key: string, value: any) => {
+    const registerDefaultProp = useCallback((key: string, value: any, type: string) => {
         setDefaultProps(state => ({
             ...state,
             [key]: value,
@@ -258,6 +273,7 @@ const EditableInner: React.FC<{
     }, [])
 
     const isSelected = useIsSelected(parentBasedUid)
+    const isHovered = useIsHovered(parentBasedUid)
 
     const transmittedProps = useRef({})
 
@@ -267,27 +283,88 @@ const EditableInner: React.FC<{
 
     useEffect(() => {
         if (isSelected) {
-            console.log('isSelected')
             if (!shallow(combinedProps, transmittedProps.current)) {
                 transmittedProps.current = combinedProps
                 updateEditing(name, combinedProps, updateProp, clearPropValue)
-            } else {
-                console.log('combinedProps', combinedProps)
             }
         }
 
     }, [isSelected, combinedProps, updateProp, clearPropValue])
+
+    const groupRef = useRef<Group>(new Group())
+
+    useLayoutEffect(() => {
+        const boundingBox = new Box3().setFromObject(groupRef.current)
+    }, [])
+
+    const {selectComponent, setHoveredComponent} = useEditContext()
+
+    const onClick = () => {
+        selectComponent(parentBasedUid, id, parentPath)
+    }
+
+    const onHover = () => {
+        setHoveredComponent(parentBasedUid, id, parentPath)
+    }
+
+    const offHover = () => {
+        setHoveredComponent('', '', [])
+    }
+
+    const onTransformMouseUp = (group: Group) => {
+        console.log('mouse up', group)
+        const x = group.position.x
+        const y = group.position.y
+        const z = group.position.z
+        updateProp('x', x)
+        updateProp('y', y)
+        updateProp('z', z)
+        // group.position.set(0, 0, 0)
+    }
+
+    useHelper(groupRef, (isSelected || isHovered) ? BoxHelper : null)
+
+    const content = (
+        <group ref={groupRef}
+               onClick={(event) => {
+                   event.stopPropagation()
+                   onClick()
+               }}
+               onPointerOver={(event) => {
+                   event.stopPropagation()
+                   onHover()
+               }}
+               onPointerOut={(event) => {
+                   event.stopPropagation()
+                   offHover()
+               }}>
+            {children}
+        </group>
+    )
+
+    const [editableWidgetGroupRef, setEditableWidgetGroupRef] = useState<MutableRefObject<Group | undefined> | null>(null)
+
+    const setEditableWidgetGroupRefFn = (ref: MutableRefObject<Group | undefined>) => {
+        setEditableWidgetGroupRef(ref)
+    }
 
     return (
         <EditableContext.Provider value={{
             props: combinedProps,
             parentPath: parentPath.concat([uid]),
             registerDefaultProp,
+            setEditableWidgetGroupRefFn,
         }}>
             <EditableChildrenContext.Provider value={{
                 registerChildren,
             }}>
-                {children}
+                {
+                    (isSelected && editableWidgetGroupRef) ? (
+                        <TransformControls groupRef={editableWidgetGroupRef} onMouseUp={onTransformMouseUp}>
+                            {content}
+                        </TransformControls>
+                    ) : content
+                }
             </EditableChildrenContext.Provider>
         </EditableContext.Provider>
     )
