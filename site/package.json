@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-spring/three": "^9.0.0-rc.3",
     "@react-three/drei": "^2.2.19",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -11,15 +12,22 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "canvas-sketch-util": "^1.10.0",
+    "hotkeys-js": "^3.8.2",
     "lodash-es": "^4.17.20",
+    "lodash.omit": "^4.5.0",
+    "lodash.pick": "^4.4.0",
+    "planck-js": "^0.3.23",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
     "react-three-fiber": "^5.3.14",
+    "react-three-game-engine": "^0.14.1",
     "styled-components": "^5.2.1",
     "styled-reset": "^4.3.4",
     "three": "^0.124.0",
     "typescript": "^4.0.3",
+    "uuid": "^8.3.2",
     "valtio": "^0.6.2",
     "web-vitals": "^0.2.4",
     "zustand": "^3.3.1"
@@ -28,9 +36,11 @@
     "@babel/plugin-transform-react-jsx-source": "^7.12.1",
     "@types/lodash-es": "^4.17.4",
     "@types/styled-components": "^5.1.7",
+    "@types/uuid": "^8.3.0",
     "babel-plugin-react-engine": "link:.yalc/babel-plugin-react-engine",
     "customize-cra": "^1.0.0",
-    "react-app-rewired": "^2.1.8"
+    "react-app-rewired": "^2.1.8",
+    "worker-loader": "^3.0.7"
   },
   "scripts": {
     "start": "react-app-rewired start",

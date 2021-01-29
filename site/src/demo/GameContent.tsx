@@ -4,17 +4,20 @@ import Lights from "./Lights";
 import Player from "./Player";
 import Editable from "../components/Editable";
 import {registerComponent} from "../state/editor";
-import RandomObject from "./RandomObject";
+import BambooChunk from "./BambooChunk";
+import PlayCamera from "./PlayCamera";
+import EngineWrapper from "./EngineWrapper";
 
 registerComponent({
-    name: 'RandomObject',
-    key: 'randomObject',
-    create: () => <RandomObject/>
+    name: 'Bamboo Chunk',
+    key: 'bambooChunk',
+    create: () => <BambooChunk/>
 })
 
 const GameContent: React.FC = () => {
     return (
-        <>
+        <EngineWrapper>
+            <PlayCamera/>
             <Lights/>
             <Editable __id="floor">
                 <Floor/>
@@ -22,7 +25,7 @@ const GameContent: React.FC = () => {
             <Editable __id="player">
                 <Player/>
             </Editable>
-        </>
+        </EngineWrapper>
     )
 }
 

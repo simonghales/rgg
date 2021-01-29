@@ -4,6 +4,7 @@ import ComponentsMenu from "./ComponentsMenu";
 import styled from "styled-components";
 import EditPanel from "./EditPanel";
 import {setComponentAppliedState} from "../state/components";
+import {globalState, useIsEditMode} from "../state/global";
 
 type SourceData = {
     columnNumber: number,
@@ -77,6 +78,14 @@ const StyledMain = styled.div`
   flex: 1;
   height: 100%;
   overflow: hidden;
+  position: relative;
+`
+
+const StyledOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 999999;
 `
 
 type AppliedProps = {
@@ -235,6 +244,8 @@ const EditProvider: React.FC = ({children}) => {
         })
     }, [])
 
+    const isEditMode = useIsEditMode()
+
     return (
         <Context.Provider value={{
             editables,
@@ -253,19 +264,36 @@ const EditProvider: React.FC = ({children}) => {
                 registerChildren,
             }}>
                 <StyledContainer>
-                    <ComponentsMenu components={subChildren}/>
+                    {
+                        isEditMode && (
+                            <ComponentsMenu components={subChildren}/>
+                        )
+                    }
                     <StyledMain>
                         {children}
+                        <StyledOverlay>
+                            <div onClick={() => globalState.isEditMode = !globalState.isEditMode}>
+                                {
+                                    isEditMode ? "play" : "edit"
+                                }
+                            </div>
+                        </StyledOverlay>
                     </StyledMain>
-                    <EditMenu setPortal={setPortalElement}/>
                     {
-                        selectedComponents.uid && (
-                            <EditPanel uid={selectedComponents.uid}
-                                       id={selectedComponents.id}
-                                       name={editing.name}
-                                       props={editing.props}
-                                       updateProp={editing.updateProp}
-                                       clearPropValue={editing.clearPropValue}/>
+                        isEditMode && (
+                            <>
+                                <EditMenu setPortal={setPortalElement}/>
+                                {
+                                    selectedComponents.uid && (
+                                        <EditPanel uid={selectedComponents.uid}
+                                                   id={selectedComponents.id}
+                                                   name={editing.name}
+                                                   props={editing.props}
+                                                   updateProp={editing.updateProp}
+                                                   clearPropValue={editing.clearPropValue}/>
+                                    )
+                                }
+                            </>
                         )
                     }
                 </StyledContainer>
