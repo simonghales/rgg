@@ -25,6 +25,7 @@ import {generateUuid} from "../utils/ids";
 import {Box3, BoxHelper, Group} from "three";
 import {useHelper} from "@react-three/drei";
 import {TransformControls} from "./TransformControls";
+import {useIsEditMode} from "../state/global";
 
 const getUid = (id?: string) => {
     if (id) {
@@ -348,6 +349,8 @@ const EditableInner: React.FC<{
         setEditableWidgetGroupRef(ref)
     }
 
+    const isEditMode = useIsEditMode()
+
     return (
         <EditableContext.Provider value={{
             props: combinedProps,
@@ -359,7 +362,7 @@ const EditableInner: React.FC<{
                 registerChildren,
             }}>
                 {
-                    (isSelected && editableWidgetGroupRef) ? (
+                    !isEditMode ? children : (isSelected && editableWidgetGroupRef) ? (
                         <TransformControls groupRef={editableWidgetGroupRef} onMouseUp={onTransformMouseUp}>
                             {content}
                         </TransformControls>
