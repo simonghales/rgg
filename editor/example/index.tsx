@@ -2,8 +2,7 @@ import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 // import { Thing, Editor } from '../.';
-import {Editor, Editable, useEditableProp, registerComponent} from '../src/index';
-import {useEditableProps} from "../src/editable/context";
+import {Editor, Editable, useEditableProp, registerComponent, TemporaryComponents} from '../src/index';
 
 const SmallerComponent = () => {
 
@@ -88,6 +87,7 @@ const App = () => {
             }}>
                 <Component/>
             </Editable>
+            <TemporaryComponents/>
         </div>
     </Editor>
   );

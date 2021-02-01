@@ -1,9 +1,10 @@
-import React, {useEffect, useMemo, useRef} from "react"
+import React, {useEffect, useRef} from "react"
 import {StyledHeading} from "../../ui/typography";
 import {StyledHeader} from "../SideMenu";
 import {useActiveComponentState} from "../../state/editor";
-import {ComponentStateData, updateComponentModifiedState} from "../../state/componentsState";
-import {useControls} from "leva";
+import {updateComponentModifiedState} from "../../state/componentsState";
+import {Leva, useControls} from "leva";
+import styled from "styled-components";
 
 
 
@@ -56,6 +57,16 @@ const StateManager: React.FC<{
     )
 }
 
+const StyledContainer = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`
+
+const StyledBody = styled.div`
+  flex: 1;
+`
+
 const ComponentStateMenu: React.FC<{
     name: string,
     uid: string,
@@ -65,12 +76,15 @@ const ComponentStateMenu: React.FC<{
     }) => {
 
     return (
-        <div>
+        <StyledContainer>
             <StyledHeader>
                 <StyledHeading>{name}</StyledHeading>
             </StyledHeader>
-            <StateManager key={uid} uid={uid}/>
-        </div>
+            <StyledBody>
+                <Leva fillParent/>
+                <StateManager key={uid} uid={uid}/>
+            </StyledBody>
+        </StyledContainer>
     )
 }
 

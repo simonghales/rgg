@@ -44,6 +44,11 @@ const cssHovered = css`
   background-color: rgba(0,0,0,0.25);
 `
 
+const cssSelected = css`
+  background-color: ${COLORS.purple};
+  color: white;
+`
+
 const cssNotSelected = css`
 
   &:focus,
@@ -51,11 +56,10 @@ const cssNotSelected = css`
     ${cssHovered};
   }
   
-`
-
-const cssSelected = css`
-  background-color: ${COLORS.purple};
-  color: white;
+  &:active {
+    ${cssSelected};
+  }
+  
 `
 
 const cssChild = css`
@@ -68,7 +72,7 @@ const StyledChildComponentsWrapper = styled.div`
   margin-top: 2px;
 `
 
-const StyledClickable = styled.button<{
+export const StyledClickable = styled.button<{
     selected: boolean,
 }>`
   ${cssResetButton};

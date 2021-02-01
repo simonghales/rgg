@@ -1,11 +1,15 @@
 import create from "zustand";
 import {useMemo} from "react";
+import {persist} from "zustand/middleware";
+import {generateUuid} from "../utils/ids";
+import {Creatable} from "./creatables";
 
 export type ComponentState = {
     uid: string,
     name: string,
     children: string[],
     isRoot: boolean,
+    componentType?: string,
 }
 
 type ComponentsStore = {
@@ -18,12 +22,39 @@ export const useComponentsStore = create<ComponentsStore>(() => ({
     components: {},
 }))
 
-export const useUnsavedComponentsStore = create<ComponentsStore>(() => ({
+export const useUnsavedComponentsStore = create<ComponentsStore>(persist(() => ({
     components: {},
+}), {
+    name: 'unsavedComponentsStore'
 }))
 
+export const useUnsavedComponents = () => {
+    return Object.values(useUnsavedComponentsStore(state => state.components))
+}
+
+export const addNewUnsavedComponent = (creatable: Creatable): ComponentState => {
+    const component: ComponentState = {
+        uid: generateUuid(),
+        name: creatable.name,
+        children: [],
+        isRoot: true,
+        componentType: creatable.uid,
+    }
+    useUnsavedComponentsStore.setState(state => {
+        return {
+            components: {
+                ...state.components,
+                [component.uid]: component,
+            }
+        }
+    })
+    return component
+}
+
 export const useComponent = (uid: string) => {
-    return useComponentsStore(state => state.components[uid])
+    const savedComponent = useComponentsStore(state => state.components[uid])
+    const unsavedComponent = useUnsavedComponentsStore(state => state.components[uid])
+    return savedComponent ?? unsavedComponent
 }
 
 export const useComponents = (uids: string[]) => {

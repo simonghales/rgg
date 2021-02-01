@@ -7,12 +7,13 @@ import {COLORS} from "../ui/colors";
 import {GlobalStyle} from "../ui/global";
 import {SPACE_UNITS} from "../ui/units";
 import ComponentsList from "./components/ComponentsList";
+import {setAddingComponent} from "../state/editor";
 
 const cssPadding = css`
   padding: ${SPACE_UNITS.medium}px ${SPACE_UNITS.mediumPlus}px;
 `
 
-const StyledWrapper = styled.div`
+export const StyledWrapper = styled.div`
   height: 100%;
   
   > div {
@@ -25,6 +26,7 @@ const StyledContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 `
 
 export const StyledHeader = styled.header`
@@ -59,7 +61,9 @@ const SideMenu: React.FC = () => {
                         <ComponentsList/>
                     </StyledMain>
                     <StyledFooter>
-                        <StyledThickerButton full>
+                        <StyledThickerButton full onClick={() => {
+                            setAddingComponent(true)
+                        }}>
                             Add component
                         </StyledThickerButton>
                     </StyledFooter>

@@ -5,6 +5,9 @@ import SideMenu from "./SideMenu";
 import TopBar from "./TopBar";
 import { Helmet } from "react-helmet";
 import StateMenu from "./state/StateMenu";
+import {COLORS} from "../ui/colors";
+import AddComponentMenu from "./components/AddComponent/AddComponentMenu";
+import {useIsAddingComponent} from "../state/editor";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -24,7 +27,7 @@ const StyledMain = styled.div`
 `
 
 const StyledAside = styled.div`
-  background-color: #161617;
+  background-color: ${COLORS.darkLighter};
   height: 100%;
   width: 100%;
   max-width: 220px;
@@ -32,7 +35,9 @@ const StyledAside = styled.div`
   line-height: 1;
 `
 
-const StyledLeft = styled(StyledAside)``
+const StyledLeft = styled(StyledAside)`
+  position: relative;
+`
 
 const StyledCenter = styled.div`
   flex: 1;
@@ -43,7 +48,7 @@ const StyledCenter = styled.div`
 `
 
 const StyledTop = styled.div`
-  background-color: #0c0c0c;
+  background-color: ${COLORS.dark};
   height: 46px;
 `
 
@@ -54,6 +59,9 @@ const StyledMainMiddle = styled.div`
 const StyledRight = styled(StyledAside)``
 
 export const Editor: React.FC = ({children}) => {
+
+    const isAddingComponent = useIsAddingComponent()
+
     return (
         <>
             <Helmet>
@@ -67,6 +75,11 @@ export const Editor: React.FC = ({children}) => {
                     <StyledMain>
                         <StyledLeft>
                             <SideMenu/>
+                            {
+                                isAddingComponent && (
+                                    <AddComponentMenu/>
+                                )
+                            }
                         </StyledLeft>
                         <StyledCenter>
                             <StyledMainMiddle>
