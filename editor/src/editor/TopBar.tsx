@@ -4,6 +4,8 @@ import root from 'react-shadow/styled-components';
 import {StyledIconWrapper, StyledPlainButton } from "../ui/buttons";
 import {FaRedo, FaUndo} from "react-icons/fa";
 import { GlobalStyle } from "../ui/global";
+import {redoState, undoState, useCanRedo, useCanUndo} from "../state/componentsState";
+import {setEditMode, useIsEditMode} from "../state/editor";
 
 const StyledWrapper = styled.div`
     height: 100%;
@@ -60,6 +62,11 @@ const StyledMiddle = styled.div`
 `
 
 const TopBar: React.FC = () => {
+
+    const canUndo = useCanUndo()
+    const canRedo = useCanRedo()
+    const isEditMode = useIsEditMode()
+
     return (
         <StyledWrapper>
             <root.div>
@@ -69,7 +76,13 @@ const TopBar: React.FC = () => {
                         <span>RGG</span>
                     </StyledLeftSide>
                     <StyledMiddle>
-                        <StyledPlainButton>Play</StyledPlainButton>
+                        <StyledPlainButton onClick={() => {
+                            setEditMode(!isEditMode)
+                        }}>
+                            {
+                                isEditMode ? "Play" : "Edit"
+                            }
+                        </StyledPlainButton>
                     </StyledMiddle>
                     <StyledRightSide>
                         <StyledOptions>
@@ -77,14 +90,14 @@ const TopBar: React.FC = () => {
                                 <StyledPlainButton faint>Discard</StyledPlainButton>
                             </li>
                             <li>
-                                <StyledPlainButton round faint>
+                                <StyledPlainButton round faint disabled={!canUndo} onClick={undoState}>
                                     <StyledIconWrapper>
                                         <FaUndo size={10}/>
                                     </StyledIconWrapper>
                                 </StyledPlainButton>
                             </li>
                             <li>
-                                <StyledPlainButton round faint>
+                                <StyledPlainButton round faint disabled={!canRedo} onClick={redoState}>
                                     <StyledIconWrapper>
                                         <FaRedo size={10}/>
                                     </StyledIconWrapper>

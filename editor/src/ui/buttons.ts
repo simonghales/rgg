@@ -66,14 +66,22 @@ export const StyledPlainButton = styled(StyledButton)<{
   ${props => props.faint ? cssFaint : ''};
   ${props => props.full ? cssFull : ''};
   
+  &:disabled {
+    border-color: transparent;
+    cursor: default;
+    opacity: 0.5;
+  }
+  
   &:focus {
     outline: none;
   }
   
-  &:focus,
-  &:hover {
-    background-color: ${COLORS.purple};
-    color: white;
+  &:not(:disabled) {
+    &:focus,
+    &:hover {
+      background-color: ${COLORS.purple};
+      color: white;
+    }
   }
   
 `

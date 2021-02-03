@@ -1,59 +1,29 @@
 import create from "zustand";
 import {useMemo} from "react";
-import {persist} from "zustand/middleware";
-import {generateUuid} from "../utils/ids";
-import {Creatable} from "./creatables";
-
-export type ComponentState = {
-    uid: string,
-    name: string,
-    children: string[],
-    isRoot: boolean,
-    componentType?: string,
-}
+import {useComponentsStateStore} from "./componentsState";
+import {ComponentState} from "./types";
 
 type ComponentsStore = {
     components: {
         [key: string]: ComponentState,
     },
+    deactivatedComponents: {
+        [key: string]: ComponentState,
+    }
 }
 
 export const useComponentsStore = create<ComponentsStore>(() => ({
     components: {},
-}))
-
-export const useUnsavedComponentsStore = create<ComponentsStore>(persist(() => ({
-    components: {},
-}), {
-    name: 'unsavedComponentsStore'
+    deactivatedComponents: {},
 }))
 
 export const useUnsavedComponents = () => {
-    return Object.values(useUnsavedComponentsStore(state => state.components))
-}
-
-export const addNewUnsavedComponent = (creatable: Creatable): ComponentState => {
-    const component: ComponentState = {
-        uid: generateUuid(),
-        name: creatable.name,
-        children: [],
-        isRoot: true,
-        componentType: creatable.uid,
-    }
-    useUnsavedComponentsStore.setState(state => {
-        return {
-            components: {
-                ...state.components,
-                [component.uid]: component,
-            }
-        }
-    })
-    return component
+    return Object.values(useComponentsStateStore(state => state.unsavedComponents))
 }
 
 export const useComponent = (uid: string) => {
     const savedComponent = useComponentsStore(state => state.components[uid])
-    const unsavedComponent = useUnsavedComponentsStore(state => state.components[uid])
+    const unsavedComponent = useComponentsStateStore(state => state.unsavedComponents[uid])
     return savedComponent ?? unsavedComponent
 }
 
@@ -77,17 +47,17 @@ export const useComponentsRootList = () => {
 
 }
 
-export const addComponent = (uid: string, name: string, children: string[], isRoot: boolean) => {
+export const addComponent = (uid: string, name: string, children: string[], isRoot: boolean, unsaved: boolean) => {
     useComponentsStore.setState(state => {
         return {
-            ...state,
             components: {
                 ...state.components,
                 [uid]: {
                     uid,
                     name,
                     children,
-                    isRoot
+                    isRoot,
+                    unsaved
                 }
             }
         }
@@ -101,8 +71,36 @@ export const removeComponent = (uid: string) => {
         }
         delete components[uid]
         return {
-            ...state,
             components,
+        }
+    })
+}
+
+export const addDeactivatedComponent = (uid: string, name: string, children: string[], isRoot: boolean, unsaved: boolean) => {
+    useComponentsStore.setState(state => {
+        return {
+            deactivatedComponents: {
+                ...state.deactivatedComponents,
+                [uid]: {
+                    uid,
+                    name,
+                    children,
+                    isRoot,
+                    unsaved
+                }
+            }
+        }
+    })
+}
+
+export const removeDeactivatedComponent = (uid: string) => {
+    useComponentsStore.setState(state => {
+        const components = {
+            ...state.deactivatedComponents,
+        }
+        delete components[uid]
+        return {
+            deactivatedComponents: components,
         }
     })
 }

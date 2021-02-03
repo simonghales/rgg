@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components";
+import {Leva} from "leva/dist/leva.cjs.js";
 import EditorProvider from "./EditorProvider";
 import SideMenu from "./SideMenu";
 import TopBar from "./TopBar";
@@ -7,7 +8,9 @@ import { Helmet } from "react-helmet";
 import StateMenu from "./state/StateMenu";
 import {COLORS} from "../ui/colors";
 import AddComponentMenu from "./components/AddComponent/AddComponentMenu";
-import {useIsAddingComponent} from "../state/editor";
+import {useIsAddingComponent, useIsEditMode} from "../state/editor";
+import CameraPreview from "./CameraPreview";
+import AddComponentBlocker from "./components/AddComponent/AddComponentBlocker";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -53,14 +56,23 @@ const StyledTop = styled.div`
 `
 
 const StyledMainMiddle = styled.div`
-    flex: 1;
+  flex: 1;
+  position: relative;
 `
 
-const StyledRight = styled(StyledAside)``
+const StyledRight = styled(StyledAside)`
+  display: flex;
+  flex-direction: column;
+`
+
+const StyledLevaContainer = styled.div`
+  flex: 1;
+`
 
 export const Editor: React.FC = ({children}) => {
 
     const isAddingComponent = useIsAddingComponent()
+    const isEditMode = useIsEditMode()
 
     return (
         <>
@@ -84,10 +96,23 @@ export const Editor: React.FC = ({children}) => {
                         <StyledCenter>
                             <StyledMainMiddle>
                                 {children}
+                                {
+                                    isEditMode && (
+                                        <CameraPreview/>
+                                    )
+                                }
+                                {
+                                    isAddingComponent && (
+                                        <AddComponentBlocker/>
+                                    )
+                                }
                             </StyledMainMiddle>
                         </StyledCenter>
                         <StyledRight>
                             <StateMenu/>
+                            <StyledLevaContainer>
+                                <Leva fillParent/>
+                            </StyledLevaContainer>
                         </StyledRight>
                     </StyledMain>
                 </StyledContainer>

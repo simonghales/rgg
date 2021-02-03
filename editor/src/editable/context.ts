@@ -2,6 +2,7 @@ import {createContext, useContext, useEffect, useMemo} from "react";
 import {ComponentStateData, StateData} from "../state/componentsState";
 
 type State = {
+    uid: string,
     derivedState: ComponentStateData,
     registerDefaultProp: (key: string, value: any) => void,
     parentPath: string[],
@@ -10,15 +11,18 @@ type State = {
     },
     isRoot: boolean,
     registerWithParent: (uid: string) => () => void,
+    getStateValue: (key: string) => any,
 }
 
 export const EditableContext = createContext<State>({
+    uid: '',
     derivedState: {},
     registerDefaultProp: () => {},
     parentPath: [],
     overrideState: {},
     isRoot: true,
     registerWithParent: () => () => {},
+    getStateValue: () => {},
 })
 
 export const useEditableContext = (): State => {

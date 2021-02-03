@@ -8,8 +8,6 @@ const StyledContainer = styled.div`
   flex-direction: column;  
 `
 
-const StyledHeader = styled.header``
-
 const StyledBody = styled.div`
   flex: 1;
 `
@@ -17,7 +15,7 @@ const StyledBody = styled.div`
 const AddComponent: React.FC = () => {
 
     const searchRef = useRef<HTMLInputElement>(null)
-    const [searchValue, setSearchValue] = useState('')
+    const [searchValue] = useState('')
 
     useLayoutEffect(() => {
         searchRef.current?.focus()

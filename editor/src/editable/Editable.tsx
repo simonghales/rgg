@@ -1,8 +1,13 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from "react"
 import {EditableContext, useEditableContext, useInheritedState} from "./context"
-import {StateData, useComponentState, useIsSelectedComponent} from "../state/componentsState";
+import {
+    StateData,
+    useComponentState,
+    useIsComponentDeactivated,
+    useIsSelectedComponent
+} from "../state/componentsState";
 import {generateUuid} from "../utils/ids";
-import {addComponent, removeComponent} from "../state/components";
+import {addComponent, addDeactivatedComponent, removeComponent, removeDeactivatedComponent} from "../state/components";
 import {setActiveComponentState} from "../state/editor";
 
 type Override = {
@@ -16,13 +21,14 @@ type Override = {
 }
 
 type Config = {
-    id?: string,
     type?: string,
     override?: Override,
+    unsaved?: boolean,
 }
 
 type Props = {
     [key: string]: any,
+    id: string,
     __config?: Config,
     __customSource?: any,
 }
@@ -38,6 +44,7 @@ const getComponentId = (config: Config, children: any, id: string) => {
 
 export const Editable: React.FC<Props> = ({
                                               children,
+                                                id: passedId,
                                               __config: config = {},
                                               ...props
                                             }) => {
@@ -49,20 +56,31 @@ export const Editable: React.FC<Props> = ({
         registerWithParent,
     } = useEditableContext()
 
-    const [id] = useState(() => config.id ?? generateUuid())
+    const [id] = useState(() => passedId ?? generateUuid())
     const [componentId] = useState(() => getComponentId(config, children, id))
     const [uid] = useState(() => {
         return parentPath.concat([id]).join('/')
     })
-    const [name] = useState(() => (children as any).type.name)
+    const [name] = useState(() => (children as any).type.displayName || (children as any).type.name || id)
+
     const [childEditables] = useState(new Set<string>())
+    const unsaved = config.unsaved ?? false
+
+    const isDeactivated = useIsComponentDeactivated(uid)
 
     useEffect(() => {
-        addComponent(uid, name, Array.from(childEditables), isRoot)
-        return () => {
-            removeComponent(uid)
+        if (isDeactivated) {
+            addDeactivatedComponent(uid, name, Array.from(childEditables), isRoot, unsaved)
+            return () => {
+                removeDeactivatedComponent(uid)
+            }
+        } else {
+            addComponent(uid, name, Array.from(childEditables), isRoot, unsaved)
+            return () => {
+                removeComponent(uid)
+            }
         }
-    }, [])
+    }, [isDeactivated])
 
     useLayoutEffect(() => {
 
@@ -135,6 +153,10 @@ export const Editable: React.FC<Props> = ({
     const derivedState = useComponentState(uid, componentId, defaultState, initialState, inheritedState)
     const isSelected = useIsSelectedComponent(uid)
 
+    const getStateValue = useCallback((key: string) => {
+        return derivedState[key]?.value ?? undefined
+    }, [derivedState])
+
     useEffect(() => {
         if (!isSelected) return
         setActiveComponentState(uid, derivedState)
@@ -149,14 +171,20 @@ export const Editable: React.FC<Props> = ({
         return () => {}
     }, [isSelected])
 
+    if (isDeactivated) {
+        return null
+    }
+
     return (
         <EditableContext.Provider value={{
+            uid,
             derivedState,
             registerDefaultProp,
             parentPath: parentPath.concat([id]),
             overrideState,
             isRoot: false,
-            registerWithParent: childRegisterWithParent
+            registerWithParent: childRegisterWithParent,
+            getStateValue,
         }}>
             {children}
         </EditableContext.Provider>

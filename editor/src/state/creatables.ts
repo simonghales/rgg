@@ -3,7 +3,9 @@ import create from "zustand";
 export type Creatable = {
     uid: string,
     name: string,
-    create: () => any,
+    create: (initialProps?: {
+        [key: string]: any,
+    }) => any,
 }
 
 type Store = {

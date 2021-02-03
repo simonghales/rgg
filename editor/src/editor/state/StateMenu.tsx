@@ -7,12 +7,6 @@ import {useComponent} from "../../state/components";
 import ComponentStateMenu from "./ComponentStateMenu";
 
 const StyledWrapper = styled.div`
-  height: 100%;
-  
-  > div {
-    height: 100%;
-  }
-  
 `
 
 const StateMenu: React.FC = () => {

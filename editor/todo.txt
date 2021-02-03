@@ -1,0 +1,7 @@
+Create component
+
+<Editable x={0}>
+    {
+        ({x}) => <Component x={x}/>
+    }
+</Editable>

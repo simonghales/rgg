@@ -5,7 +5,10 @@ import {useCreatable} from "../state/creatables";
 const UnsavedComponent: React.FC<{
     uid: string,
     componentType: string,
-}> = ({componentType, uid}) => {
+    initialProps?: {
+        [key: string]: any,
+    }
+}> = ({componentType, uid, initialProps = {}}) => {
 
     const creatable = useCreatable(componentType)
 
@@ -13,13 +16,13 @@ const UnsavedComponent: React.FC<{
         if (!creatable) {
             return null
         }
-        return creatable.create()
+        return creatable.create(initialProps)
     }, [creatable])
 
     return (
-        <Editable __config={{
-            id: uid,
+        <Editable {...initialProps} id={uid} __config={{
             type: componentType,
+            unsaved: true,
         }}>
             {component}
         </Editable>

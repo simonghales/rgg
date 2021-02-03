@@ -1,12 +1,10 @@
 import React, {useEffect, useRef} from "react"
 import {StyledHeading} from "../../ui/typography";
-import {StyledHeader} from "../SideMenu";
 import {useActiveComponentState} from "../../state/editor";
+import {useControls, store} from "leva/dist/leva.cjs.js"
 import {updateComponentModifiedState} from "../../state/componentsState";
-import {Leva, useControls} from "leva";
 import styled from "styled-components";
-
-
+import {StyledHeader} from "../../ui/shared";
 
 const State: React.FC<{
     uid: string,
@@ -19,9 +17,23 @@ const State: React.FC<{
         firstUpdate: true
     })
 
-    const updatedValue = useControls(uid, {
+    const localValueRef = useRef(stateValue)
+
+    useEffect(() => {
+        localValueRef.current = stateValue
+    }, [stateValue])
+
+    const updatedValue = useControls({
         [stateKey]: stateValue,
     })
+
+    useEffect(() => {
+        try {
+            store.setValueAtPath(stateKey, stateValue)
+        } catch (e) {
+
+        }
+    }, [stateValue])
 
     const value = updatedValue[stateKey]
 
@@ -31,6 +43,9 @@ const State: React.FC<{
             if (localStateRef.current.initialValue === value) {
                 return
             }
+        }
+        if (localValueRef.current === value) {
+            return
         }
         updateComponentModifiedState(uid, stateKey, value)
     }, [value])
@@ -44,7 +59,9 @@ const StateManager: React.FC<{
 
     const componentState = useActiveComponentState(uid)
 
-    if (!componentState) return null
+    if (!componentState) {
+        return null
+    }
 
     return (
         <>
@@ -81,7 +98,7 @@ const ComponentStateMenu: React.FC<{
                 <StyledHeading>{name}</StyledHeading>
             </StyledHeader>
             <StyledBody>
-                <Leva fillParent/>
+                {/*<Leva fillParent/>*/}
                 <StateManager key={uid} uid={uid}/>
             </StyledBody>
         </StyledContainer>

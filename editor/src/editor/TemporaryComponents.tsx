@@ -9,8 +9,8 @@ const TemporaryComponents: React.FC = () => {
     return (
         <>
             {
-                unsavedComponents.map(({uid, componentType}) => (
-                    <UnsavedComponent uid={uid} componentType={componentType as string} key={uid}/>
+                unsavedComponents.map(({uid, componentType, initialProps}) => (
+                    <UnsavedComponent uid={uid} componentType={componentType as string} initialProps={initialProps} key={uid}/>
                 ))
             }
         </>

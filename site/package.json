@@ -40,7 +40,8 @@
     "babel-plugin-react-engine": "link:.yalc/babel-plugin-react-engine",
     "customize-cra": "^1.0.0",
     "react-app-rewired": "^2.1.8",
-    "worker-loader": "^3.0.7"
+    "worker-loader": "^3.0.7",
+    "worker-plugin": "^5.0.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
