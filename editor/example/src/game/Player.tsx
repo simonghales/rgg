@@ -13,6 +13,11 @@ export const Player: React.FC = () => {
         },
     })
 
+    const speed = useEditableProp('speed', {
+        defaultValue: { value: 9, max: 15, min: 5, step: 0.01 }
+    })
+
+
     const [ref] = useDraggableMesh()
 
     return (

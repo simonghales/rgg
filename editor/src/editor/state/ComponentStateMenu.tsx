@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useMemo, useRef} from "react"
 import {StyledHeading} from "../../ui/typography";
 import {useActiveComponentState} from "../../state/editor";
 import {useControls, store} from "leva/dist/leva.cjs.js"
@@ -6,11 +6,16 @@ import {updateComponentModifiedState} from "../../state/componentsState";
 import styled from "styled-components";
 import {StyledHeader} from "../../ui/shared";
 
+const isStateObj = (value: any) => {
+    return (!!value && typeof value === 'object' && value.hasOwnProperty('value'))
+}
+
 const State: React.FC<{
     uid: string,
     stateKey: string,
+    defaultValue?: any,
     stateValue: any,
-}> = ({uid, stateKey, stateValue}) => {
+}> = ({uid, stateKey, stateValue, defaultValue}) => {
 
     const localStateRef = useRef({
         initialValue: stateValue,
@@ -23,8 +28,18 @@ const State: React.FC<{
         localValueRef.current = stateValue
     }, [stateValue])
 
+    const preppedState = useMemo(() => {
+        if (isStateObj(defaultValue) && !isStateObj(stateValue)) {
+            return {
+                ...defaultValue,
+                value: stateValue,
+            }
+        }
+        return stateValue
+    }, [stateValue, defaultValue])
+
     const updatedValue = useControls({
-        [stateKey]: stateValue,
+        [stateKey]: preppedState,
     })
 
     useEffect(() => {
@@ -66,8 +81,8 @@ const StateManager: React.FC<{
     return (
         <>
             {
-                Object.entries(componentState).map(([key, {value}]) => (
-                    <State uid={uid} stateKey={key} stateValue={value} key={key}/>
+                Object.entries(componentState).map(([key, {value, defaultValue}]) => (
+                    <State uid={uid} stateKey={key} stateValue={value} defaultValue={defaultValue} key={key}/>
                 ))
             }
         </>

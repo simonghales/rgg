@@ -194,12 +194,15 @@ export enum StateType {
     modified = 'modified',
 }
 
+export type ComponentIndividualStateData = {
+    defaultValue?: any,
+    value: any,
+    stateType: StateType,
+    type?: string,
+}
+
 export type ComponentStateData = {
-    [key: string]: {
-        value: any,
-        stateType: StateType,
-        type?: string,
-    }
+    [key: string]: ComponentIndividualStateData
 }
 
 const useModifiedState = (uid: string): StateData => {
@@ -214,10 +217,17 @@ const useAppliedState = (componentId: string): StateData => {
 
 const applyStateData = (componentState: ComponentStateData, stateData: StateData, stateType: StateType) => {
     Object.entries(stateData).forEach(([key, {value, type}]) => {
-        componentState[key] = {
+        const data: ComponentIndividualStateData = {
             value,
             type,
             stateType,
+        }
+        if (stateType === StateType.default) {
+            data.defaultValue = value
+        }
+        componentState[key] = {
+            ...(componentState[key] || {}),
+            ...data
         }
     })
 }
