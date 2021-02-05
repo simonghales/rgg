@@ -41,7 +41,6 @@ export const useDraggableMesh = () => {
         }
         controls.addEventListener('dragging-changed', onDraggingChanged)
         return () => {
-            console.log('unmount')
             editorStateProxy.transformActive = false
             if (orbitRef.current) {
                 orbitRef.current.enabled = true

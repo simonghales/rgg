@@ -166,6 +166,7 @@ export const getComponent = (uid: string) => {
 }
 
 export const updateComponentModifiedState = (uid: string, key: string, value: any) => {
+    console.log('updateComponentModifiedState', uid, key, value)
     storeSnapshot()
     const component = getComponent(uid)
     useComponentsStateStore.setState(state => {
@@ -215,21 +216,38 @@ const useAppliedState = (componentId: string): StateData => {
     return appliedState ?? {}
 }
 
-const applyStateData = (componentState: ComponentStateData, stateData: StateData, stateType: StateType) => {
-    Object.entries(stateData).forEach(([key, {value, type}]) => {
-        const data: ComponentIndividualStateData = {
-            value,
-            type,
-            stateType,
-        }
-        if (stateType === StateType.default) {
-            data.defaultValue = value
-        }
-        componentState[key] = {
-            ...(componentState[key] || {}),
-            ...data
-        }
-    })
+const applyStateData = (componentState: ComponentStateData, stateData: StateData, stateType: StateType, onlyExistingEntries: boolean = true) => {
+    if (onlyExistingEntries) {
+        Object.entries(componentState).forEach(([key, existingData]) => {
+            if (stateData[key]) {
+                const sourceData = stateData[key]
+                const data: ComponentIndividualStateData = {
+                    value: sourceData.value,
+                    type: sourceData.type,
+                    stateType,
+                }
+                componentState[key] = {
+                    ...existingData,
+                    ...data,
+                }
+            }
+        })
+    } else {
+        Object.entries(stateData).forEach(([key, {value, type}]) => {
+            const data: ComponentIndividualStateData = {
+                value,
+                type,
+                stateType,
+            }
+            if (stateType === StateType.default) {
+                data.defaultValue = value
+            }
+            componentState[key] = {
+                ...(componentState[key] || {}),
+                ...data
+            }
+        })
+    }
 }
 
 export const useComponentState = (
@@ -245,7 +263,8 @@ export const useComponentState = (
 
     const componentState = useMemo(() => {
         const state: ComponentStateData = {}
-        applyStateData(state, defaultState, StateType.default)
+        console.log(uid, defaultState, initialState, appliedState, inheritedState, modifiedState)
+        applyStateData(state, defaultState, StateType.default, false)
         applyStateData(state, initialState, StateType.initial)
         applyStateData(state, appliedState, StateType.applied)
         applyStateData(state, inheritedState, StateType.inherited)

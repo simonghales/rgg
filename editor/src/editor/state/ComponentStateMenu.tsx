@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from "react"
+import React, {useEffect, useMemo, useRef, useState} from "react"
 import {StyledHeading} from "../../ui/typography";
 import {useActiveComponentState} from "../../state/editor";
 import {useControls, store} from "leva/dist/leva.cjs.js"
@@ -23,6 +23,7 @@ const State: React.FC<{
     })
 
     const localValueRef = useRef(stateValue)
+    const [isObjDefaultValue] = useState(() => isStateObj(defaultValue))
 
     useEffect(() => {
         localValueRef.current = stateValue
@@ -46,18 +47,26 @@ const State: React.FC<{
         try {
             store.setValueAtPath(stateKey, stateValue)
         } catch (e) {
-
+            // console.error(e)
         }
-    }, [stateValue])
+    }, [defaultValue])
+
+    useEffect(() => {
+        try {
+            if (!isObjDefaultValue) {
+                store.setValueAtPath(stateKey, stateValue)
+            }
+        } catch (e) {
+            // console.error(e)
+        }
+    }, [stateValue, isObjDefaultValue])
 
     const value = updatedValue[stateKey]
 
     useEffect(() => {
         if (localStateRef.current.firstUpdate) {
             localStateRef.current.firstUpdate = false
-            if (localStateRef.current.initialValue === value) {
-                return
-            }
+            return
         }
         if (localValueRef.current === value) {
             return
@@ -82,7 +91,7 @@ const StateManager: React.FC<{
         <>
             {
                 Object.entries(componentState).map(([key, {value, defaultValue}]) => (
-                    <State uid={uid} stateKey={key} stateValue={value} defaultValue={defaultValue} key={key}/>
+                    <State uid={uid} stateKey={key} stateValue={value} defaultValue={defaultValue} key={`${uid}-${key}`}/>
                 ))
             }
         </>

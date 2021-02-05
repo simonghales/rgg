@@ -5,13 +5,17 @@ import {useDraggableMesh} from "../../../src/three/useDraggableMesh";
 
 export const Player: React.FC = () => {
 
-    const {x, y, z} = useEditableProp('position', {
-        defaultValue: {
-            x: 0,
-            y: 0,
-            z: 0,
-        },
-    })
+    // const {x, y, z} = useEditableProp('position', {
+    //     defaultValue: {
+    //         x: 0,
+    //         y: 0,
+    //         z: 0,
+    //     },
+    // })
+
+    const x = 0
+    const y = 0
+    const z = 0
 
     const speed = useEditableProp('speed', {
         defaultValue: { value: 9, max: 15, min: 5, step: 0.01 }
