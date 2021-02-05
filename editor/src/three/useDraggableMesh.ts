@@ -62,21 +62,21 @@ export const useDraggableMesh = () => {
         controls.addEventListener('mouseUp', () => {
 
             if (!ref.current) return
-            const prevX = getStateValue('x')
-            const prevY = getStateValue('y')
-            const prevZ = getStateValue('z')
+
+            const {
+                x: prevX,
+                y: prevY,
+                z: prevZ,
+            } = getStateValue('position')
+
             const {x, y, z} = ref.current.position
 
-            if (prevX != undefined && prevX !== x) {
-                updateComponentModifiedState(uid, 'x', x)
-            }
-
-            if (prevY != undefined && prevY !== y) {
-                updateComponentModifiedState(uid, 'y', y)
-            }
-
-            if (prevZ != undefined && prevY !== z) {
-                updateComponentModifiedState(uid, 'z', z)
+            if (prevX != undefined && prevX !== x || prevY != undefined && prevY !== y || prevZ != undefined && prevY !== z) {
+                updateComponentModifiedState(uid, 'position', {
+                    x,
+                    y,
+                    z
+                })
             }
 
         })

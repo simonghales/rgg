@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef} from "react"
-import {Circle, Cylinder} from "@react-three/drei";
+import {Circle} from "@react-three/drei";
 import {Object3D} from "three";
 import {subscribe} from "valtio";
 import {editorStateProxy, useAddComponentKey} from "../state/editor";

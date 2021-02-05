@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from "react"
+import React, {useMemo, useRef} from "react"
 import {Plane} from "@react-three/drei";
 import {editorMutableState, editorStateProxy, useIsAddingComponentToCanvas} from "../state/editor";
 import {addNewUnsavedComponent, setSelectedComponent} from "../state/componentsState";
