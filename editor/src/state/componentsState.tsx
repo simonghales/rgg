@@ -166,7 +166,6 @@ export const getComponent = (uid: string) => {
 }
 
 export const updateComponentModifiedState = (uid: string, key: string, value: any) => {
-    console.log('updateComponentModifiedState', uid, key, value)
     storeSnapshot()
     const component = getComponent(uid)
     useComponentsStateStore.setState(state => {
@@ -263,7 +262,6 @@ export const useComponentState = (
 
     const componentState = useMemo(() => {
         const state: ComponentStateData = {}
-        console.log(uid, defaultState, initialState, appliedState, inheritedState, modifiedState)
         applyStateData(state, defaultState, StateType.default, false)
         applyStateData(state, initialState, StateType.initial)
         applyStateData(state, appliedState, StateType.applied)
