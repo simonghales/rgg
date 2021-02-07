@@ -1,11 +1,16 @@
 import create from "zustand";
 
+export type CreatableOptions = {
+    transformPlace: (position: [number, number, number]) => [number, number, number]
+}
+
 export type Creatable = {
     uid: string,
     name: string,
     create: (initialProps?: {
         [key: string]: any,
     }) => any,
+    options?: CreatableOptions,
 }
 
 type Store = {
@@ -30,7 +35,9 @@ export const getCreatable = (uid: string) => {
     return useCreatablesStore.getState().creatables[uid]
 }
 
-export const registerComponent = (uid: string, name: string, create: () => any) => {
+export const registerComponent = (uid: string, name: string, create: () => any, options?: {
+    transformPlace: (position: [number, number, number]) => [number, number, number]
+}) => {
     useCreatablesStore.setState(state => {
         return {
             creatables: {
@@ -39,6 +46,7 @@ export const registerComponent = (uid: string, name: string, create: () => any) 
                     uid,
                     name,
                     create,
+                    options,
                 }
             }
         }

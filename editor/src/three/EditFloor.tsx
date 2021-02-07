@@ -1,8 +1,8 @@
-import React, {useMemo, useRef} from "react"
+import React, {useCallback, useMemo, useRef} from "react"
 import {Plane} from "@react-three/drei";
-import {editorMutableState, editorStateProxy, useIsAddingComponentToCanvas} from "../state/editor";
+import {editorMutableState, editorStateProxy, useAddComponentKey, useIsAddingComponentToCanvas} from "../state/editor";
 import {addNewUnsavedComponent, setSelectedComponent} from "../state/componentsState";
-import {getCreatable} from "../state/creatables";
+import {getCreatable, useCreatable} from "../state/creatables";
 
 const EditFloor: React.FC = () => {
 
@@ -10,20 +10,33 @@ const EditFloor: React.FC = () => {
         lastDown: 0,
     })
     const isAddingComponent = useIsAddingComponentToCanvas()
+    const addComponentKey = useAddComponentKey()
+    const creatable = useCreatable(addComponentKey)
+
+    const transformPosition = useCallback((position: [number, number, number]) => {
+
+        if (creatable && creatable.options && creatable.options.transformPlace) {
+            return creatable.options.transformPlace(position)
+        }
+
+        return position
+    }, [creatable])
 
     const handlers = useMemo(() => {
         return {
             onPointerOver: (event: any) => {
                 if (!isAddingComponent) return
-                const {x, y} = event.point
-                editorStateProxy.addComponentPosition.x = x
-                editorStateProxy.addComponentPosition.y = y
+                const {x, y, z} = event.point
+                const position = transformPosition([x, y, z])
+                editorStateProxy.addComponentPosition.x = position[0]
+                editorStateProxy.addComponentPosition.y = position[1]
             },
             onPointerMove: (event: any) => {
                 if (!isAddingComponent) return
-                const {x, y} = event.point
-                editorStateProxy.addComponentPosition.x = x
-                editorStateProxy.addComponentPosition.y = y
+                const {x, y, z} = event.point
+                const position = transformPosition([x, y, z])
+                editorStateProxy.addComponentPosition.x = position[0]
+                editorStateProxy.addComponentPosition.y = position[1]
                 if (isAddingComponent) {
                     editorMutableState.pendingAddingComponent = false
                 }
@@ -40,11 +53,12 @@ const EditFloor: React.FC = () => {
                 if (difference < 200 || editorMutableState.pendingAddingComponent) {
                     const component = getCreatable(editorStateProxy.addComponentKey)
                     if (component) {
-                        const {x, y} = event.point
+                        const {x, y, z} = event.point
+                        const position = transformPosition([x, y, z])
                         const addedComponent = addNewUnsavedComponent(component, {
                             position: {
-                                x,
-                                y,
+                                x: position[0],
+                                y: position[1],
                                 z: 0,
                             }
                         })
@@ -54,7 +68,7 @@ const EditFloor: React.FC = () => {
                 editorMutableState.pendingAddingComponent = false
             },
         }
-    }, [isAddingComponent])
+    }, [isAddingComponent, transformPosition])
 
     return (
         <>
