@@ -42,8 +42,11 @@ const EditFloor: React.FC = () => {
                     if (component) {
                         const {x, y} = event.point
                         const addedComponent = addNewUnsavedComponent(component, {
-                            x,
-                            y,
+                            position: {
+                                x,
+                                y,
+                                z: 0,
+                            }
                         })
                         setSelectedComponent(addedComponent.uid)
                     }
