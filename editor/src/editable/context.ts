@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, useMemo} from "react";
 import {ComponentStateData, StateData} from "../state/componentsState";
+import {isStateObj} from "../editor/state/ComponentStateMenu";
 
 type State = {
     uid: string,
@@ -48,6 +49,13 @@ export const useInheritedState = (id: string): StateData => {
     }, [overrideState])
 }
 
+const getSafeDefaultValue = (defaultValue: any) => {
+    if (isStateObj(defaultValue)) {
+        return defaultValue.value
+    }
+    return defaultValue
+}
+
 export const useEditableProp = (key: string, options: Options = {}) => {
 
     const {
@@ -59,7 +67,7 @@ export const useEditableProp = (key: string, options: Options = {}) => {
         registerDefaultProp(key, options.defaultValue)
     }, [])
 
-    return derivedState[key]?.value ?? options.defaultValue
+    return derivedState[key]?.value ?? getSafeDefaultValue(options.defaultValue)
 
 }
 
@@ -87,7 +95,7 @@ export const useEditableProps = (props: {
         } = {}
 
         Object.entries(props).forEach(([key, options]) => {
-            state[key] = derivedState[key]?.value ?? options.defaultValue
+            state[key] = derivedState[key]?.value ?? getSafeDefaultValue(options.defaultValue)
         })
 
         return state

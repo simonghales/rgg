@@ -6,7 +6,7 @@ import {updateComponentModifiedState} from "../../state/componentsState";
 import styled from "styled-components";
 import {StyledHeader} from "../../ui/shared";
 
-const isStateObj = (value: any) => {
+export const isStateObj = (value: any) => {
     return (!!value && typeof value === 'object' && value.hasOwnProperty('value'))
 }
 
