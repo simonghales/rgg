@@ -18,7 +18,9 @@ const recursiveSetLayer = (object: Object3D) => {
     // }
 }
 
-export const useDraggableMesh = () => {
+export const useDraggableMesh = (options: {
+    translationSnap?: number,
+} = {}) => {
     const { camera, gl, scene } = useThree()
     const {uid, getStateValue} = useEditableContext()
     const isEditMode = useIsEditMode()
@@ -54,6 +56,10 @@ export const useDraggableMesh = () => {
         if (!active) return
         if (!ref.current) return
         const controls = new TransformControls(camera, gl.domElement)
+        const {translationSnap} = options
+        if (translationSnap != undefined) {
+            controls.setTranslationSnap(translationSnap)
+        }
         controls.raycaster.layers.enable(31)
         recursiveSetLayer(controls)
         setControls(controls)

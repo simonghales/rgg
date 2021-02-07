@@ -22,7 +22,9 @@ export const Player: React.FC = () => {
     })
 
 
-    const [ref] = useDraggableMesh()
+    const [ref] = useDraggableMesh({
+        translationSnap: 1,
+    })
 
     return (
         <EditableGrabbable>
