@@ -68,11 +68,13 @@ export const useDraggableMesh = (options: {
 
             if (!ref.current) return
 
+            const previousPosition = getStateValue('position')
+
             const {
                 x: prevX,
                 y: prevY,
                 z: prevZ,
-            } = getStateValue('position')
+            } = (previousPosition ?? {})
 
             const {x, y, z} = ref.current.position
 
