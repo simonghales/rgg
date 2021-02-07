@@ -14,6 +14,7 @@ const AddingComponentHandler: React.FC = () => {
     useEffect(() => {
 
         const apply = () => {
+            if (!visualRef.current) return
             visualRef.current.position.x = editorStateProxy.addComponentPosition.x
             visualRef.current.position.y = editorStateProxy.addComponentPosition.y
         }
