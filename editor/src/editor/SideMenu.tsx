@@ -26,7 +26,8 @@ const StyledContainer = styled.div`
 `
 
 const StyledMain = styled.div`
-  flex: 1;
+  flex: 1 1 1px;
+  overflow: hidden;
 `
 
 const StyledFooter = styled.footer`

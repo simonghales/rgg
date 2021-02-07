@@ -22,7 +22,7 @@ const StyledContainer = styled.div`
 `
 
 const StyledSide = styled.div`
-  flex: 1;
+  flex: 1 1 1px;
   height: 100%;
 `
 

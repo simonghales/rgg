@@ -22,11 +22,13 @@ const StyledContainer = styled.div`
   background-color: #121213;
   color: white;
   flex-direction: column;
+  overflow: hidden;
 `
 
 const StyledMain = styled.div`
   display: flex;
-  flex: 1;
+  flex: 1 1 1px;
+  overflow: hidden;
 `
 
 const StyledAside = styled.div`
@@ -43,7 +45,7 @@ const StyledLeft = styled(StyledAside)`
 `
 
 const StyledCenter = styled.div`
-  flex: 1;
+  flex: 1 1 1px;
   position: relative;
   height: 100%;
   display: flex;
@@ -56,7 +58,7 @@ const StyledTop = styled.div`
 `
 
 const StyledMainMiddle = styled.div`
-  flex: 1;
+  flex: 1 1 1px;
   position: relative;
 `
 
@@ -66,7 +68,7 @@ const StyledRight = styled(StyledAside)`
 `
 
 const StyledLevaContainer = styled.div`
-  flex: 1;
+  flex: 1 1 1px;
 `
 
 export const Editor: React.FC = ({children}) => {
