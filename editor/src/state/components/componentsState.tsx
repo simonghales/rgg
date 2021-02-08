@@ -267,7 +267,7 @@ export const useSelectedComponents = () => {
 
 export const useSelectedComponent = () => {
     const selectedComponents = useSelectedComponents()
-    const uids = Object.entries(selectedComponents)
+    const uids = Object.keys(selectedComponents)
     if (uids.length > 0) return uids[0]
     return ''
 }

@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components";
 import {SPACE_UNITS} from "../../ui/units";
-import {ListOfComponents, ListOfItems} from "./Component";
+import {ListOfItems} from "./Component";
 import {useComponentsRootList} from "../../state/components/components";
 import DeactivatedComponents from "./DeactivatedComponents";
 import {useHasDeactivatedComponents} from "../../state/deactivated";
