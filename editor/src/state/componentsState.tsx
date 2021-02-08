@@ -4,6 +4,7 @@ import {useMemo} from "react";
 import {ComponentState} from "./types";
 import {Creatable} from "./creatables";
 import {generateUuid} from "../utils/ids";
+import FileSaver from "file-saver";
 
 export type StateData = {
     [key: string]: {
@@ -76,12 +77,23 @@ export const useComponentsStateStore = create<ComponentsStateStore>(persist(() =
         return (state: ComponentsStateStore) => {
             revertState = state
         }
-    }
+    },
 }))
 
 export const discardChanges = () => {
     storeSnapshot()
     useComponentsStateStore.setState(revertState)
+}
+
+export const loadState = (state: ComponentsStateStore) => {
+    useComponentsStateStore.setState(state)
+}
+
+export const saveChanges = () => {
+
+    const file = new File([JSON.stringify(useComponentsStateStore.getState())], "data.json", {type: "application/json"});
+    FileSaver.saveAs(file);
+
 }
 
 export const undoState = () => {

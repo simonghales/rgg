@@ -56,6 +56,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.12.13",
     "@react-three/drei": "^2.2.19",
     "@size-limit/preset-small-lib": "^4.9.1",
+    "@types/file-saver": "^2.0.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-helmet": "^6.1.0",
@@ -73,6 +74,7 @@
     "zustand": "^3.3.1"
   },
   "dependencies": {
+    "file-saver": "^2.0.5",
     "leva": "https://pkg.csb.dev/gsimone/leva/commit/cfe3e89d/leva",
     "react-helmet": "^6.1.0",
     "react-icons": "^4.1.0",
