@@ -60,15 +60,29 @@ export const useCanRedo = () => {
     return useHistoryStore(state => state.futureSnapshots.length > 0)
 }
 
-export const useComponentsStateStore = create<ComponentsStateStore>(persist(() => ({
+const initialState: ComponentsStateStore = {
     components: {},
     sharedComponents: {},
     selectedComponent: '',
     unsavedComponents: {},
     deactivatedComponents: {},
-}), {
-    name: 'componentsStateStore'
+}
+
+let revertState: ComponentsStateStore = initialState
+
+export const useComponentsStateStore = create<ComponentsStateStore>(persist(() => (initialState), {
+    name: 'componentsStateStore',
+    onRehydrateStorage: () => {
+        return (state: ComponentsStateStore) => {
+            revertState = state
+        }
+    }
 }))
+
+export const discardChanges = () => {
+    storeSnapshot()
+    useComponentsStateStore.setState(revertState)
+}
 
 export const undoState = () => {
     const pastSnapshots = useHistoryStore.getState().pastSnapshots
