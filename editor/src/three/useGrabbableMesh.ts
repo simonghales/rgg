@@ -4,7 +4,6 @@ import {BoxHelper} from "three";
 import {useEditableContext} from "../editable/context";
 import {
     setSelectedComponent,
-    useIsComponentSelected,
     useIsOnlyComponentSelected
 } from "../state/components/componentsState";
 import {setComponentEditorHovered, useIsHovered} from "../state/localState";

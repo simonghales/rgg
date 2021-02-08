@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from "react";
 import {useEditableContext} from "../editable/context";
 import {
     updateComponentModifiedState,
-    useIsComponentSelected,
     useIsOnlyComponentSelected
 } from "../state/components/componentsState";
 import {useThree} from "react-three-fiber";
