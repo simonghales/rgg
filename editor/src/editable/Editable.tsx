@@ -4,7 +4,7 @@ import {
     StateData,
     useComponentState,
     useIsComponentDeactivated,
-    useIsComponentSelected, useIsOnlyComponentSelected
+    useIsOnlyComponentSelected
 } from "../state/components/componentsState";
 import {generateUuid} from "../utils/ids";
 import {addComponent, addDeactivatedComponent, removeComponent, removeDeactivatedComponent} from "../state/components/components";
