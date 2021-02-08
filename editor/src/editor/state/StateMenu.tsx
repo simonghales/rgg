@@ -2,8 +2,8 @@ import React from "react"
 import root from "react-shadow/styled-components";
 import {GlobalStyle} from "../../ui/global";
 import styled from "styled-components";
-import {useSelectedComponent} from "../../state/componentsState";
-import {useComponent} from "../../state/components";
+import {useSelectedComponent} from "../../state/components/componentsState";
+import {useComponent} from "../../state/components/components";
 import ComponentStateMenu from "./ComponentStateMenu";
 
 const StyledWrapper = styled.div`

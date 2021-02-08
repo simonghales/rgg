@@ -1,5 +1,5 @@
 {
-  "version": "0.1.12",
+  "version": "0.1.13",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "file-saver": "^2.0.5",
+    "hotkeys-js": "^3.8.2",
     "leva": "https://pkg.csb.dev/gsimone/leva/commit/cfe3e89d/leva",
     "react-helmet": "^6.1.0",
     "react-icons": "^4.1.0",

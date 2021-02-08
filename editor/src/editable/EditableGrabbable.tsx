@@ -2,14 +2,14 @@ import React, {ReactElement} from "react"
 import {useGrabbableMesh} from "../three/useGrabbableMesh";
 import EditableTransform from "./EditableTransform";
 import {useEditableContext} from "./context";
-import {useIsSelectedComponent} from "../state/componentsState";
+import {useIsComponentSelected, useIsOnlyComponentSelected} from "../state/components/componentsState";
 import {useIsEditMode} from "../state/editor";
 
 const EditableGrabbable: React.FC = ({children}) => {
 
     const props = useGrabbableMesh()
     const {uid} = useEditableContext()
-    const isSelected = useIsSelectedComponent(uid)
+    const isSelected = useIsOnlyComponentSelected(uid)
     const isEditMode = useIsEditMode()
 
     if (!isEditMode) return children as ReactElement

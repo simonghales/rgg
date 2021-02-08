@@ -1,6 +1,6 @@
 import create from "zustand";
 import {proxy, ref, useProxy} from "valtio";
-import {ComponentStateData} from "./componentsState";
+import {ComponentStateData} from "./components/componentsState";
 import {useEffect, useRef} from "react";
 import {OrthographicCamera, PerspectiveCamera} from "three";
 

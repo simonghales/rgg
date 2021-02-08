@@ -1,7 +1,7 @@
 import create from "zustand";
 import {useMemo} from "react";
 import {useComponentsStateStore} from "./componentsState";
-import {ComponentState} from "./types";
+import {ComponentState} from "../types";
 
 type ComponentsStore = {
     components: {
@@ -45,6 +45,13 @@ export const useComponentsRootList = () => {
         }).map(([, component]) => component)
     }, [components])
 
+}
+
+export const getComponentsRootList = () => {
+    const components = useComponentsStore.getState().components
+    return Object.entries(components).filter(([, component]) => {
+        return component.isRoot
+    }).map(([, component]) => component)
 }
 
 export const addComponent = (uid: string, name: string, children: string[], isRoot: boolean, unsaved: boolean) => {

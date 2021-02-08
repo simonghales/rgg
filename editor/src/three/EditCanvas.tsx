@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useRef} from "react"
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef} from "react"
 import {EditTools} from "../index";
 import {useThree} from "react-three-fiber";
 import {OrthographicCamera, PerspectiveCamera} from "three";
@@ -6,6 +6,22 @@ import {useIsEditMode, useIsEditModeRef} from "../state/editor";
 import {Context} from "./EditCanvas.context";
 import TemporaryComponents from "../editor/TemporaryComponents";
 import CameraPreviewHandler from "./CameraPreviewHandler";
+import {setSelectedComponents, useAreMultipleComponentsSelected} from "../state/components/componentsState";
+
+export const useEditCanvasProps = () => {
+
+    const multipleComponentsSelected = useAreMultipleComponentsSelected()
+
+    return useMemo(() => {
+        return {
+            onPointerMissed: () => {
+                if (multipleComponentsSelected) {
+                    setSelectedComponents([])
+                }
+            }
+        }
+    }, [multipleComponentsSelected])
+}
 
 const EditCanvas: React.FC = ({children}) => {
 

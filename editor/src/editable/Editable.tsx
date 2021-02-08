@@ -4,10 +4,10 @@ import {
     StateData,
     useComponentState,
     useIsComponentDeactivated,
-    useIsSelectedComponent
-} from "../state/componentsState";
+    useIsComponentSelected, useIsOnlyComponentSelected
+} from "../state/components/componentsState";
 import {generateUuid} from "../utils/ids";
-import {addComponent, addDeactivatedComponent, removeComponent, removeDeactivatedComponent} from "../state/components";
+import {addComponent, addDeactivatedComponent, removeComponent, removeDeactivatedComponent} from "../state/components/components";
 import {setActiveComponentState} from "../state/editor";
 
 type Override = {
@@ -154,7 +154,7 @@ export const Editable: React.FC<Props> = ({
     const inheritedState = useInheritedState(id)
 
     const derivedState = useComponentState(uid, componentId, defaultState, initialState, inheritedState)
-    const isSelected = useIsSelectedComponent(uid)
+    const isSelected = useIsOnlyComponentSelected(uid)
 
     const getStateValue = useCallback((key: string) => {
         return derivedState[key]?.value ?? undefined

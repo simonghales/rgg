@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ComponentPreview from "./ComponentPreview";
 import {getCreatable, useCreatables} from "../../../state/creatables";
 import {setAddingComponent} from "../../../state/editor";
-import {addNewUnsavedComponent, setSelectedComponent} from "../../../state/componentsState";
+import {addNewUnsavedComponent, setSelectedComponent} from "../../../state/components/componentsState";
 
 const StyledContainer = styled.ul`
   height: 100%;
@@ -29,7 +29,7 @@ const AddComponentList: React.FC<{
         const component = getCreatable(uid)
         if (component) {
             const addedComponent = addNewUnsavedComponent(component)
-            setSelectedComponent(addedComponent.uid)
+            setSelectedComponent(true, addedComponent.uid)
         }
         setAddingComponent(false)
     }, [])

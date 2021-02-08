@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect} from "react"
 import styled from "styled-components";
 import {Leva} from "leva/dist/leva.cjs.js";
 import EditorProvider from "./EditorProvider";
@@ -11,6 +11,8 @@ import AddComponentMenu from "./components/AddComponent/AddComponentMenu";
 import {useIsAddingComponent, useIsEditMode} from "../state/editor";
 import CameraPreview from "./CameraPreview";
 import AddComponentBlocker from "./components/AddComponent/AddComponentBlocker";
+import hotkeys from "hotkeys-js";
+import ContextMenu from "./ContextMenu";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -71,10 +73,19 @@ const StyledLevaContainer = styled.div`
   flex: 1 1 1px;
 `
 
+const useHotkeysListener = () => {
+
+    useEffect(() => {
+        hotkeys('*', '', () => {})
+    }, [])
+
+}
+
 export const Editor: React.FC = ({children}) => {
 
     const isAddingComponent = useIsAddingComponent()
     const isEditMode = useIsEditMode()
+    useHotkeysListener()
 
     return (
         <>
@@ -118,6 +129,7 @@ export const Editor: React.FC = ({children}) => {
                         </StyledRight>
                     </StyledMain>
                 </StyledContainer>
+                <ContextMenu/>
             </EditorProvider>
         </>
     )

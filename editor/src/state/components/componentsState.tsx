@@ -1,9 +1,9 @@
 import create from "zustand";
 import {persist} from "zustand/middleware";
 import {useMemo} from "react";
-import {ComponentState} from "./types";
-import {Creatable} from "./creatables";
-import {generateUuid} from "../utils/ids";
+import {ComponentState} from "../types";
+import {Creatable} from "../creatables";
+import {generateUuid} from "../../utils/ids";
 import FileSaver from "file-saver";
 
 export type StateData = {
@@ -24,6 +24,18 @@ type SharedComponent = {
     appliedState: StateData,
 }
 
+export type ComponentGroup = {
+    parent: string,
+    isOpen: boolean,
+    components: {
+        [key: string]: boolean
+    }
+}
+
+export type GroupedComponents = {
+    [key: string]: string
+}
+
 type ComponentsStateStore = {
     components: {
         [key: string]: StoredComponentState
@@ -32,12 +44,19 @@ type ComponentsStateStore = {
         [key: string]: SharedComponent,
     },
     selectedComponent: string,
+    selectedComponents: {
+        [key: string]: boolean,
+    },
     unsavedComponents: {
         [key: string]: ComponentState,
     },
     deactivatedComponents: {
         [key: string]: boolean,
-    }
+    },
+    groups: {
+        [key: string]: ComponentGroup
+    },
+    groupedComponents: GroupedComponents
 }
 
 type HistoryStore = {
@@ -51,6 +70,7 @@ export const useHistoryStore = create<HistoryStore>(persist(() => ({
     futureSnapshots: [],
 }), {
     name: 'historyStore',
+    version: 1,
 }))
 
 export const useCanUndo = () => {
@@ -65,8 +85,11 @@ const initialState: ComponentsStateStore = {
     components: {},
     sharedComponents: {},
     selectedComponent: '',
+    selectedComponents: {},
     unsavedComponents: {},
     deactivatedComponents: {},
+    groups: {},
+    groupedComponents: {},
 }
 
 let revertState: ComponentsStateStore = initialState
@@ -78,6 +101,7 @@ export const useComponentsStateStore = create<ComponentsStateStore>(persist(() =
             revertState = state
         }
     },
+    version: 3,
 }))
 
 export const discardChanges = () => {
@@ -137,6 +161,22 @@ export const storeSnapshot = () => {
     })
 }
 
+export const useGroup = (uid: string) => {
+    return useComponentsStateStore(state => state.groups[uid])
+}
+
+export const setGroupIsOpen = (uid: string, isOpen: boolean) => {
+    useComponentsStateStore.setState(state => ({
+        groups: {
+            ...state.groups,
+            [uid]: {
+                ...state.groups[uid],
+                isOpen,
+            }
+        }
+    }))
+}
+
 export const addDeactivatedComponent = (uid: string) => {
     storeSnapshot()
     useComponentsStateStore.setState(state => ({
@@ -164,28 +204,86 @@ export const useIsComponentDeactivated = (uid: string) => {
     return useComponentsStateStore(state => state.deactivatedComponents[uid]) ?? false
 }
 
-export const setSelectedComponent = (uid: string, from?: string) => {
-    useComponentsStateStore.setState(state => {
-        if (!from) {
-            return {
-                selectedComponent: uid,
-            }
-        }
-        if (state.selectedComponent === from) {
-            return {
-                selectedComponent: uid,
-            }
-        }
-        return {}
+export const setSelectedComponents = (components: string[]) => {
+    const selectedComponents: {
+        [key: string]: boolean,
+    } = {}
+    components.forEach((uid) => {
+        selectedComponents[uid] = true
+    })
+    useComponentsStateStore.setState({
+        selectedComponents: selectedComponents,
     })
 }
 
-export const useSelectedComponent = () => {
-    return useComponentsStateStore(state => state.selectedComponent)
+export const setSelectedComponent = (selected: boolean, uid: string, override: boolean = true) => {
+    useComponentsStateStore.setState(state => {
+        if (override) {
+            if (selected) {
+                return {
+                    selectedComponent: uid,
+                    selectedComponents: {
+                        [uid]: true,
+                    }
+                }
+            } else {
+                return {
+                    selectedComponent: '',
+                    selectedComponents: {},
+                }
+            }
+        }
+        if (selected) {
+            return {
+                selectedComponents: {
+                    ...state.selectedComponents,
+                    [uid]: selected
+                }
+            }
+        } else {
+            const updated = {
+                ...state.selectedComponents,
+            }
+            delete updated[uid]
+            return {
+                selectedComponents: updated
+            }
+        }
+    })
 }
 
-export const useIsSelectedComponent = (uid: string) => {
-    return useSelectedComponent() === uid
+export const getSelectedComponent = () => {
+    return useComponentsStateStore.getState().selectedComponent
+}
+
+export const getSelectedComponents = () => {
+    const selectedComponents = useComponentsStateStore.getState().selectedComponents
+    return Object.entries(selectedComponents).filter(([, selected]) => selected).map(([key]) => key)
+}
+
+export const useSelectedComponents = () => {
+    return useComponentsStateStore(state => state.selectedComponents)
+}
+
+export const useSelectedComponent = () => {
+    const selectedComponents = useSelectedComponents()
+    const uids = Object.entries(selectedComponents)
+    if (uids.length > 0) return uids[0]
+    return ''
+}
+
+export const useAreMultipleComponentsSelected = () => {
+    return Object.keys(useSelectedComponents()).length > 1
+}
+
+export const useIsComponentSelected = (uid: string) => {
+    const selectedComponents = useSelectedComponents()
+    return !!selectedComponents[uid]
+}
+
+export const useIsOnlyComponentSelected = (uid: string) => {
+    const selectedComponents = useSelectedComponents()
+    return (Object.keys(selectedComponents).length === 1) && !!selectedComponents[uid]
 }
 
 export const getComponent = (uid: string) => {

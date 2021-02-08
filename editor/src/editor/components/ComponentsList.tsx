@@ -1,10 +1,12 @@
 import React from "react"
 import styled from "styled-components";
 import {SPACE_UNITS} from "../../ui/units";
-import {ListOfComponents} from "./Component";
-import {useComponentsRootList} from "../../state/components";
+import {ListOfComponents, ListOfItems} from "./Component";
+import {useComponentsRootList} from "../../state/components/components";
 import DeactivatedComponents from "./DeactivatedComponents";
 import {useHasDeactivatedComponents} from "../../state/deactivated";
+import {useComponentsStateStore} from "../../state/components/componentsState";
+import ComponentsContext, {COMPONENTS_PARENT_TYPE} from "./ComponentsContext";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -25,16 +27,72 @@ const StyledComponentsContainer = styled.div`
 
 const StyledDeactivatedContainer = styled.div``
 
+export const useGroups = () => {
+    return useComponentsStateStore(state => state.groups)
+}
+
+export const useGroupedComponents = () => {
+    return useComponentsStateStore(state => state.groupedComponents)
+}
+
+export type ListItem = {
+    type: string,
+    uid: string,
+    components?: string[],
+}
+
+export const useItems = () => {
+    const items: ListItem[] = []
+    const components = useComponentsRootList()
+    const groupedComponents = useGroupedComponents()
+
+    const groups: {
+        [key: string]: {
+            [key: string]: boolean,
+        }
+    } = {}
+
+    components.forEach((component) => {
+        if (!groupedComponents[component.uid]) {
+            items.push({
+                type: 'component',
+                uid: component.uid,
+            })
+        } else {
+            const groupId = groupedComponents[component.uid]
+            if (groups[groupId]) {
+                groups[groupId][component.uid] = true
+            } else {
+                groups[groupId] = {
+                    [component.uid]: true
+                }
+            }
+        }
+    })
+
+    Object.entries(groups).forEach(([groupId, groupComponents]) => {
+        items.push({
+            type: 'group',
+            uid: groupId,
+            components: Object.keys(groupComponents)
+        })
+    })
+
+    return items
+}
+
 const ComponentsList: React.FC = () => {
 
-    const components = useComponentsRootList()
+    const items = useItems()
     const hasDeactivated = useHasDeactivatedComponents()
 
     return (
         <StyledContainer>
             <StyledMain>
                 <StyledComponentsContainer>
-                    <ListOfComponents components={components}/>
+                    <ComponentsContext type={COMPONENTS_PARENT_TYPE.ROOT}>
+                        <ListOfItems items={items}/>
+                    </ComponentsContext>
                 </StyledComponentsContainer>
             </StyledMain>
             {

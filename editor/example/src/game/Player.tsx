@@ -22,8 +22,6 @@ export const Player: React.FC = () => {
         }
     })
 
-    console.log('speed', speed)
-
 
     const [ref] = useDraggableMesh({
         translationSnap: 1,

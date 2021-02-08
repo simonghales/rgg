@@ -3,7 +3,7 @@ export * from './editable/Editable'
 import {useEditableProp} from './editable/context'
 import EditableGrabbable from './editable/EditableGrabbable';
 import TemporaryComponents from './editor/TemporaryComponents';
-import { loadState } from './state/componentsState';
+import { loadState } from './state/components/componentsState';
 import {registerComponent} from './state/creatables';
 import {setMainCamera, useIsEditMode } from './state/editor';
 import EditCanvas from './three/EditCanvas';

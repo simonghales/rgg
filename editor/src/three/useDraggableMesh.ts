@@ -1,6 +1,10 @@
 import {useEffect, useRef, useState} from "react";
 import {useEditableContext} from "../editable/context";
-import {updateComponentModifiedState, useIsSelectedComponent} from "../state/componentsState";
+import {
+    updateComponentModifiedState,
+    useIsComponentSelected,
+    useIsOnlyComponentSelected
+} from "../state/components/componentsState";
 import {useThree} from "react-three-fiber";
 import { TransformControls as OriginalTransformControls } from "three/examples/jsm/controls/TransformControls";
 // @ts-ignore
@@ -24,7 +28,7 @@ export const useDraggableMesh = (options: {
     const { camera, gl, scene } = useThree()
     const {uid, getStateValue} = useEditableContext()
     const isEditMode = useIsEditMode()
-    const isSelected = useIsSelectedComponent(uid)
+    const isSelected = useIsOnlyComponentSelected(uid)
     const ref = useRef<Object3D>()
     const orbitRef = useOrbitRef()
     const [controls, setControls] = useState<OriginalTransformControls | null>(null)

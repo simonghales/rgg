@@ -1,5 +1,5 @@
-import {useComponentsStateStore} from "./componentsState";
-import {useComponentsStore} from "./components";
+import {useComponentsStateStore} from "./components/componentsState";
+import {useComponentsStore} from "./components/components";
 import {ComponentState} from "./types";
 
 export const useHasDeactivatedComponents = () => {
