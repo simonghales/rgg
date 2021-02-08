@@ -1,8 +1,7 @@
-import React, {useState} from "react"
+import React from "react"
 import {ListOfItems, StyledClickable} from "./Component";
 import ComponentsContext, {COMPONENTS_PARENT_TYPE} from "./ComponentsContext";
 import styled from "styled-components";
-import {COLORS} from "../../ui/colors";
 import {setGroupIsOpen, useGroup} from "../../state/components/componentsState";
 
 const StyledContainer = styled.div``
