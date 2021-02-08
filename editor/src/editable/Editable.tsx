@@ -137,12 +137,15 @@ export const Editable: React.FC<Props> = ({
         return state
     }, [config.override, previousOverrideState])
 
-    const registerDefaultProp = useCallback((key: string, value: any) => {
+    const registerDefaultProp = useCallback((key: string, value: any, config?: {
+        [key: string]: any,
+    }) => {
         setDefaultState(state => {
             return {
                 ...state,
                 [key]: {
                     value,
+                    config,
                 }
             }
         })

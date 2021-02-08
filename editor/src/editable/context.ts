@@ -5,7 +5,9 @@ import {isStateObj} from "../editor/state/ComponentStateMenu";
 type State = {
     uid: string,
     derivedState: ComponentStateData,
-    registerDefaultProp: (key: string, value: any) => void,
+    registerDefaultProp: (key: string, value: any, options?: {
+        [key: string]: any,
+    }) => void,
     parentPath: string[],
     overrideState: {
         [key: string]: StateData
@@ -32,6 +34,9 @@ export const useEditableContext = (): State => {
 
 type Options = {
     defaultValue?: any,
+    config?: {
+        [key: string]: any,
+    }
 }
 
 export const useInheritedState = (id: string): StateData => {
@@ -49,13 +54,6 @@ export const useInheritedState = (id: string): StateData => {
     }, [overrideState])
 }
 
-const getSafeDefaultValue = (defaultValue: any) => {
-    if (isStateObj(defaultValue)) {
-        return defaultValue.value
-    }
-    return defaultValue
-}
-
 export const useEditableProp = (key: string, options: Options = {}) => {
 
     const {
@@ -64,10 +62,10 @@ export const useEditableProp = (key: string, options: Options = {}) => {
     } = useEditableContext()
 
     useEffect(() => {
-        registerDefaultProp(key, options.defaultValue)
+        registerDefaultProp(key, options.defaultValue, options.config)
     }, [])
 
-    return derivedState[key]?.value ?? getSafeDefaultValue(options.defaultValue)
+    return derivedState[key]?.value ?? options.defaultValue
 
 }
 
@@ -84,7 +82,7 @@ export const useEditableProps = (props: {
 
     useEffect(() => {
         Object.entries(props).forEach(([key, options]) => {
-            registerDefaultProp(key, options.defaultValue)
+            registerDefaultProp(key, options.defaultValue, options.config)
         })
     }, [])
 
@@ -95,7 +93,7 @@ export const useEditableProps = (props: {
         } = {}
 
         Object.entries(props).forEach(([key, options]) => {
-            state[key] = derivedState[key]?.value ?? getSafeDefaultValue(options.defaultValue)
+            state[key] = derivedState[key]?.value ?? options.defaultValue
         })
 
         return state

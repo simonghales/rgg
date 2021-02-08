@@ -12,10 +12,13 @@ export const isStateObj = (value: any) => {
 
 const State: React.FC<{
     uid: string,
+    config?: {
+      [key: string]: any,
+    },
     stateKey: string,
     defaultValue?: any,
     stateValue: any,
-}> = ({uid, stateKey, stateValue, defaultValue}) => {
+}> = ({uid, stateKey, stateValue, defaultValue, config}) => {
 
     const localStateRef = useRef({
         initialValue: stateValue,
@@ -30,9 +33,9 @@ const State: React.FC<{
     }, [stateValue])
 
     const preppedState = useMemo(() => {
-        if (isStateObj(defaultValue) && !isStateObj(stateValue)) {
+        if (config) {
             return {
-                ...defaultValue,
+                ...config,
                 value: stateValue,
             }
         }
@@ -90,8 +93,8 @@ const StateManager: React.FC<{
     return (
         <>
             {
-                Object.entries(componentState).map(([key, {value, defaultValue}]) => (
-                    <State uid={uid} stateKey={key} stateValue={value} defaultValue={defaultValue} key={`${uid}-${key}`}/>
+                Object.entries(componentState).map(([key, {value, defaultValue, config}]) => (
+                    <State uid={uid} stateKey={key} stateValue={value} defaultValue={defaultValue} config={config} key={`${uid}-${key}`}/>
                 ))
             }
         </>

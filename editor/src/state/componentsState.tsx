@@ -9,6 +9,9 @@ export type StateData = {
     [key: string]: {
         value: any,
         type?: string,
+        config?: {
+            [key: string]: any,
+        }
     }
 }
 
@@ -199,6 +202,9 @@ export type ComponentIndividualStateData = {
     value: any,
     stateType: StateType,
     type?: string,
+    config?: {
+        [key: string]: any,
+    }
 }
 
 export type ComponentStateData = {
@@ -232,11 +238,12 @@ const applyStateData = (componentState: ComponentStateData, stateData: StateData
             }
         })
     } else {
-        Object.entries(stateData).forEach(([key, {value, type}]) => {
+        Object.entries(stateData).forEach(([key, {value, type, config}]) => {
             const data: ComponentIndividualStateData = {
                 value,
                 type,
                 stateType,
+                config,
             }
             if (stateType === StateType.default) {
                 data.defaultValue = value
