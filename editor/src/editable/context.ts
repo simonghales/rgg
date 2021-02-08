@@ -1,6 +1,5 @@
 import {createContext, useContext, useEffect, useMemo} from "react";
 import {ComponentStateData, StateData} from "../state/componentsState";
-import {isStateObj} from "../editor/state/ComponentStateMenu";
 
 type State = {
     uid: string,
