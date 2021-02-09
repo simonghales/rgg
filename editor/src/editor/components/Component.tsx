@@ -14,10 +14,10 @@ import {FaTrash} from "react-icons/fa";
 import {ComponentState} from "../../state/types";
 import {setComponentSidebarHovered, useIsHovered} from "../../state/localState";
 import {INPUTS, isInputPressed} from "../../inputs/inputs";
-import {calculateNewSelectedComponents} from "../../state/components/temp";
+import {calculateNewSelectedComponents, SidebarItem} from "../../state/components/temp";
 import {MENU_TYPE, showContextMenu} from "../ContextMenu";
-import {ListItem} from "./ComponentsList";
 import GroupOfComponents from "./GroupOfComponents";
+import {useComponentParentGroupId} from "./ComponentsContext";
 
 const StyledList = styled.ul`
 
@@ -48,18 +48,18 @@ export const ListOfComponents: React.FC<{
 }
 
 export const ListOfItems: React.FC<{
-    items: ListItem[],
+    items: SidebarItem[],
 }> = ({items}) => {
     return (
         <StyledList>
             {
                 items.map((item, index) => (
-                    <li key={item.uid}>
+                    <li key={item.key}>
                         {
                             (item.type === 'group') ? (
-                                <GroupOfComponents uid={item.uid} components={item.components as string[]}/>
+                                <GroupOfComponents uid={item.key} components={item.children || []}/>
                             ) : (
-                                <Component uid={item.uid} index={index}/>
+                                <Component uid={item.key} index={index}/>
                             )
                         }
                     </li>
@@ -166,6 +166,7 @@ const Component: React.FC<{
     index: number,
 }> = ({uid, index}) => {
 
+    const parentGroupId = useComponentParentGroupId()
     const component = useComponent(uid)
     const children = useComponents(component.children)
     const isSelected = useIsComponentSelected(uid)
@@ -188,14 +189,13 @@ const Component: React.FC<{
     const onClick = useCallback(() => {
 
         if (isInputPressed(INPUTS.shift)) {
-            const selectedRange = calculateNewSelectedComponents(index, uid)
-            console.log('shift is pressed...', index, selectedRange)
+            const selectedRange = calculateNewSelectedComponents(index, uid, parentGroupId)
             setSelectedComponents(selectedRange)
         } else {
-            setSelectedComponent(true, uid)
+            setSelectedComponent(true, uid, !isInputPressed(INPUTS.command))
         }
 
-    }, [])
+    }, [parentGroupId])
 
     const onRightClick = useCallback((event: MouseEvent) => {
         showContextMenu(MENU_TYPE.SIDEBAR_COMPONENT, event.pageX, event.pageY, uid)

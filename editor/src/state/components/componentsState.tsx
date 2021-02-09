@@ -36,7 +36,7 @@ export type GroupedComponents = {
     [key: string]: string
 }
 
-type ComponentsStateStore = {
+export type ComponentsStateStore = {
     components: {
         [key: string]: StoredComponentState
     },
@@ -162,7 +162,7 @@ export const storeSnapshot = () => {
 }
 
 export const useGroup = (uid: string) => {
-    return useComponentsStateStore(state => state.groups[uid])
+    return useComponentsStateStore(state => state.groups[uid] ?? true)
 }
 
 export const setGroupIsOpen = (uid: string, isOpen: boolean) => {

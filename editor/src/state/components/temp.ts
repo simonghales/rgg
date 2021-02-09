@@ -1,6 +1,6 @@
-import {getComponentsRootList} from "./components";
+import {ComponentsStore, getComponentsRootList, useComponentsStore} from "./components";
 import {
-    ComponentGroup,
+    ComponentGroup, ComponentsStateStore,
     getSelectedComponent,
     getSelectedComponents,
     GroupedComponents,
@@ -8,9 +8,39 @@ import {
 } from "./componentsState";
 import {generateUuid} from "../../utils/ids";
 
-export const calculateNewSelectedComponents = (newSelectedIndex: number, uid: string): string[] => {
+const findGroup = (groupId: string, sidebarItems: SidebarItem[]): SidebarItem | null => {
+    for (let i = 0, len = sidebarItems.length; i < len; i++) {
+        const item = sidebarItems[i]
+        if (item.key === groupId) {
+            return item
+        } else if (item.children) {
+            const match = findGroup(groupId, item.children)
+            if (match) {
+                return match
+            }
+        }
+    }
+    return null
+}
 
-    const rootList = getComponentsRootList().map(({uid}) => uid)
+export const calculateNewSelectedComponents = (newSelectedIndex: number, uid: string, parentGroupId: string): string[] => {
+
+    // const rootList = getComponentsRootList().map(({uid}) => uid)
+
+
+    const sidebarItems = getSidebarItems()
+    let rootList = sidebarItems.map(item => item.key)
+
+    if (parentGroupId) {
+        const group = findGroup(parentGroupId, sidebarItems)
+        const groupChildrenKeys = group?.children?.map(({key}) => key) || []
+        if (!group || !groupChildrenKeys.includes(uid)) {
+            return [uid]
+        } else {
+            rootList = groupChildrenKeys
+        }
+    }
+
     const selectedComponents = getSelectedComponents()
 
     const selectedIndexes: number[] = []
@@ -62,7 +92,7 @@ export const groupSelectedComponents = () => {
 
     const newGroup: ComponentGroup = {
         parent: '',
-        isOpen: false,
+        isOpen: true,
         components: {},
     }
     const groupedComponents: GroupedComponents = {}
@@ -85,4 +115,107 @@ export const groupSelectedComponents = () => {
         }
     })
 
+}
+
+/*
+
+
+[
+item,
+item,
+group,
+item,
+item,
+]
+
+ */
+
+export type SidebarItem = {
+    key: string,
+    type: 'component' | 'group',
+    children?: SidebarItem[],
+}
+
+const computeSidebarItems = (
+    components: ComponentsStore['components'],
+    groupedComponents: ComponentsStateStore['groupedComponents'],
+    groups: ComponentsStateStore['groups'],
+    ): SidebarItem[] => {
+
+    const items: SidebarItem[] = []
+    const itemGroups: {
+        [key: string]: {
+            [key: string]: true,
+        }
+    } = {}
+
+    Object.entries(components).forEach(([key]) => {
+        const groupKey = groupedComponents[key]
+        if (groupKey && groups[groupKey]) {
+            if (itemGroups[groupKey]) {
+                itemGroups[groupKey][key] = true
+            } else {
+                itemGroups[groupKey] = {
+                    [key]: true,
+                }
+            }
+        } else {
+            items.push({
+                key,
+                type: 'component',
+            })
+        }
+    })
+    Object.entries(itemGroups).forEach(([key, group]) => {
+        items.push({
+            key,
+            type: 'group',
+            children: Object.keys(group).map((componentKey) => ({
+                key: componentKey,
+                type: 'component',
+            }))
+        })
+    })
+    return items
+}
+
+export const getSidebarItems = () => {
+    const {groupedComponents, groups} = useComponentsStateStore.getState()
+    const components = useComponentsStore.getState().components
+    return computeSidebarItems(components, groupedComponents, groups)
+}
+
+export const useSidebarItems = (): SidebarItem[] => {
+    const {groupedComponents, groups} = useComponentsStateStore(state => ({
+        groupedComponents: state.groupedComponents,
+        groups: state.groups,
+    }))
+    const {components} = useComponentsStore(state => ({
+        components: state.components,
+    }))
+    return computeSidebarItems(components, groupedComponents, groups)
+}
+
+export const removeGroup = (groupId: string) => {
+    return useComponentsStateStore.setState(state => {
+        const updatedGroupedComponents = {
+            ...state.groupedComponents,
+        }
+        const updatedGroups = {
+            ...state.groups,
+        }
+
+        Object.entries(updatedGroupedComponents).forEach(([componentId, componentGroupId]) => {
+            if (componentGroupId === groupId) {
+                delete updatedGroupedComponents[componentId]
+            }
+        })
+
+        delete updatedGroups[groupId]
+
+        return {
+            groupedComponents: updatedGroupedComponents,
+            groups: updatedGroups,
+        }
+    })
 }

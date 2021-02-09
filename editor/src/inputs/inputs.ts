@@ -4,6 +4,7 @@ const KEY_CODES: {
     [key: string]: number,
 } = {
     shift: 16,
+    command: 91,
 }
 
 type Input = {
@@ -17,7 +18,10 @@ export const INPUTS: {
 } = {
     shift: {
         codes: [KEY_CODES.shift]
-    }
+    },
+    command: {
+        codes: [KEY_CODES.command]
+    },
 }
 
 export const isInputPressed = (input: Input): boolean => {

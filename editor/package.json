@@ -74,6 +74,7 @@
     "zustand": "^3.3.1"
   },
   "dependencies": {
+    "antd": "^4.12.2",
     "file-saver": "^2.0.5",
     "hotkeys-js": "^3.8.2",
     "leva": "https://pkg.csb.dev/gsimone/leva/commit/cfe3e89d/leva",

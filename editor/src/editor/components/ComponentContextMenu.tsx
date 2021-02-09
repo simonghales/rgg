@@ -4,7 +4,7 @@ import {COLORS} from "../../ui/colors";
 import {useAreMultipleComponentsSelected} from "../../state/components/componentsState";
 import {groupSelectedComponents} from "../../state/components/temp";
 
-const StyledContainer = styled.div`
+export const StyledContainer = styled.div`
   width: 200px;
   background-color: ${COLORS.dark};
   padding: 5px;

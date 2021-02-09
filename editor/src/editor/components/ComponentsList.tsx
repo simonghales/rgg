@@ -1,12 +1,17 @@
 import React from "react"
 import styled from "styled-components";
 import {SPACE_UNITS} from "../../ui/units";
-import {ListOfItems} from "./Component";
 import {useComponentsRootList} from "../../state/components/components";
 import DeactivatedComponents from "./DeactivatedComponents";
 import {useHasDeactivatedComponents} from "../../state/deactivated";
 import {useComponentsStateStore} from "../../state/components/componentsState";
+import {ListOfItems} from "./Component";
 import ComponentsContext, {COMPONENTS_PARENT_TYPE} from "./ComponentsContext";
+
+import { Tree } from "antd";
+import {useSidebarItems} from "../../state/components/temp";
+
+const { TreeNode } = Tree;
 
 const StyledContainer = styled.div`
   display: flex;
@@ -44,6 +49,7 @@ export type ListItem = {
 export const useItems = () => {
     const items: ListItem[] = []
     const components = useComponentsRootList()
+    console.log('useItems components', components)
     const groupedComponents = useGroupedComponents()
 
     const groups: {
@@ -83,7 +89,8 @@ export const useItems = () => {
 
 const ComponentsList: React.FC = () => {
 
-    const items = useItems()
+    const sidebarItems = useSidebarItems()
+
     const hasDeactivated = useHasDeactivatedComponents()
 
     return (
@@ -91,7 +98,7 @@ const ComponentsList: React.FC = () => {
             <StyledMain>
                 <StyledComponentsContainer>
                     <ComponentsContext type={COMPONENTS_PARENT_TYPE.ROOT}>
-                        <ListOfItems items={items}/>
+                        <ListOfItems items={sidebarItems}/>
                     </ComponentsContext>
                 </StyledComponentsContainer>
             </StyledMain>

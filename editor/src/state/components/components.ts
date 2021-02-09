@@ -3,7 +3,7 @@ import {useMemo} from "react";
 import {useComponentsStateStore} from "./componentsState";
 import {ComponentState} from "../types";
 
-type ComponentsStore = {
+export type ComponentsStore = {
     components: {
         [key: string]: ComponentState,
     },
