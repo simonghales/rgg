@@ -3,6 +3,7 @@ import {Plane} from "@react-three/drei";
 import {editorMutableState, editorStateProxy, useAddComponentKey, useIsAddingComponentToCanvas} from "../state/editor";
 import {addNewUnsavedComponent, setSelectedComponent} from "../state/components/componentsState";
 import {getCreatable, useCreatable} from "../state/creatables";
+import {INPUTS, isInputPressed} from "../inputs/inputs";
 
 const EditFloor: React.FC = () => {
 
@@ -63,6 +64,9 @@ const EditFloor: React.FC = () => {
                             }
                         })
                         setSelectedComponent(true, addedComponent.uid)
+                        if (!isInputPressed(INPUTS.shift)) {
+                            editorStateProxy.addComponentKey = ''
+                        }
                     }
                 }
                 editorMutableState.pendingAddingComponent = false
