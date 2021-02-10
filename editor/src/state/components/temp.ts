@@ -251,3 +251,7 @@ export const deleteSelectedComponents = () => {
         deleteComponent(componentId)
     })
 }
+
+export const getUnsavedComponent = (componentId: string) => {
+    return useComponentsStateStore.getState().unsavedComponents[componentId]
+}

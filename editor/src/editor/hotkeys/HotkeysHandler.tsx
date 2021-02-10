@@ -1,7 +1,14 @@
 import React from "react"
-import {redoState, saveChanges, undoState, useAreComponentsSelected} from "../../state/components/componentsState";
+import {
+    getSelectedComponents,
+    redoState,
+    saveChanges,
+    undoState,
+    useAreComponentsSelected
+} from "../../state/components/componentsState";
 import {useShortcut} from "./shortcuts";
 import {deleteSelectedComponents} from "../../state/components/temp";
+import {addToClipboard, handlePaste, PendingPasteType} from "./state";
 
 const SelectedComponentsHandler: React.FC = () => {
 
@@ -9,6 +16,19 @@ const SelectedComponentsHandler: React.FC = () => {
         shortcut: 'Backspace',
         handler: () => {
             deleteSelectedComponents()
+        }
+    }{
+        shortcut: 'Delete',
+        handler: () => {
+            deleteSelectedComponents()
+        }
+    }, {
+        shortcut: 'CmdOrCtrl+C',
+        handler: () => {
+            addToClipboard({
+                type: PendingPasteType.COMPONENTS,
+                data: getSelectedComponents(),
+            })
         }
     }])
 
@@ -34,6 +54,11 @@ const HotkeysHandler: React.FC = () => {
         handler: (event) => {
             event.preventDefault()
             saveChanges()
+        }
+    }, {
+        shortcut: 'CmdOrCtrl+V',
+        handler: () => {
+            handlePaste()
         }
     }])
 
