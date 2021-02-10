@@ -1,4 +1,4 @@
-import {ComponentsStore, getComponentsRootList, useComponentsStore} from "./components";
+import {ComponentsStore, useComponentsStore} from "./components";
 import {
     ComponentGroup, ComponentsStateStore,
     getSelectedComponent,
@@ -218,4 +218,11 @@ export const removeGroup = (groupId: string) => {
             groups: updatedGroups,
         }
     })
+}
+
+export const getParentGroup = (componentId: string): string => {
+    const {
+        groupedComponents
+    } = useComponentsStateStore.getState()
+    return groupedComponents[componentId] ?? ''
 }
