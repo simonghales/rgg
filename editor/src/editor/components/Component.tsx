@@ -130,6 +130,12 @@ export const StyledClickable = styled.button<{
   
   &:focus {
     outline: none;
+    box-shadow: 0 0 0 2px #d72859;
+  }
+  
+  &:focus-within,
+  &:focus-visible {
+    box-shadow: 0 0 0 2px #d72859;
   }
   
   ${props => props.hovered ? cssHovered : ''};
@@ -186,7 +192,7 @@ const Component: React.FC<{
         }
     }, [])
 
-    const onClick = useCallback(() => {
+    const onClick = useCallback((event: MouseEvent) => {
 
         if (isInputPressed(INPUTS.shift)) {
             const selectedRange = calculateNewSelectedComponents(index, uid, parentGroupId)

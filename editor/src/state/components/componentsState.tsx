@@ -102,6 +102,7 @@ export const useComponentsStateStore = create<ComponentsStateStore>(persist(() =
         }
     },
     version: 3,
+    blacklist: ['selectedComponent', 'selectedComponents']
 }))
 
 export const discardChanges = () => {
@@ -263,6 +264,12 @@ export const getSelectedComponents = () => {
 
 export const useSelectedComponents = () => {
     return useComponentsStateStore(state => state.selectedComponents)
+}
+
+export const useAreComponentsSelected = () => {
+    const selectedComponents = useSelectedComponents()
+    const uids = Object.keys(selectedComponents)
+    return uids.length > 0
 }
 
 export const useSelectedComponent = () => {

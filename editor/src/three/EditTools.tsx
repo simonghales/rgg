@@ -3,6 +3,7 @@ import EditCamera from "./EditCamera";
 import EditFloor from "./EditFloor";
 import {useIsAddingComponentToCanvas, useIsEditMode} from "../state/editor";
 import AddingComponentHandler from "./AddingComponentHandler";
+import HotkeysHandler from "../editor/hotkeys/HotkeysHandler";
 
 const EditTools: React.FC = () => {
     const isEditMode = useIsEditMode()
@@ -17,7 +18,10 @@ const EditTools: React.FC = () => {
             }
             {
                 isEditMode && (
-                    <EditFloor/>
+                    <>
+                        <HotkeysHandler/>
+                        <EditFloor/>
+                    </>
                 )
             }
         </>

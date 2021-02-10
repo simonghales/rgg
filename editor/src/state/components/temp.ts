@@ -1,9 +1,10 @@
 import {ComponentsStore, useComponentsStore} from "./components";
 import {
+    addDeactivatedComponent,
     ComponentGroup, ComponentsStateStore,
     getSelectedComponent,
     getSelectedComponents,
-    GroupedComponents,
+    GroupedComponents, removeUnsavedComponent,
     useComponentsStateStore
 } from "./componentsState";
 import {generateUuid} from "../../utils/ids";
@@ -230,4 +231,23 @@ export const getParentGroup = (componentId: string): string => {
 
 export const closeAddingComponent = () => {
     editorStateProxy.addComponentKey = ''
+}
+
+export const isComponentUnsaved = (componentId: string) => {
+    return !!useComponentsStateStore.getState().unsavedComponents[componentId]
+}
+
+export const deleteComponent = (componentId: string) => {
+    if (isComponentUnsaved(componentId)) {
+        removeUnsavedComponent(componentId)
+    } else {
+        addDeactivatedComponent(componentId)
+    }
+}
+
+export const deleteSelectedComponents = () => {
+    const selectedComponents = getSelectedComponents()
+    selectedComponents.forEach((componentId) => {
+        deleteComponent(componentId)
+    })
 }

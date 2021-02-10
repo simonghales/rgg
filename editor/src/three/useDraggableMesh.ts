@@ -38,6 +38,8 @@ export const useDraggableMesh = (options: {
 
     useHotkeys('*', () => {
         setShiftIsPressed(isInputPressed(INPUTS.shift))
+    }, {
+        keyup: true,
     })
 
     const active = isEditMode && isSelected && isCanvasEnabled
