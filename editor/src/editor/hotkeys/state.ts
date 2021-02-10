@@ -34,7 +34,7 @@ const handlePasteComponents = (components: string[]) => {
             if (component) {
                 const creatable = getCreatable(component.componentType || '')
                 if (creatable) {
-                    addedComponents.push(addNewUnsavedComponent(creatable).uid)
+                    addedComponents.push(addNewUnsavedComponent(creatable, {}, componentId).uid)
                 }
             }
         }

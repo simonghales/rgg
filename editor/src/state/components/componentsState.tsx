@@ -427,7 +427,7 @@ export const removeUnsavedComponent = (uid: string) => {
 }
 export const addNewUnsavedComponent = (creatable: Creatable, initialProps: {
     [key: string]: any,
-} = {}): ComponentState => {
+} = {}, copiedFromId?: string): ComponentState => {
     storeSnapshot()
     const component: ComponentState = {
         uid: generateUuid(),
@@ -438,12 +438,21 @@ export const addNewUnsavedComponent = (creatable: Creatable, initialProps: {
         initialProps,
     }
     useComponentsStateStore.setState(state => {
-        return {
+        const update: Partial<ComponentsStateStore> = {
             unsavedComponents: {
                 ...state.unsavedComponents,
                 [component.uid]: component,
             }
         }
+        if (copiedFromId) {
+            update.components = {
+                ...state.components,
+                [component.uid]: {
+                    ...(state.components[copiedFromId] ?? {})
+                }
+            }
+        }
+        return update
     })
     return component
 }
