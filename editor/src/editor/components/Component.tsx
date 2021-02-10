@@ -200,7 +200,7 @@ const Component: React.FC<{
         }
     }, [])
 
-    const onClick = useCallback((event: MouseEvent) => {
+    const onClick = useCallback(() => {
 
         if (isSelected) {
             if (isInputPressed(INPUTS.command)) {

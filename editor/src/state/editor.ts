@@ -41,7 +41,6 @@ export const useIsMovingComponents = () => {
 }
 
 export const clearMovingComponents = () => {
-    console.log('clearMovingComponents')
     editorStateProxy.movingComponents = []
 }
 

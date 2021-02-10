@@ -1,7 +1,7 @@
 import React, {useMemo} from "react"
 import styled from "styled-components";
 import {COLORS} from "../../ui/colors";
-import {useAreMultipleComponentsSelected, useSelectedComponents} from "../../state/components/componentsState";
+import {useSelectedComponents} from "../../state/components/componentsState";
 import {groupSelectedComponents, ungroupComponents, useAreComponentsInsideGroup} from "../../state/components/temp";
 import {setMovingComponents} from "../../state/editor";
 

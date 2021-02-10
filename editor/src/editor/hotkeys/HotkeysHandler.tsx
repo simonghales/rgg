@@ -13,25 +13,27 @@ import {clearMovingComponents, useIsMovingComponents} from "../../state/editor";
 
 const SelectedComponentsHandler: React.FC = () => {
 
-    useShortcut([{
-        shortcut: 'Backspace',
-        handler: () => {
-            deleteSelectedComponents()
-        }
-    }{
-        shortcut: 'Delete',
-        handler: () => {
-            deleteSelectedComponents()
-        }
-    }, {
-        shortcut: 'CmdOrCtrl+C',
-        handler: () => {
-            addToClipboard({
-                type: PendingPasteType.COMPONENTS,
-                data: getSelectedComponents(),
-            })
-        }
-    }])
+    useShortcut([
+        {
+            shortcut: 'Backspace',
+            handler: () => {
+                deleteSelectedComponents()
+            }
+        },
+        {
+            shortcut: 'Delete',
+            handler: () => {
+                deleteSelectedComponents()
+            }
+        }, {
+            shortcut: 'CmdOrCtrl+C',
+            handler: () => {
+                addToClipboard({
+                    type: PendingPasteType.COMPONENTS,
+                    data: getSelectedComponents(),
+                })
+            }
+        }])
 
     return null
 }
@@ -70,12 +72,12 @@ const HotkeysHandler: React.FC = () => {
         handler: () => {
             undoState()
         }
-    },{
+    }, {
         shortcut: 'CmdOrCtrl+Shift+Z',
         handler: () => {
             redoState()
         }
-    },{
+    }, {
         shortcut: 'CmdOrCtrl+S',
         handler: (event) => {
             event.preventDefault()

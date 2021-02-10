@@ -1,8 +1,7 @@
 import {proxy, ref} from "valtio";
-import {addNewUnsavedComponent, getComponent, setSelectedComponents} from "../../state/components/componentsState";
+import {addNewUnsavedComponent, setSelectedComponents} from "../../state/components/componentsState";
 import {getUnsavedComponent, isComponentUnsaved} from "../../state/components/temp";
 import {getCreatable} from "../../state/creatables";
-import {editorStateProxy} from "../../state/editor";
 
 export enum PendingPasteType {
     COMPONENTS = 'COMPONENTS'
