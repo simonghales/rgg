@@ -10,6 +10,8 @@ import { TransformControls as OriginalTransformControls } from "three/examples/j
 import { TransformControls as CustomTransformControls } from "../custom/TransformControls"
 import {Object3D} from "three";
 import {editorStateProxy, useIsCanvasInteractable, useIsEditMode, useOrbitRef} from "../state/editor";
+import {INPUTS, isInputPressed} from "../inputs/inputs";
+import {useHotkeys} from "../inputs/hooks";
 
 const TransformControls: any = CustomTransformControls
 
@@ -32,13 +34,29 @@ export const useDraggableMesh = (options: {
     const orbitRef = useOrbitRef()
     const [controls, setControls] = useState<OriginalTransformControls | null>(null)
     const isCanvasEnabled = useIsCanvasInteractable()
+    const [shiftIsPressed, setShiftIsPressed] = useState<boolean>(isInputPressed(INPUTS.shift))
+
+    useHotkeys('*', () => {
+        setShiftIsPressed(isInputPressed(INPUTS.shift))
+    })
 
     const active = isEditMode && isSelected && isCanvasEnabled
+
+    // @ts-ignore
+    useEffect(() => {
+        if (!controls) return
+        const currentTranslationSnap = controls.translationSnap
+        if (shiftIsPressed) {
+            controls.setTranslationSnap(1)
+            return () => {
+                controls.setTranslationSnap(currentTranslationSnap)
+            }
+        }
+    }, [shiftIsPressed, controls])
 
     useEffect(() => {
         if (!orbitRef || !controls) return
         const onDraggingChanged = (event: any) => {
-            console.log('change', event.value)
             editorStateProxy.transformActive = event.value
             if (orbitRef.current) {
                 orbitRef.current.enabled = !event.value

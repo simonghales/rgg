@@ -1,6 +1,6 @@
 import hotkeys from "hotkeys-js";
 
-const KEY_CODES: {
+export const KEY_CODES: {
     [key: string]: number,
 } = {
     shift: 16,
