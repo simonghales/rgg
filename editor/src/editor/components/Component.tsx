@@ -18,6 +18,7 @@ import {calculateNewSelectedComponents, SidebarItem} from "../../state/component
 import {MENU_TYPE, showContextMenu} from "../ContextMenu";
 import GroupOfComponents from "./GroupOfComponents";
 import {useComponentParentGroupId} from "./ComponentsContext";
+import {useIsMovingComponents} from "../../state/editor";
 
 const StyledList = styled.ul`
 
@@ -110,9 +111,14 @@ export const cssComponentName = css`
   font-size: 0.8rem;
 `
 
+const cssInactive = css`
+  opacity: 0.33;
+`
+
 export const StyledClickable = styled.button<{
     selected: boolean,
     hovered?: boolean,
+    inactive?: boolean,
 }>`
   ${cssResetButton};
   display: block;
@@ -140,6 +146,7 @@ export const StyledClickable = styled.button<{
   
   ${props => props.hovered ? cssHovered : ''};
   ${props => props.selected ? cssSelected : cssNotSelected};
+  ${props => props.inactive ? cssInactive : ''};
   
 `
 
@@ -177,6 +184,7 @@ const Component: React.FC<{
     const children = useComponents(component.children)
     const isSelected = useIsComponentSelected(uid)
     const isHovered = useIsHovered(uid)
+    const componentsAreBeingMoved = useIsMovingComponents()
 
     const {
         onMouseEnter,
@@ -194,6 +202,13 @@ const Component: React.FC<{
 
     const onClick = useCallback((event: MouseEvent) => {
 
+        if (isSelected) {
+            if (isInputPressed(INPUTS.command)) {
+                setSelectedComponent(false, uid, false)
+            }
+            return
+        }
+
         if (isInputPressed(INPUTS.shift)) {
             const selectedRange = calculateNewSelectedComponents(index, uid, parentGroupId)
             setSelectedComponents(selectedRange)
@@ -201,7 +216,7 @@ const Component: React.FC<{
             setSelectedComponent(true, uid, !isInputPressed(INPUTS.command))
         }
 
-    }, [parentGroupId])
+    }, [parentGroupId, isSelected])
 
     const onRightClick = useCallback((event: MouseEvent) => {
         showContextMenu(MENU_TYPE.SIDEBAR_COMPONENT, event.pageX, event.pageY, uid)
@@ -224,6 +239,7 @@ const Component: React.FC<{
                     onMouseLeave={onMouseLeave}
                     selected={isSelected}
                     hovered={isHovered}
+                    inactive={componentsAreBeingMoved}
                     // @ts-ignore
                     onContextMenu={onRightClick}
                 >

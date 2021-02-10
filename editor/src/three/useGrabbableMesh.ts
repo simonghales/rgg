@@ -3,18 +3,20 @@ import {useHelper} from "@react-three/drei";
 import {BoxHelper} from "three";
 import {useEditableContext} from "../editable/context";
 import {
-    setSelectedComponent,
+    setSelectedComponent, useIsComponentSelected,
     useIsOnlyComponentSelected
 } from "../state/components/componentsState";
 import {setComponentEditorHovered, useIsHovered} from "../state/localState";
 import {editorStateProxy, useIsCanvasInteractable} from "../state/editor";
 import {useProxy} from "valtio";
+import {INPUTS, isInputPressed} from "../inputs/inputs";
 
 export const useGrabbableMesh = (passedRef?: any, helper?: any) => {
     const localRef = useRef()
     const ref = passedRef || localRef
     const {uid} = useEditableContext()
     const isHovered = useIsHovered(uid)
+    const isGroupSelected = useIsComponentSelected(uid)
     const isSelected = useIsOnlyComponentSelected(uid) || (helper)
     const isCanvasEnabled = useIsCanvasInteractable()
     const [hovered, setHovered] = useState(isHovered)
@@ -61,7 +63,11 @@ export const useGrabbableMesh = (passedRef?: any, helper?: any) => {
                     return
                 }
                 event.stopPropagation()
-                setSelectedComponent(true, uid)
+                if (isSelected && isInputPressed(INPUTS.command)) {
+                    setSelectedComponent(false, uid, false)
+                    return
+                }
+                setSelectedComponent(true, uid, !isInputPressed(INPUTS.command))
             }
         }
         if (isSelected) {
@@ -75,7 +81,13 @@ export const useGrabbableMesh = (passedRef?: any, helper?: any) => {
         return handlers
     }, [isSelected, isCanvasEnabled])
 
-    const helperToUse = active ? (helper ?? BoxHelper) : null
+    const helperToUse = useMemo(() => {
+        if (active || isGroupSelected) {
+            return helper ?? BoxHelper
+        }
+        return null
+    }, [active, helper, isGroupSelected])
+
 
     const helperRef = useHelper(ref, helperToUse)
 

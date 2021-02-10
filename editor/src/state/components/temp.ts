@@ -87,6 +87,20 @@ export const calculateNewSelectedComponents = (newSelectedIndex: number, uid: st
 
 }
 
+export const addComponentsToGroup = (componentIds: string[], groupId: string) => {
+    useComponentsStateStore.setState(state => {
+        const groupedComponents = {
+            ...state.groupedComponents,
+        }
+        componentIds.forEach((componentId) => {
+            groupedComponents[componentId] = groupId
+        })
+        return {
+            groupedComponents,
+        }
+    })
+}
+
 export const groupSelectedComponents = () => {
     const selectedComponents = getSelectedComponents()
 
@@ -254,4 +268,32 @@ export const deleteSelectedComponents = () => {
 
 export const getUnsavedComponent = (componentId: string) => {
     return useComponentsStateStore.getState().unsavedComponents[componentId]
+}
+
+export const useAreComponentsInsideGroup = (componentIds: string[]): boolean => {
+    let insideGroup = false
+
+    const groupedComponents = useComponentsStateStore(state => state.groupedComponents)
+
+    componentIds.forEach((componentId) => {
+        if (groupedComponents[componentId]) {
+            insideGroup = true
+        }
+    })
+
+    return insideGroup
+}
+
+export const ungroupComponents = (componentIds: string[]) => {
+    useComponentsStateStore.setState(state => {
+        const groupedComponents = {
+            ...state.groupedComponents,
+        }
+        componentIds.forEach((componentId) => {
+            delete groupedComponents[componentId]
+        })
+        return {
+            groupedComponents,
+        }
+    })
 }

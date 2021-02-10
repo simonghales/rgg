@@ -1,8 +1,9 @@
 import React, {useMemo} from "react"
 import styled from "styled-components";
 import {COLORS} from "../../ui/colors";
-import {useAreMultipleComponentsSelected} from "../../state/components/componentsState";
-import {groupSelectedComponents} from "../../state/components/temp";
+import {useAreMultipleComponentsSelected, useSelectedComponents} from "../../state/components/componentsState";
+import {groupSelectedComponents, ungroupComponents, useAreComponentsInsideGroup} from "../../state/components/temp";
+import {setMovingComponents} from "../../state/editor";
 
 export const StyledContainer = styled.div`
   width: 200px;
@@ -14,29 +15,47 @@ export const StyledContainer = styled.div`
 const ComponentContextMenu: React.FC<{
     uid: string,
     onClose: () => void,
-}> = ({uid, onClose}) => {
+}> = ({onClose}) => {
 
-    const multipleSelected = useAreMultipleComponentsSelected()
+    const selectedComponents = Object.keys(useSelectedComponents())
+    const insideGroup = useAreComponentsInsideGroup(selectedComponents)
 
     const {
         onGroupTogether,
+        removeFromGroup,
+        addToExistingGroup,
     } = useMemo(() => ({
         onGroupTogether: () => {
             groupSelectedComponents()
             onClose()
-        }
-    }), [uid])
+        },
+        removeFromGroup: () => {
+            ungroupComponents(selectedComponents)
+            onClose()
+        },
+        addToExistingGroup: (event: any) => {
+            event.stopPropagation()
+            setMovingComponents(selectedComponents)
+            onClose()
+        },
+    }), [selectedComponents])
 
     return (
         <StyledContainer>
             <ul>
                 {
-                    multipleSelected && (
+                    insideGroup && (
                         <li>
-                            <button onClick={onGroupTogether}>Group together</button>
+                            <button onClick={removeFromGroup}>Remove from group</button>
                         </li>
                     )
                 }
+                <li>
+                    <button onClick={onGroupTogether}>Add to new group</button>
+                </li>
+                <li>
+                    <button onClick={addToExistingGroup}>Move to existing group</button>
+                </li>
             </ul>
         </StyledContainer>
     )

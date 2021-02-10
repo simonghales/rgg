@@ -20,9 +20,13 @@ const StyledMain = styled.div`
 `
 
 const StyledComponentsContainer = styled.div`
-  padding: ${SPACE_UNITS.medium}px 12px;
   height: 100%;
   overflow-y: auto;
+  
+  > ul {
+    padding: ${SPACE_UNITS.medium}px 12px;
+  }
+  
 `
 
 const StyledDeactivatedContainer = styled.div``

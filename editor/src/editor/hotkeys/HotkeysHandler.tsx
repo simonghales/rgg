@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect} from "react"
 import {
     getSelectedComponents,
     redoState,
@@ -9,6 +9,7 @@ import {
 import {useShortcut} from "./shortcuts";
 import {deleteSelectedComponents} from "../../state/components/temp";
 import {addToClipboard, handlePaste, PendingPasteType} from "./state";
+import {clearMovingComponents, useIsMovingComponents} from "../../state/editor";
 
 const SelectedComponentsHandler: React.FC = () => {
 
@@ -35,9 +36,34 @@ const SelectedComponentsHandler: React.FC = () => {
     return null
 }
 
+const ComponentsBeingMovedHandler: React.FC = () => {
+
+    useShortcut([{
+        shortcut: 'Esc',
+        handler: () => {
+            clearMovingComponents()
+        },
+    },])
+
+    useEffect(() => {
+        const onClick = () => {
+            clearMovingComponents()
+        }
+
+        document.addEventListener('click', onClick)
+
+        return () => {
+            document.removeEventListener('click', onClick)
+        }
+    }, [])
+
+    return null
+}
+
 const HotkeysHandler: React.FC = () => {
 
     const areComponentsSelected = useAreComponentsSelected()
+    const componentsAreBeingMoved = useIsMovingComponents()
 
     useShortcut([{
         shortcut: 'CmdOrCtrl+Z',
@@ -67,6 +93,11 @@ const HotkeysHandler: React.FC = () => {
             {
                 areComponentsSelected && (
                     <SelectedComponentsHandler/>
+                )
+            }
+            {
+                componentsAreBeingMoved && (
+                    <ComponentsBeingMovedHandler/>
                 )
             }
         </>

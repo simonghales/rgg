@@ -1,12 +1,13 @@
-import React, {useCallback} from "react"
+import React, {useCallback, useMemo} from "react"
 import {ListOfItems, StyledClickable} from "./Component";
 import ComponentsContext, {COMPONENTS_PARENT_TYPE} from "./ComponentsContext";
 import styled from "styled-components";
 import {setGroupIsOpen, setSelectedComponents, useGroup} from "../../state/components/componentsState";
-import {SidebarItem} from "../../state/components/temp";
+import {addComponentsToGroup, SidebarItem} from "../../state/components/temp";
 import {StyledPlainButton} from "../../ui/buttons";
 import {FaFolder, FaFolderOpen} from "react-icons/fa";
 import {MENU_TYPE, showContextMenu} from "../ContextMenu";
+import {editorStateProxy} from "../../state/editor";
 
 const StyledContainer = styled.div``
 
@@ -45,12 +46,22 @@ const GroupOfComponents: React.FC<{
         showContextMenu(MENU_TYPE.SIDEBAR_GROUP, event.pageX, event.pageY, uid)
     }, [])
 
+    const {
+        onClick,
+    } = useMemo(() => ({
+        onClick: () => {
+            if (editorStateProxy.movingComponents.length > 0) {
+                addComponentsToGroup(editorStateProxy.movingComponents, uid)
+            } else {
+                setSelectedComponents([])
+            }
+        }
+    }), [])
+
     return (
         <StyledContainer>
             <StyledWrapper>
-                <StyledClickable selected={false} onClick={() => {
-                    setSelectedComponents([])
-                }}
+                <StyledClickable selected={false} onClick={onClick}
                     // @ts-ignore
                     onContextMenu={onRightClick}>
                     <StyledName>
