@@ -4,12 +4,15 @@ import {Object3D} from "three";
 import {subscribe} from "valtio";
 import {editorStateProxy, useAddComponentKey} from "../state/editor";
 import {useCreatable} from "../state/creatables";
+import {closeAddingComponent} from "../state/components/temp";
+import {useHotkeys} from "../inputs/hooks";
 
 const AddingComponentHandler: React.FC = () => {
 
     const visualRef = useRef<Object3D>(null as unknown as Object3D)
     const addComponentKey = useAddComponentKey()
 
+    useHotkeys('esc', closeAddingComponent)
 
     useEffect(() => {
 

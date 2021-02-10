@@ -4,6 +4,7 @@ import {editorMutableState, editorStateProxy, useAddComponentKey, useIsAddingCom
 import {addNewUnsavedComponent, setSelectedComponent} from "../state/components/componentsState";
 import {getCreatable, useCreatable} from "../state/creatables";
 import {INPUTS, isInputPressed} from "../inputs/inputs";
+import {closeAddingComponent} from "../state/components/temp";
 
 const EditFloor: React.FC = () => {
 
@@ -65,7 +66,7 @@ const EditFloor: React.FC = () => {
                         })
                         setSelectedComponent(true, addedComponent.uid)
                         if (!isInputPressed(INPUTS.shift)) {
-                            editorStateProxy.addComponentKey = ''
+                            closeAddingComponent()
                         }
                     }
                 }

@@ -7,6 +7,7 @@ import {
     useComponentsStateStore
 } from "./componentsState";
 import {generateUuid} from "../../utils/ids";
+import {editorStateProxy} from "../editor";
 
 const findGroup = (groupId: string, sidebarItems: SidebarItem[]): SidebarItem | null => {
     for (let i = 0, len = sidebarItems.length; i < len; i++) {
@@ -225,4 +226,8 @@ export const getParentGroup = (componentId: string): string => {
         groupedComponents
     } = useComponentsStateStore.getState()
     return groupedComponents[componentId] ?? ''
+}
+
+export const closeAddingComponent = () => {
+    editorStateProxy.addComponentKey = ''
 }

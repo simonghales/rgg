@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useCallback} from "react"
 import styled from "styled-components";
 import OutsideClickHandler from 'react-outside-click-handler';
 import {COLORS} from "../../../ui/colors";
@@ -7,6 +7,7 @@ import {StyledWrapper} from "../../SideMenu";
 import {GlobalStyle} from "../../../ui/global";
 import {setAddingComponent} from "../../../state/editor";
 import AddComponent from "./AddComponent";
+import {useHotkeys} from "../../../inputs/hooks";
 
 const StyledContainer = styled(StyledWrapper)`
   position: absolute;
@@ -22,10 +23,14 @@ const StyledContainer = styled(StyledWrapper)`
 
 const AddComponentMenu: React.FC = () => {
 
+    const onClose = useCallback(() => {
+        setAddingComponent(false)
+    }, [])
+
+    useHotkeys('esc', onClose)
+
     return (
-        <OutsideClickHandler onOutsideClick={() => {
-            setAddingComponent(false)
-        }}>
+        <OutsideClickHandler onOutsideClick={onClose}>
             <StyledContainer>
                 <root.div>
                         <GlobalStyle/>
