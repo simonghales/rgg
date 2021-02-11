@@ -5,8 +5,11 @@ import DeactivatedComponents from "./DeactivatedComponents";
 import {useHasDeactivatedComponents} from "../../state/deactivated";
 import {ListOfItems} from "./Component";
 import ComponentsContext, {COMPONENTS_PARENT_TYPE} from "./ComponentsContext";
-import {getParentGroup, useSidebarItems} from "../../state/components/temp";
-import {ComponentsStateStore, setGroupIsOpen, useComponentsStateStore} from "../../state/components/componentsState";
+import {useStateStore} from "../../state/main/store";
+import {StateStore} from "../../state/main/types";
+import {setGroupIsOpen} from "../../state/main/actions";
+import {getParentGroup} from "../../state/main/getters";
+import {useSidebarItems} from "../../state/main/hooks";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -34,8 +37,8 @@ const StyledDeactivatedContainer = styled.div``
 const useHandleSelectedComponentsEffects = () => {
 
     useEffect(() => {
-        useComponentsStateStore.subscribe((selectedComponents) => {
-            Object.keys(selectedComponents as ComponentsStateStore['selectedComponents']).forEach((componentId) => {
+        useStateStore.subscribe((selectedComponents) => {
+            Object.keys(selectedComponents as StateStore['selectedComponents']).forEach((componentId) => {
                 const parentGroup = getParentGroup(componentId)
                 if (parentGroup) {
                     setGroupIsOpen(parentGroup, true)

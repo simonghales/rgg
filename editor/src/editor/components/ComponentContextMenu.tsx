@@ -1,9 +1,9 @@
 import React, {useMemo} from "react"
 import styled from "styled-components";
 import {COLORS} from "../../ui/colors";
-import {useSelectedComponents} from "../../state/components/componentsState";
-import {groupSelectedComponents, ungroupComponents, useAreComponentsInsideGroup} from "../../state/components/temp";
 import {setMovingComponents} from "../../state/editor";
+import {useAreComponentsInsideGroup, useSelectedComponents} from "../../state/main/hooks";
+import {groupSelectedComponents, ungroupComponents} from "../../state/main/actions";
 
 export const StyledContainer = styled.div`
   width: 200px;

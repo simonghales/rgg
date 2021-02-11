@@ -1,6 +1,6 @@
 import React from "react"
 import {StyledContainer} from "./ComponentContextMenu";
-import {removeGroup} from "../../state/components/temp";
+import {removeGroup} from "../../state/main/actions";
 
 const GroupContextMenu: React.FC<{
     uid: string,

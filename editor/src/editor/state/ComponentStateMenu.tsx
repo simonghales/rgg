@@ -2,9 +2,9 @@ import React, {useEffect, useMemo, useRef, useState} from "react"
 import {StyledHeading} from "../../ui/typography";
 import {useActiveComponentState} from "../../state/editor";
 import {useControls, store} from "leva/dist/leva.cjs.js"
-import {updateComponentModifiedState} from "../../state/components/componentsState";
 import styled from "styled-components";
 import {StyledHeader} from "../../ui/shared";
+import {updateComponentModifiedState} from "../../state/main/actions";
 
 export const isStateObj = (value: any) => {
     return (!!value && typeof value === 'object' && value.hasOwnProperty('value'))

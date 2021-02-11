@@ -6,7 +6,7 @@ import {COLORS} from "../../ui/colors";
 import {useDeactivatedComponents} from "../../state/deactivated";
 import {StyledIconWrapper, StyledPlainButton} from "../../ui/buttons";
 import {FaPlus} from "react-icons/fa";
-import {removeDeactivatedComponent} from "../../state/components/componentsState";
+import {removeDeactivatedComponent} from "../../state/main/actions";
 
 const StyledContainer = styled.div`
 `

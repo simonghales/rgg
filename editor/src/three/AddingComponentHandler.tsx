@@ -4,8 +4,8 @@ import {Object3D} from "three";
 import {subscribe} from "valtio";
 import {editorStateProxy, useAddComponentKey} from "../state/editor";
 import {useCreatable} from "../state/creatables";
-import {closeAddingComponent} from "../state/components/temp";
 import {useHotkeys} from "../inputs/hooks";
+import {closeAddingComponent} from "../state/main/actions";
 
 const AddingComponentHandler: React.FC = () => {
 

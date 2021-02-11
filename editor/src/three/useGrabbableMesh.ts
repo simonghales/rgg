@@ -2,14 +2,13 @@ import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {useHelper} from "@react-three/drei";
 import {BoxHelper} from "three";
 import {useEditableContext} from "../editable/context";
-import {
-    setSelectedComponent, useIsComponentSelected,
-    useIsOnlyComponentSelected
-} from "../state/components/componentsState";
 import {setComponentEditorHovered, useIsHovered} from "../state/localState";
 import {editorStateProxy, useIsCanvasInteractable} from "../state/editor";
 import {useProxy} from "valtio";
 import {INPUTS, isInputPressed} from "../inputs/inputs";
+import {useIsComponentSelected, useIsOnlyComponentSelected} from "../state/main/hooks";
+import {setSelectedComponent} from "../state/main/actions";
+import hotkeys from "hotkeys-js";
 
 export const useGrabbableMesh = (passedRef?: any, helper?: any) => {
     const localRef = useRef()
@@ -63,11 +62,11 @@ export const useGrabbableMesh = (passedRef?: any, helper?: any) => {
                     return
                 }
                 event.stopPropagation()
-                if (isSelected && isInputPressed(INPUTS.command)) {
+                if (isSelected && (isInputPressed(INPUTS.command))) {
                     setSelectedComponent(false, uid, false)
                     return
                 }
-                setSelectedComponent(true, uid, !isInputPressed(INPUTS.command))
+                setSelectedComponent(true, uid, (!isInputPressed(INPUTS.command) && !hotkeys.shift))
             }
         }
         if (isSelected) {

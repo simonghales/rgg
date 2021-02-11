@@ -6,7 +6,8 @@ import {useIsEditMode, useIsEditModeRef} from "../state/editor";
 import {Context} from "./EditCanvas.context";
 import TemporaryComponents from "../editor/TemporaryComponents";
 import CameraPreviewHandler from "./CameraPreviewHandler";
-import {setSelectedComponents, useAreMultipleComponentsSelected} from "../state/components/componentsState";
+import {useAreMultipleComponentsSelected} from "../state/main/hooks";
+import {setSelectedComponents} from "../state/main/actions";
 
 export const useEditCanvasProps = () => {
 

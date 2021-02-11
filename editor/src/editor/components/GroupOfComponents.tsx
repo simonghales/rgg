@@ -2,12 +2,13 @@ import React, {useCallback, useMemo} from "react"
 import {ListOfItems, StyledClickable} from "./Component";
 import ComponentsContext, {COMPONENTS_PARENT_TYPE} from "./ComponentsContext";
 import styled from "styled-components";
-import {setGroupIsOpen, setSelectedComponents, useGroup} from "../../state/components/componentsState";
-import {addComponentsToGroup, SidebarItem} from "../../state/components/temp";
 import {StyledPlainButton} from "../../ui/buttons";
 import {FaFolder, FaFolderOpen} from "react-icons/fa";
 import {MENU_TYPE, showContextMenu} from "../ContextMenu";
 import {editorStateProxy} from "../../state/editor";
+import {useGroup} from "../../state/main/hooks";
+import {addComponentsToGroup, setGroupIsOpen, setSelectedComponents} from "../../state/main/actions";
+import {SidebarItem} from "../../state/main/types";
 
 const StyledContainer = styled.div``
 

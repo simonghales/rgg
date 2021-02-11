@@ -3,22 +3,24 @@ import styled, {css} from "styled-components";
 import {cssResetButton, StyledIconWrapper, StyledPlainButton} from "../../ui/buttons";
 import {COLORS} from "../../ui/colors";
 import {useComponent, useComponents} from "../../state/components/components";
-import {
-    addDeactivatedComponent,
-    removeUnsavedComponent,
-    setSelectedComponent,
-    setSelectedComponents,
-    useIsComponentSelected
-} from "../../state/components/componentsState";
 import {FaTrash} from "react-icons/fa";
 import {ComponentState} from "../../state/types";
 import {setComponentSidebarHovered, useIsHovered} from "../../state/localState";
 import {INPUTS, isInputPressed} from "../../inputs/inputs";
-import {calculateNewSelectedComponents, SidebarItem} from "../../state/components/temp";
 import {MENU_TYPE, showContextMenu} from "../ContextMenu";
 import GroupOfComponents from "./GroupOfComponents";
 import {useComponentParentGroupId} from "./ComponentsContext";
 import {useIsMovingComponents} from "../../state/editor";
+import {useIsComponentSelected} from "../../state/main/hooks";
+import {
+    addDeactivatedComponent,
+    removeUnsavedComponent,
+    setSelectedComponent,
+    setSelectedComponents
+} from "../../state/main/actions";
+import {calculateNewSelectedComponents} from "../../state/main/getters";
+import {SidebarItem} from "../../state/main/types";
+import hotkeys from "hotkeys-js";
 
 const StyledList = styled.ul`
 
@@ -209,7 +211,7 @@ const Component: React.FC<{
             return
         }
 
-        if (isInputPressed(INPUTS.shift)) {
+        if (isInputPressed(hotkeys.shift)) {
             const selectedRange = calculateNewSelectedComponents(index, uid, parentGroupId)
             setSelectedComponents(selectedRange)
         } else {

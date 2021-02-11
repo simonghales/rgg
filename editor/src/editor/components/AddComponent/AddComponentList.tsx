@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ComponentPreview from "./ComponentPreview";
 import {getCreatable, useCreatables} from "../../../state/creatables";
 import {setAddingComponent} from "../../../state/editor";
-import {addNewUnsavedComponent, setSelectedComponent} from "../../../state/components/componentsState";
+import {addNewUnsavedComponent, setSelectedComponent} from "../../../state/main/actions";
 
 const StyledContainer = styled.ul`
   height: 100%;

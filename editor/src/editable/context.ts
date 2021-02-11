@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useMemo} from "react";
-import {ComponentStateData, StateData} from "../state/components/componentsState";
+import {ComponentStateData, StateData} from "../state/main/types";
 
 type State = {
     uid: string,

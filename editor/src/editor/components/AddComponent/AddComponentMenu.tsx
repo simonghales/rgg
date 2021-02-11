@@ -17,7 +17,7 @@ const StyledContainer = styled(StyledWrapper)`
   width: 100%;
   max-width: 220px;
   background-color: ${COLORS.darkLighter};
-  z-index: 999;
+  z-index: 99999999;
   border-left: 1px solid ${COLORS.dark};
 `
 

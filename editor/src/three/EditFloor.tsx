@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo, useRef} from "react"
 import {Plane} from "@react-three/drei";
 import {editorMutableState, editorStateProxy, useAddComponentKey, useIsAddingComponentToCanvas} from "../state/editor";
-import {addNewUnsavedComponent, setSelectedComponent} from "../state/components/componentsState";
 import {getCreatable, useCreatable} from "../state/creatables";
-import {INPUTS, isInputPressed} from "../inputs/inputs";
-import {closeAddingComponent} from "../state/components/temp";
+import {addNewUnsavedComponent, closeAddingComponent, setSelectedComponent} from "../state/main/actions";
+import hotkeys from "hotkeys-js";
 
 const EditFloor: React.FC = () => {
 
@@ -65,7 +64,7 @@ const EditFloor: React.FC = () => {
                             }
                         })
                         setSelectedComponent(true, addedComponent.uid)
-                        if (!isInputPressed(INPUTS.shift)) {
+                        if (!hotkeys.shift) {
                             closeAddingComponent()
                         }
                     }

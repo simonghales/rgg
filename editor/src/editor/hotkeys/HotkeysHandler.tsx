@@ -1,15 +1,11 @@
 import React, {useEffect} from "react"
-import {
-    getSelectedComponents,
-    redoState,
-    saveChanges,
-    undoState,
-    useAreComponentsSelected
-} from "../../state/components/componentsState";
 import {useShortcut} from "./shortcuts";
-import {deleteSelectedComponents} from "../../state/components/temp";
 import {addToClipboard, handlePaste, PendingPasteType} from "./state";
 import {clearMovingComponents, useIsMovingComponents} from "../../state/editor";
+import {deleteSelectedComponents, saveChanges} from "../../state/main/actions";
+import {useAreComponentsSelected} from "../../state/main/hooks";
+import {getSelectedComponents} from "../../state/main/getters";
+import {redoState, undoState} from "../../state/history/actions";
 
 const SelectedComponentsHandler: React.FC = () => {
 

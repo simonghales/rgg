@@ -1,17 +1,15 @@
 import {useEffect, useRef, useState} from "react";
 import {useEditableContext} from "../editable/context";
-import {
-    updateComponentModifiedState,
-    useIsOnlyComponentSelected
-} from "../state/components/componentsState";
 import {useThree} from "react-three-fiber";
 import { TransformControls as OriginalTransformControls } from "three/examples/jsm/controls/TransformControls";
 // @ts-ignore
 import { TransformControls as CustomTransformControls } from "../custom/TransformControls"
 import {Object3D} from "three";
 import {editorStateProxy, useIsCanvasInteractable, useIsEditMode, useOrbitRef} from "../state/editor";
-import {INPUTS, isInputPressed} from "../inputs/inputs";
 import {useHotkeys} from "../inputs/hooks";
+import {useIsOnlyComponentSelected} from "../state/main/hooks";
+import {updateComponentModifiedState} from "../state/main/actions";
+import hotkeys from "hotkeys-js";
 
 const TransformControls: any = CustomTransformControls
 
@@ -34,10 +32,10 @@ export const useDraggableMesh = (options: {
     const orbitRef = useOrbitRef()
     const [controls, setControls] = useState<OriginalTransformControls | null>(null)
     const isCanvasEnabled = useIsCanvasInteractable()
-    const [shiftIsPressed, setShiftIsPressed] = useState<boolean>(isInputPressed(INPUTS.shift))
+    const [shiftIsPressed, setShiftIsPressed] = useState<boolean>(hotkeys.shift)
 
     useHotkeys('*', () => {
-        setShiftIsPressed(isInputPressed(INPUTS.shift))
+        setShiftIsPressed(hotkeys.shift)
     }, {
         keyup: true,
     })
@@ -113,9 +111,9 @@ export const useDraggableMesh = (options: {
         scene.add(controls)
 
         return () => {
-            setControls(null)
             controls.detach()
             scene.remove(controls)
+            setControls(null)
         }
 
     }, [active])
