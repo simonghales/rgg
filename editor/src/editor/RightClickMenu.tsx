@@ -5,6 +5,7 @@ import root from "react-shadow/styled-components";
 import {GlobalStyle} from "../ui/global";
 import {MENU_TYPE, useContextMenuState} from "./ContextMenu";
 import ComponentContextMenu from "./components/ComponentContextMenu";
+import GroupContextMenu from "./components/GroupContextMenu";
 
 const StyledContainer = styled.div<{
     x: number,
@@ -36,12 +37,18 @@ const RightClickMenu: React.FC<{
     }))
 
     const menu = useMemo(() => {
-        if (menuType === MENU_TYPE.SIDEBAR_COMPONENT) {
-            return (
-                <ComponentContextMenu uid={menuData as string} onClose={onClose}/>
-            )
+        switch (menuType) {
+            case MENU_TYPE.SIDEBAR_COMPONENT:
+                return (
+                    <ComponentContextMenu uid={menuData as string} onClose={onClose}/>
+                )
+            case MENU_TYPE.SIDEBAR_GROUP:
+                return (
+                    <GroupContextMenu uid={menuData as string} onClose={onClose}/>
+                )
+            default:
+                return null
         }
-        return null
     }, [menuType, menuData])
 
     return (

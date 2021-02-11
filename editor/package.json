@@ -1,5 +1,5 @@
 {
-  "version": "0.1.13",
+  "version": "0.1.18",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -74,6 +74,7 @@
     "zustand": "^3.3.1"
   },
   "dependencies": {
+    "antd": "^4.12.2",
     "file-saver": "^2.0.5",
     "hotkeys-js": "^3.8.2",
     "leva": "https://pkg.csb.dev/gsimone/leva/commit/cfe3e89d/leva",
@@ -82,6 +83,7 @@
     "react-onclickoutside": "^6.10.0",
     "react-outside-click-handler": "^1.3.0",
     "react-shadow": "^19.0.2",
+    "shortcuts": "^1.6.2",
     "styled-components": "^5.2.1",
     "styled-reset": "^4.3.4",
     "uuid": "^8.3.2",

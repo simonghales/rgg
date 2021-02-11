@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from "react"
+import React, {useEffect} from "react"
 import RightClickMenu from "./RightClickMenu";
 import create from "zustand";
 
 export enum MENU_TYPE {
-    SIDEBAR_COMPONENT
+    SIDEBAR_COMPONENT,
+    SIDEBAR_GROUP,
 }
 
 export const useContextMenuState = create<{

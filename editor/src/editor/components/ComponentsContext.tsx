@@ -16,6 +16,10 @@ export const useComponentParentContext = () => {
     return useContext(Context)
 }
 
+export const useComponentParentGroupId = () => {
+    return useComponentParentContext().id
+}
+
 const ComponentsContext: React.FC<{
     type: COMPONENTS_PARENT_TYPE,
     id?: string,

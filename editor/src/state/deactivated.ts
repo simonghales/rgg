@@ -1,14 +1,14 @@
-import {useComponentsStateStore} from "./components/componentsState";
 import {useComponentsStore} from "./components/components";
 import {ComponentState} from "./types";
+import {useStateStore} from "./main/store";
 
 export const useHasDeactivatedComponents = () => {
-    return useComponentsStateStore(state => Object.keys(state.deactivatedComponents).length > 0)
+    return useStateStore(state => Object.keys(state.deactivatedComponents).length > 0)
 }
 
 export const useDeactivatedComponents = () => {
 
-    const deactivatedComponentsKeys = Object.keys(useComponentsStateStore(state => state.deactivatedComponents))
+    const deactivatedComponentsKeys = Object.keys(useStateStore(state => state.deactivatedComponents))
     const deactivatedComponents = useComponentsStore(state => {
         const components: ComponentState[] = []
         deactivatedComponentsKeys.forEach((uid) => {

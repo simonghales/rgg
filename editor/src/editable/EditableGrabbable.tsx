@@ -2,8 +2,8 @@ import React, {ReactElement} from "react"
 import {useGrabbableMesh} from "../three/useGrabbableMesh";
 import EditableTransform from "./EditableTransform";
 import {useEditableContext} from "./context";
-import {useIsComponentSelected, useIsOnlyComponentSelected} from "../state/components/componentsState";
 import {useIsEditMode} from "../state/editor";
+import {useIsOnlyComponentSelected} from "../state/main/hooks";
 
 const EditableGrabbable: React.FC = ({children}) => {
 

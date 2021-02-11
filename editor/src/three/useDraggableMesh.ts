@@ -1,16 +1,15 @@
 import {useEffect, useRef, useState} from "react";
 import {useEditableContext} from "../editable/context";
-import {
-    updateComponentModifiedState,
-    useIsComponentSelected,
-    useIsOnlyComponentSelected
-} from "../state/components/componentsState";
 import {useThree} from "react-three-fiber";
 import { TransformControls as OriginalTransformControls } from "three/examples/jsm/controls/TransformControls";
 // @ts-ignore
 import { TransformControls as CustomTransformControls } from "../custom/TransformControls"
 import {Object3D} from "three";
 import {editorStateProxy, useIsCanvasInteractable, useIsEditMode, useOrbitRef} from "../state/editor";
+import {useHotkeys} from "../inputs/hooks";
+import {useIsOnlyComponentSelected} from "../state/main/hooks";
+import {updateComponentModifiedState} from "../state/main/actions";
+import hotkeys from "hotkeys-js";
 
 const TransformControls: any = CustomTransformControls
 
@@ -33,13 +32,31 @@ export const useDraggableMesh = (options: {
     const orbitRef = useOrbitRef()
     const [controls, setControls] = useState<OriginalTransformControls | null>(null)
     const isCanvasEnabled = useIsCanvasInteractable()
+    const [shiftIsPressed, setShiftIsPressed] = useState<boolean>(hotkeys.shift)
+
+    useHotkeys('*', () => {
+        setShiftIsPressed(hotkeys.shift)
+    }, {
+        keyup: true,
+    })
 
     const active = isEditMode && isSelected && isCanvasEnabled
+
+    // @ts-ignore
+    useEffect(() => {
+        if (!controls) return
+        const currentTranslationSnap = controls.translationSnap
+        if (shiftIsPressed) {
+            controls.setTranslationSnap(1)
+            return () => {
+                controls.setTranslationSnap(currentTranslationSnap)
+            }
+        }
+    }, [shiftIsPressed, controls])
 
     useEffect(() => {
         if (!orbitRef || !controls) return
         const onDraggingChanged = (event: any) => {
-            console.log('change', event.value)
             editorStateProxy.transformActive = event.value
             if (orbitRef.current) {
                 orbitRef.current.enabled = !event.value
@@ -94,9 +111,9 @@ export const useDraggableMesh = (options: {
         scene.add(controls)
 
         return () => {
-            setControls(null)
             controls.detach()
             scene.remove(controls)
+            setControls(null)
         }
 
     }, [active])

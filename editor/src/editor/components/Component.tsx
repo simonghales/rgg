@@ -1,23 +1,27 @@
-import React, {useCallback, useMemo} from "react"
+import React, {useCallback, useEffect, useMemo, useState} from "react"
 import styled, {css} from "styled-components";
 import {cssResetButton, StyledIconWrapper, StyledPlainButton} from "../../ui/buttons";
 import {COLORS} from "../../ui/colors";
 import {useComponent, useComponents} from "../../state/components/components";
-import {
-    addDeactivatedComponent,
-    removeUnsavedComponent,
-    setSelectedComponent,
-    setSelectedComponents,
-    useIsComponentSelected
-} from "../../state/components/componentsState";
 import {FaTrash} from "react-icons/fa";
 import {ComponentState} from "../../state/types";
 import {setComponentSidebarHovered, useIsHovered} from "../../state/localState";
 import {INPUTS, isInputPressed} from "../../inputs/inputs";
-import {calculateNewSelectedComponents} from "../../state/components/temp";
 import {MENU_TYPE, showContextMenu} from "../ContextMenu";
-import {ListItem} from "./ComponentsList";
 import GroupOfComponents from "./GroupOfComponents";
+import {useComponentParentGroupId} from "./ComponentsContext";
+import {useIsMovingComponents} from "../../state/editor";
+import {useComponentName, useIsComponentSelected} from "../../state/main/hooks";
+import {
+    addDeactivatedComponent,
+    removeUnsavedComponent,
+    setSelectedComponent,
+    setSelectedComponents, updateComponentName
+} from "../../state/main/actions";
+import {calculateNewSelectedComponents} from "../../state/main/getters";
+import {SidebarItem} from "../../state/main/types";
+import hotkeys from "hotkeys-js";
+import ComponentEditName from "./ComponentEditName";
 
 const StyledList = styled.ul`
 
@@ -48,18 +52,18 @@ export const ListOfComponents: React.FC<{
 }
 
 export const ListOfItems: React.FC<{
-    items: ListItem[],
+    items: SidebarItem[],
 }> = ({items}) => {
     return (
         <StyledList>
             {
                 items.map((item, index) => (
-                    <li key={item.uid}>
+                    <li key={item.key}>
                         {
                             (item.type === 'group') ? (
-                                <GroupOfComponents uid={item.uid} components={item.components as string[]}/>
+                                <GroupOfComponents uid={item.key} components={item.children || []}/>
                             ) : (
-                                <Component uid={item.uid} index={index}/>
+                                <Component uid={item.key} index={index}/>
                             )
                         }
                     </li>
@@ -110,9 +114,32 @@ export const cssComponentName = css`
   font-size: 0.8rem;
 `
 
+const cssInactive = css`
+  opacity: 0.33;
+`
+
+const cssEditing = css`
+  color: transparent;
+  
+  span {
+    visibility: hidden;
+  }
+  
+`
+
+export const cssClickableFont = css`
+  ${cssComponentName};
+  
+  ${StyledChildComponentsWrapper} & {
+    font-size: 0.75rem;
+  }
+`
+
 export const StyledClickable = styled.button<{
     selected: boolean,
     hovered?: boolean,
+    inactive?: boolean,
+    editing?: boolean,
 }>`
   ${cssResetButton};
   display: block;
@@ -122,18 +149,22 @@ export const StyledClickable = styled.button<{
   border-radius: 7px;
   cursor: pointer;
   transition: all 250ms ease;
-  ${cssComponentName};
-  
-  ${StyledChildComponentsWrapper} & {
-    font-size: 0.75rem;
-  }
+  ${cssClickableFont};
   
   &:focus {
     outline: none;
+    box-shadow: 0 0 0 2px #d72859;
+  }
+  
+  &:focus-within,
+  &:focus-visible {
+    box-shadow: 0 0 0 2px #d72859;
   }
   
   ${props => props.hovered ? cssHovered : ''};
   ${props => props.selected ? cssSelected : cssNotSelected};
+  ${props => props.inactive ? cssInactive : ''};
+  ${props => props.editing ? cssEditing : ''};
   
 `
 
@@ -166,10 +197,22 @@ const Component: React.FC<{
     index: number,
 }> = ({uid, index}) => {
 
+    const parentGroupId = useComponentParentGroupId()
     const component = useComponent(uid)
     const children = useComponents(component.children)
     const isSelected = useIsComponentSelected(uid)
     const isHovered = useIsHovered(uid)
+    const componentsAreBeingMoved = useIsMovingComponents()
+    const [editingName, setEditingName] = useState(false) // todo - set to false
+    const storedComponentName = useComponentName(uid)
+
+    const name = storedComponentName || component.name
+
+    useEffect(() => {
+        if (!isSelected) {
+            setEditingName(false)
+        }
+    }, [isSelected])
 
     const {
         onMouseEnter,
@@ -187,15 +230,21 @@ const Component: React.FC<{
 
     const onClick = useCallback(() => {
 
-        if (isInputPressed(INPUTS.shift)) {
-            const selectedRange = calculateNewSelectedComponents(index, uid)
-            console.log('shift is pressed...', index, selectedRange)
-            setSelectedComponents(selectedRange)
-        } else {
-            setSelectedComponent(true, uid)
+        if (isSelected) {
+            if (isInputPressed(INPUTS.command)) {
+                setSelectedComponent(false, uid, false)
+                return
+            }
         }
 
-    }, [])
+        if (hotkeys.shift) {
+            const selectedRange = calculateNewSelectedComponents(index, uid, parentGroupId)
+            setSelectedComponents(selectedRange)
+        } else {
+            setSelectedComponent(true, uid, !isInputPressed(INPUTS.command))
+        }
+
+    }, [parentGroupId, isSelected])
 
     const onRightClick = useCallback((event: MouseEvent) => {
         showContextMenu(MENU_TYPE.SIDEBAR_COMPONENT, event.pageX, event.pageY, uid)
@@ -209,6 +258,24 @@ const Component: React.FC<{
         }
     }, [])
 
+    const onEditNameClose = useCallback(() => {
+        setEditingName(false)
+    }, [])
+
+    const updateName = useCallback((updatedName: string) => {
+        if (updatedName) {
+            updateComponentName(uid, updatedName)
+        }
+    }, [])
+
+    const onSpanClick = useCallback(() => {
+
+        if (isSelected && !isInputPressed(INPUTS.command)) {
+            setEditingName(true)
+        }
+
+    }, [isSelected])
+
     return (
         <StyledContainer>
             <StyledClickableWrapper>
@@ -218,13 +285,15 @@ const Component: React.FC<{
                     onMouseLeave={onMouseLeave}
                     selected={isSelected}
                     hovered={isHovered}
+                    inactive={componentsAreBeingMoved}
                     // @ts-ignore
                     onContextMenu={onRightClick}
+                    editing={editingName}
                 >
-                    <span>{component.name}</span>
+                    <span onClick={onSpanClick}>{name}</span>
                 </StyledClickable>
                 {
-                    component.isRoot && (
+                    component.isRoot && !editingName && (
                         <StyledDeleteWrapper>
                             <StyledDeleteButton round faint onClick={onDelete}>
                                 <StyledIconWrapper>
@@ -232,6 +301,11 @@ const Component: React.FC<{
                                 </StyledIconWrapper>
                             </StyledDeleteButton>
                         </StyledDeleteWrapper>
+                    )
+                }
+                {
+                    editingName && (
+                        <ComponentEditName name={name} updateName={updateName} close={onEditNameClose}/>
                     )
                 }
             </StyledClickableWrapper>

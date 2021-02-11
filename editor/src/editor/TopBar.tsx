@@ -4,8 +4,10 @@ import root from 'react-shadow/styled-components';
 import {StyledIconWrapper, StyledPlainButton } from "../ui/buttons";
 import {FaRedo, FaUndo} from "react-icons/fa";
 import { GlobalStyle } from "../ui/global";
-import {discardChanges, redoState, saveChanges, undoState, useCanRedo, useCanUndo} from "../state/components/componentsState";
 import {setEditMode, useIsEditMode} from "../state/editor";
+import {discardChanges, saveChanges} from "../state/main/actions";
+import {useCanRedo, useCanUndo} from "../state/history/hooks";
+import {redoState, undoState} from "../state/history/actions";
 
 const StyledWrapper = styled.div`
     height: 100%;

@@ -1,9 +1,9 @@
 import create from "zustand";
 import {useMemo} from "react";
-import {useComponentsStateStore} from "./componentsState";
 import {ComponentState} from "../types";
+import {useStateStore} from "../main/store";
 
-type ComponentsStore = {
+export type ComponentsStore = {
     components: {
         [key: string]: ComponentState,
     },
@@ -18,12 +18,12 @@ export const useComponentsStore = create<ComponentsStore>(() => ({
 }))
 
 export const useUnsavedComponents = () => {
-    return Object.values(useComponentsStateStore(state => state.unsavedComponents))
+    return Object.values(useStateStore(state => state.unsavedComponents))
 }
 
 export const useComponent = (uid: string) => {
     const savedComponent = useComponentsStore(state => state.components[uid])
-    const unsavedComponent = useComponentsStateStore(state => state.unsavedComponents[uid])
+    const unsavedComponent = useStateStore(state => state.unsavedComponents[uid])
     return savedComponent ?? unsavedComponent
 }
 

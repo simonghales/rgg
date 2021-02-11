@@ -1,8 +1,8 @@
 import create from "zustand";
 import {proxy, ref, useProxy} from "valtio";
-import {ComponentStateData} from "./components/componentsState";
 import {useEffect, useRef} from "react";
 import {OrthographicCamera, PerspectiveCamera} from "three";
+import {ComponentStateData} from "./main/types";
 
 export const editorMutableState = {
     pendingAddingComponent: false,
@@ -14,6 +14,7 @@ export const editorStateProxy = proxy<{
     mainCamera: null | PerspectiveCamera | OrthographicCamera,
     transformActive: boolean,
     addComponentKey: string,
+    movingComponents: string[],
     addComponentPosition: {
         x: number,
         y: number,
@@ -24,11 +25,28 @@ export const editorStateProxy = proxy<{
     mainCamera: null,
     transformActive: false,
     addComponentKey: '',
+    movingComponents: [],
     addComponentPosition: {
         x: 0,
         y: 0,
     }
 })
+
+export const useMovingComponents = () => {
+    return useProxy(editorStateProxy).movingComponents
+}
+
+export const useIsMovingComponents = () => {
+    return useMovingComponents().length > 0
+}
+
+export const clearMovingComponents = () => {
+    editorStateProxy.movingComponents = []
+}
+
+export const setMovingComponents = (componentIds: string[]) => {
+    editorStateProxy.movingComponents = componentIds
+}
 
 export const setAddComponentKey = (uid: string) => {
     editorStateProxy.addComponentKey = uid

@@ -1,9 +1,12 @@
 import hotkeys from "hotkeys-js";
 
-const KEY_CODES: {
+export const KEY_CODES: {
     [key: string]: number,
 } = {
+    delete: 8,
     shift: 16,
+    escape: 27,
+    command: 91,
 }
 
 type Input = {
@@ -15,9 +18,18 @@ export const INPUTS: {
         codes: number[],
     },
 } = {
+    delete: {
+        codes: [KEY_CODES.delete]
+    },
+    escape: {
+        codes: [KEY_CODES.escape]
+    },
     shift: {
         codes: [KEY_CODES.shift]
-    }
+    },
+    command: {
+        codes: [KEY_CODES.command]
+    },
 }
 
 export const isInputPressed = (input: Input): boolean => {

@@ -1,14 +1,10 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from "react"
 import {EditableContext, useEditableContext, useInheritedState} from "./context"
-import {
-    StateData,
-    useComponentState,
-    useIsComponentDeactivated,
-    useIsComponentSelected, useIsOnlyComponentSelected
-} from "../state/components/componentsState";
 import {generateUuid} from "../utils/ids";
 import {addComponent, addDeactivatedComponent, removeComponent, removeDeactivatedComponent} from "../state/components/components";
 import {setActiveComponentState} from "../state/editor";
+import {useComponentState, useIsComponentDeactivated, useIsOnlyComponentSelected} from "../state/main/hooks";
+import {StateData} from "../state/main/types";
 
 type Override = {
     [key: string]: {
