@@ -3,6 +3,7 @@ import create from "zustand";
 import {persist} from "zustand/middleware";
 
 export const initialStoreState: StateStore = {
+    componentNames: {},
     components: {},
     sharedComponents: {},
     selectedComponents: {},
@@ -22,6 +23,6 @@ export const useStateStore = create<StateStore>(persist(() => (initialStoreState
             revertState = state
         }
     },
-    version: 3,
-    blacklist: ['selectedComponents']
+    version: 4,
+    blacklist: ['selectedComponents', 'selectedComponent']
 }))

@@ -137,3 +137,7 @@ export const useAreComponentsInsideGroup = (componentIds: string[]): boolean => 
 
     return insideGroup
 }
+
+export const useComponentName = (componentId: string) => {
+    return useStateStore(state => state.componentNames[componentId])
+}

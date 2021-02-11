@@ -277,3 +277,15 @@ export const ungroupComponents = (componentIds: string[]) => {
         }
     })
 }
+
+export const updateComponentName = (componentId: string, name: string) => {
+    storeSnapshot()
+    useStateStore.setState(state => {
+        return {
+             componentNames: {
+                 ...state.componentNames,
+                 [componentId]: name,
+             }
+        }
+    })
+}

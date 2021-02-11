@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from "react"
+import React, {useCallback, useEffect, useMemo, useState} from "react"
 import styled, {css} from "styled-components";
 import {cssResetButton, StyledIconWrapper, StyledPlainButton} from "../../ui/buttons";
 import {COLORS} from "../../ui/colors";
@@ -11,16 +11,17 @@ import {MENU_TYPE, showContextMenu} from "../ContextMenu";
 import GroupOfComponents from "./GroupOfComponents";
 import {useComponentParentGroupId} from "./ComponentsContext";
 import {useIsMovingComponents} from "../../state/editor";
-import {useIsComponentSelected} from "../../state/main/hooks";
+import {useComponentName, useIsComponentSelected} from "../../state/main/hooks";
 import {
     addDeactivatedComponent,
     removeUnsavedComponent,
     setSelectedComponent,
-    setSelectedComponents
+    setSelectedComponents, updateComponentName
 } from "../../state/main/actions";
 import {calculateNewSelectedComponents} from "../../state/main/getters";
 import {SidebarItem} from "../../state/main/types";
 import hotkeys from "hotkeys-js";
+import ComponentEditName from "./ComponentEditName";
 
 const StyledList = styled.ul`
 
@@ -117,10 +118,28 @@ const cssInactive = css`
   opacity: 0.33;
 `
 
+const cssEditing = css`
+  color: transparent;
+  
+  span {
+    visibility: hidden;
+  }
+  
+`
+
+export const cssClickableFont = css`
+  ${cssComponentName};
+  
+  ${StyledChildComponentsWrapper} & {
+    font-size: 0.75rem;
+  }
+`
+
 export const StyledClickable = styled.button<{
     selected: boolean,
     hovered?: boolean,
     inactive?: boolean,
+    editing?: boolean,
 }>`
   ${cssResetButton};
   display: block;
@@ -130,11 +149,7 @@ export const StyledClickable = styled.button<{
   border-radius: 7px;
   cursor: pointer;
   transition: all 250ms ease;
-  ${cssComponentName};
-  
-  ${StyledChildComponentsWrapper} & {
-    font-size: 0.75rem;
-  }
+  ${cssClickableFont};
   
   &:focus {
     outline: none;
@@ -149,6 +164,7 @@ export const StyledClickable = styled.button<{
   ${props => props.hovered ? cssHovered : ''};
   ${props => props.selected ? cssSelected : cssNotSelected};
   ${props => props.inactive ? cssInactive : ''};
+  ${props => props.editing ? cssEditing : ''};
   
 `
 
@@ -187,6 +203,16 @@ const Component: React.FC<{
     const isSelected = useIsComponentSelected(uid)
     const isHovered = useIsHovered(uid)
     const componentsAreBeingMoved = useIsMovingComponents()
+    const [editingName, setEditingName] = useState(false) // todo - set to false
+    const storedComponentName = useComponentName(uid)
+
+    const name = storedComponentName || component.name
+
+    useEffect(() => {
+        if (!isSelected) {
+            setEditingName(false)
+        }
+    }, [isSelected])
 
     const {
         onMouseEnter,
@@ -207,11 +233,11 @@ const Component: React.FC<{
         if (isSelected) {
             if (isInputPressed(INPUTS.command)) {
                 setSelectedComponent(false, uid, false)
+                return
             }
-            return
         }
 
-        if (isInputPressed(hotkeys.shift)) {
+        if (hotkeys.shift) {
             const selectedRange = calculateNewSelectedComponents(index, uid, parentGroupId)
             setSelectedComponents(selectedRange)
         } else {
@@ -232,6 +258,24 @@ const Component: React.FC<{
         }
     }, [])
 
+    const onEditNameClose = useCallback(() => {
+        setEditingName(false)
+    }, [])
+
+    const updateName = useCallback((updatedName: string) => {
+        if (updatedName) {
+            updateComponentName(uid, updatedName)
+        }
+    }, [])
+
+    const onSpanClick = useCallback(() => {
+
+        if (isSelected && !isInputPressed(INPUTS.command)) {
+            setEditingName(true)
+        }
+
+    }, [isSelected])
+
     return (
         <StyledContainer>
             <StyledClickableWrapper>
@@ -244,11 +288,12 @@ const Component: React.FC<{
                     inactive={componentsAreBeingMoved}
                     // @ts-ignore
                     onContextMenu={onRightClick}
+                    editing={editingName}
                 >
-                    <span>{component.name}</span>
+                    <span onClick={onSpanClick}>{name}</span>
                 </StyledClickable>
                 {
-                    component.isRoot && (
+                    component.isRoot && !editingName && (
                         <StyledDeleteWrapper>
                             <StyledDeleteButton round faint onClick={onDelete}>
                                 <StyledIconWrapper>
@@ -256,6 +301,11 @@ const Component: React.FC<{
                                 </StyledIconWrapper>
                             </StyledDeleteButton>
                         </StyledDeleteWrapper>
+                    )
+                }
+                {
+                    editingName && (
+                        <ComponentEditName name={name} updateName={updateName} close={onEditNameClose}/>
                     )
                 }
             </StyledClickableWrapper>

@@ -41,6 +41,9 @@ type SharedComponent = {
 }
 
 export type StateStore = {
+    componentNames: {
+      [key: string]: string,
+    },
     components: {
         [key: string]: StoredComponentState
     },
