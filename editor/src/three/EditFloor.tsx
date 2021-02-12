@@ -2,8 +2,7 @@ import React, {useCallback, useMemo, useRef} from "react"
 import {Plane} from "@react-three/drei";
 import {editorMutableState, editorStateProxy, useAddComponentKey, useIsAddingComponentToCanvas} from "../state/editor";
 import {getCreatable, useCreatable} from "../state/creatables";
-import {addNewUnsavedComponent, closeAddingComponent, setSelectedComponent} from "../state/main/actions";
-import hotkeys from "hotkeys-js";
+import {addNewUnsavedComponent, setSelectedComponent} from "../state/main/actions";
 
 const EditFloor: React.FC = () => {
 
