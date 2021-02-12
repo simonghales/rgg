@@ -1,7 +1,7 @@
 import {proxy, ref} from "valtio";
 import {getCreatable} from "../../state/creatables";
 import {addNewUnsavedComponent, setSelectedComponents} from "../../state/main/actions";
-import {getUnsavedComponent, isComponentUnsaved} from "../../state/main/getters";
+import {getUnsavedComponent, getUnsavedComponentInitialProps, isComponentUnsaved} from "../../state/main/getters";
 
 export enum PendingPasteType {
     COMPONENTS = 'COMPONENTS'
@@ -34,7 +34,8 @@ const handlePasteComponents = (components: string[]) => {
             if (component) {
                 const creatable = getCreatable(component.componentType || '')
                 if (creatable) {
-                    addedComponents.push(addNewUnsavedComponent(creatable, {}, componentId).uid)
+                    const initialProps = getUnsavedComponentInitialProps(componentId)
+                    addedComponents.push(addNewUnsavedComponent(creatable, initialProps, componentId).uid)
                 }
             }
         }

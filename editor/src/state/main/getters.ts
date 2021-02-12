@@ -154,3 +154,8 @@ export const isComponentUnsaved = (componentId: string) => {
 export const getUnsavedComponent = (componentId: string) => {
     return useStateStore.getState().unsavedComponents[componentId]
 }
+
+export const getUnsavedComponentInitialProps = (componentId: string) => {
+    const unsavedComponent = getUnsavedComponent(componentId)
+    return unsavedComponent?.initialProps ?? {}
+}
