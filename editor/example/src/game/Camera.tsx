@@ -19,15 +19,11 @@ const Camera: React.FC = () => {
     const setDefaultCamera = useSetDefaultCamera()
     const isEditMode = useIsEditMode()
 
-    const x = useEditableProp('x', {
-        defaultValue: 0,
-    })
-    const y = useEditableProp('y', {
-        defaultValue: 0,
-    })
-    const z = useEditableProp('z', {
-        defaultValue: 0,
-    })
+    const {x, y, z} = useEditableProp('position', {defaultValue: {
+            x: 0,
+            y: 0,
+            z: 10,
+        }})
 
     useEffect(() => {
         cameraRef.current.up.set(0,0,1)

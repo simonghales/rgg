@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet";
 import StateMenu from "./state/StateMenu";
 import {COLORS} from "../ui/colors";
 import AddComponentMenu from "./components/AddComponent/AddComponentMenu";
-import {useIsAddingComponent, useIsEditMode} from "../state/editor";
+import {setEditMode, useIsAddingComponent, useIsEditMode} from "../state/editor";
 import CameraPreview from "./CameraPreview";
 import AddComponentBlocker from "./components/AddComponent/AddComponentBlocker";
 import hotkeys from "hotkeys-js";
@@ -81,11 +81,23 @@ const useHotkeysListener = () => {
 
 }
 
-export const Editor: React.FC = ({children}) => {
+export const Editor: React.FC<{
+    gameOnly?: boolean,
+}> = ({children, gameOnly = false}) => {
 
     const isAddingComponent = useIsAddingComponent()
     const isEditMode = useIsEditMode()
     useHotkeysListener()
+
+    useEffect(() => {
+        if (gameOnly) {
+            setEditMode(false)
+        }
+    }, [gameOnly])
+
+    if (gameOnly) {
+        return children
+    }
 
     return (
         <>

@@ -4,7 +4,7 @@ import Game from "../game/Game";
 
 const App = () => {
     return (
-        <Editor>
+        <Editor gameOnly>
             <Game/>
         </Editor>
     );
