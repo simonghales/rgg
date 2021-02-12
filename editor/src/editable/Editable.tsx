@@ -170,6 +170,14 @@ export const Editable: React.FC<Props> = ({
         return () => {}
     }, [isSelected])
 
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) return null
+
     if (isDeactivated) {
         return null
     }
