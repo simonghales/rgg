@@ -82,6 +82,7 @@ const useHotkeysListener = () => {
 }
 
 export const Editor: React.FC<{
+    children: any, // this shouldn't be necessary but typescript was complaining?....
     gameOnly?: boolean,
 }> = ({children, gameOnly = false}) => {
 
