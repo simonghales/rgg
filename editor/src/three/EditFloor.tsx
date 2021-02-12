@@ -64,9 +64,9 @@ const EditFloor: React.FC = () => {
                             }
                         })
                         setSelectedComponent(true, addedComponent.uid)
-                        if (!hotkeys.shift) {
-                            closeAddingComponent()
-                        }
+                        // if (hotkeys.shift) {
+                        //     closeAddingComponent()
+                        // }
                     }
                 }
                 editorMutableState.pendingAddingComponent = false
