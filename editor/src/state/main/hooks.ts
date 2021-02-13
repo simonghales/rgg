@@ -53,7 +53,7 @@ const useAppliedState = (componentId: string): StateData => {
     return appliedState ?? {}
 }
 
-const applyStateData = (componentState: ComponentStateData, stateData: StateData, stateType: StateType, onlyExistingEntries: boolean = true) => {
+const applyStateData = (componentState: ComponentStateData, stateData: StateData, stateType: StateType, onlyExistingEntries: boolean = false) => {
     if (onlyExistingEntries) {
         Object.entries(componentState).forEach(([key, existingData]) => {
             if (stateData[key]) {
@@ -62,6 +62,9 @@ const applyStateData = (componentState: ComponentStateData, stateData: StateData
                     value: sourceData.value,
                     type: sourceData.type,
                     stateType,
+                }
+                if (stateType === StateType.default) {
+                    data.hasDefault = true
                 }
                 componentState[key] = {
                     ...existingData,
@@ -101,7 +104,7 @@ export const useComponentState = (
 
     const componentState = useMemo(() => {
         const state: ComponentStateData = {}
-        applyStateData(state, defaultState, StateType.default, false)
+        applyStateData(state, defaultState, StateType.default)
         applyStateData(state, initialState, StateType.initial)
         applyStateData(state, appliedState, StateType.applied)
         applyStateData(state, inheritedState, StateType.inherited)

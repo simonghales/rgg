@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useMemo} from "react";
+import {createContext, useContext, useLayoutEffect, useMemo} from "react";
 import {ComponentStateData, StateData} from "../state/main/types";
 
 type State = {
@@ -60,7 +60,7 @@ export const useEditableProp = (key: string, options: Options = {}) => {
         registerDefaultProp,
     } = useEditableContext()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         registerDefaultProp(key, options.defaultValue, options.config)
     }, [])
 
@@ -79,7 +79,7 @@ export const useEditableProps = (props: {
         registerDefaultProp,
     } = useEditableContext()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         Object.entries(props).forEach(([key, options]) => {
             registerDefaultProp(key, options.defaultValue, options.config)
         })

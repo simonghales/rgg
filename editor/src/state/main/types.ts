@@ -82,6 +82,7 @@ export type ComponentIndividualStateData = {
     config?: {
         [key: string]: any,
     }
+    hasDefault?: boolean,
 }
 
 export type ComponentStateData = {

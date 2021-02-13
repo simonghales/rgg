@@ -10,6 +10,8 @@ const Scenery: React.FC = () => {
             z: 0,
         }})
 
+    console.log('scenery', x, y, z)
+
 
     const [ref] = useDraggableMesh()
 
