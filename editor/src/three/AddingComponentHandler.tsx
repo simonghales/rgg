@@ -20,6 +20,7 @@ const AddingComponentHandler: React.FC = () => {
             if (!visualRef.current) return
             visualRef.current.position.x = editorStateProxy.addComponentPosition.x
             visualRef.current.position.y = editorStateProxy.addComponentPosition.y
+            visualRef.current.position.z = editorStateProxy.addComponentPosition.z
         }
 
         apply()

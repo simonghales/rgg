@@ -4,6 +4,7 @@ import Player from "./Player";
 import Random from "./Random";
 import Camera from "./Camera";
 import "./registeredComponents"
+import RapierContents from "./RapierContents";
 
 const GameContents: React.FC = () => {
     return (
@@ -12,6 +13,7 @@ const GameContents: React.FC = () => {
             <Camera/>
             <Player/>
             <Random/>
+            <RapierContents/>
         </>
     )
 }

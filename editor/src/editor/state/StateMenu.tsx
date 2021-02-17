@@ -7,6 +7,12 @@ import ComponentStateMenu from "./ComponentStateMenu";
 import {useSelectedComponent} from "../../state/main/hooks";
 
 const StyledWrapper = styled.div`
+    height: 100%;
+  
+    > div {
+      height: 100%;
+    }
+  
 `
 
 const StateMenu: React.FC = () => {

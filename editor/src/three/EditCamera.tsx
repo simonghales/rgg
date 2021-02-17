@@ -2,7 +2,7 @@ import React, {useEffect, useLayoutEffect, useRef} from "react"
 import {OrbitControls, PerspectiveCamera} from "@react-three/drei";
 import {PerspectiveCamera as PCamera} from "three";
 import {useThree} from "react-three-fiber";
-import {editorStateProxy, useIsEditMode} from "../state/editor";
+import {editorStateProxy, useIsEditMode, useIsTwoDimensional} from "../state/editor";
 import {ref} from "valtio";
 
 const EditCamera: React.FC = () => {
@@ -13,10 +13,18 @@ const EditCamera: React.FC = () => {
     const {
         setDefaultCamera,
     } = useThree()
+    const twoDimensional = useIsTwoDimensional()
+
+    useLayoutEffect(() => {
+        if (twoDimensional) {
+            cameraRef.current.up.set(0,0,1)
+        } else {
+            cameraRef.current.up.set(0,1,0)
+        }
+    }, [twoDimensional])
 
     useLayoutEffect(() => {
         cameraRef.current.layers.enable(31)
-        cameraRef.current.up.set(0,0,1)
         cameraRef.current.lookAt(0, 0, 0)
         editorStateProxy.orbitRef = ref(orbitRef)
     }, [])

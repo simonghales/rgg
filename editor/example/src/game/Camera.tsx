@@ -26,7 +26,7 @@ const Camera: React.FC = () => {
         }})
 
     useEffect(() => {
-        cameraRef.current.up.set(0,0,1)
+        // cameraRef.current.up.set(0,0,1)
         cameraRef.current.lookAt(0, 0, 0)
         setMainCamera(cameraRef.current)
     }, [])
@@ -37,7 +37,6 @@ const Camera: React.FC = () => {
 
     useEffect(() => {
         if (isEditMode) return
-        console.log('setting as default camera??')
         setDefaultCamera(cameraRef.current)
     }, [isEditMode])
 

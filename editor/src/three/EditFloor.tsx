@@ -1,6 +1,12 @@
 import React, {useCallback, useMemo, useRef} from "react"
 import {Plane} from "@react-three/drei";
-import {editorMutableState, editorStateProxy, useAddComponentKey, useIsAddingComponentToCanvas} from "../state/editor";
+import {
+    editorMutableState,
+    editorStateProxy,
+    useAddComponentKey,
+    useIsAddingComponentToCanvas,
+    useIsTwoDimensional
+} from "../state/editor";
 import {getCreatable, useCreatable} from "../state/creatables";
 import {addNewUnsavedComponent, setSelectedComponent} from "../state/main/actions";
 
@@ -30,13 +36,16 @@ const EditFloor: React.FC = () => {
                 const position = transformPosition([x, y, z])
                 editorStateProxy.addComponentPosition.x = position[0]
                 editorStateProxy.addComponentPosition.y = position[1]
+                editorStateProxy.addComponentPosition.z = position[2]
             },
             onPointerMove: (event: any) => {
+                console.log('pointer move!')
                 if (!isAddingComponent) return
                 const {x, y, z} = event.point
                 const position = transformPosition([x, y, z])
                 editorStateProxy.addComponentPosition.x = position[0]
                 editorStateProxy.addComponentPosition.y = position[1]
+                editorStateProxy.addComponentPosition.z = position[2]
                 if (isAddingComponent) {
                     editorMutableState.pendingAddingComponent = false
                 }
@@ -59,7 +68,7 @@ const EditFloor: React.FC = () => {
                             position: {
                                 x: position[0],
                                 y: position[1],
-                                z: 0,
+                                z: position[2],
                             }
                         })
                         setSelectedComponent(true, addedComponent.uid)
@@ -73,14 +82,16 @@ const EditFloor: React.FC = () => {
         }
     }, [isAddingComponent, transformPosition])
 
+    const twoDimensional = useIsTwoDimensional()
+
     return (
         <>
             {
                 isAddingComponent && (
-                    <Plane args={[1000, 1000]} visible={false} {...handlers}/>
+                    <Plane args={[1000, 1000]} rotation={[twoDimensional ? 0 : -Math.PI / 2, 0, 0]} visible={false} {...handlers}/>
                 )
             }
-            <gridHelper position={[0, 0, -0.01]} args={[1000, 1000, '#888', '#111']} rotation={[Math.PI / 2, 0, 0]} layers={[31]}/>
+            <gridHelper position={[0, 0, -0.01]} args={[1000, 1000, '#888', '#111']} rotation={[twoDimensional ? Math.PI / 2 : 0, 0, 0]} layers={[31]}/>
         </>
     )
 }

@@ -3,6 +3,7 @@ import {EditCanvas} from "rgg-editor";
 import {Engine} from "react-three-game-engine";
 import {Canvas} from "react-three-fiber";
 import {useEditCanvasProps} from "../../../src/three/EditCanvas";
+import RGGEngine from "../RGGEngine";
 
 const physicsWorker = new Worker("../worker/physics.worker.js")
 
@@ -12,11 +13,13 @@ const GameEngine: React.FC = ({children}) => {
 
     return (
         <Canvas {...editCanvasProps}>
-            <EditCanvas>
-                <Engine physicsWorker={physicsWorker}>
-                    {children}
-                </Engine>
-            </EditCanvas>
+            <RGGEngine>
+                <EditCanvas>
+                    {/*<Engine physicsWorker={physicsWorker}>*/}
+                        {children}
+                    {/*</Engine>*/}
+                </EditCanvas>
+            </RGGEngine>
         </Canvas>
     )
 }

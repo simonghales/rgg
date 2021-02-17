@@ -54,6 +54,21 @@ export const getComponentsRootList = () => {
     }).map(([, component]) => component)
 }
 
+export const setComponentChildren = (uid: string, children: string[]) => {
+    useComponentsStore.setState(state => {
+        if (!state.components[uid]) return {}
+        return {
+            components: {
+                ...state.components,
+                [uid]: {
+                    ...(state.components[uid] ?? {}),
+                    children,
+                }
+            }
+        }
+    })
+}
+
 export const addComponent = (uid: string, name: string, children: string[], isRoot: boolean, unsaved: boolean) => {
     useComponentsStore.setState(state => {
         return {

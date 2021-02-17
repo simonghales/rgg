@@ -1,7 +1,13 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from "react"
 import {EditableContext, useEditableContext, useInheritedState} from "./context"
 import {generateUuid} from "../utils/ids";
-import {addComponent, addDeactivatedComponent, removeComponent, removeDeactivatedComponent} from "../state/components/components";
+import {
+    addComponent,
+    addDeactivatedComponent,
+    removeComponent,
+    removeDeactivatedComponent,
+    setComponentChildren
+} from "../state/components/components";
 import {setActiveComponentState} from "../state/editor";
 import {useComponentState, useIsComponentDeactivated, useIsOnlyComponentSelected} from "../state/main/hooks";
 import {StateData} from "../state/main/types";
@@ -59,24 +65,32 @@ export const Editable: React.FC<Props> = ({
     })
     const [name] = useState(() => (children as any).type.displayName || (children as any).type.name || id)
 
-    const [childEditables] = useState(new Set<string>())
+    const [childEditables, setChildEditables] = useState<{
+        [key: string]: boolean,
+    }>({})
     const unsaved = config.unsaved ?? false
 
     const isDeactivated = useIsComponentDeactivated(uid)
 
     useEffect(() => {
         if (isDeactivated) {
-            addDeactivatedComponent(uid, name, Array.from(childEditables), isRoot, unsaved)
+            addDeactivatedComponent(uid, name, Object.keys(childEditables), isRoot, unsaved)
             return () => {
                 removeDeactivatedComponent(uid)
             }
         } else {
-            addComponent(uid, name, Array.from(childEditables), isRoot, unsaved)
+            addComponent(uid, name, Object.keys(childEditables), isRoot, unsaved)
             return () => {
                 removeComponent(uid)
             }
         }
     }, [isDeactivated])
+
+    useEffect(() => {
+        if (!isDeactivated) {
+            setComponentChildren(uid, Object.keys(childEditables))
+        }
+    }, [isDeactivated, childEditables])
 
     useLayoutEffect(() => {
 
@@ -89,9 +103,18 @@ export const Editable: React.FC<Props> = ({
     }, [])
 
     const childRegisterWithParent = useCallback((uid: string) => {
-        childEditables.add(uid)
+        setChildEditables(state => ({
+            ...state,
+            [uid]: true,
+        }))
         return () => {
-            childEditables.delete(uid)
+            setChildEditables(state => {
+                const updated = {
+                    ...state,
+                }
+                delete updated[uid]
+                return updated
+            })
         }
     }, [])
 

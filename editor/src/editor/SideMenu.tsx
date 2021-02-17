@@ -65,7 +65,7 @@ const SideMenu: React.FC = () => {
                                 <StyledThickerButton full onClick={() => {
                                     setAddingComponent(true)
                                 }}>
-                                    Add component
+                                    Add Instance
                                 </StyledThickerButton>
                             )
                         }

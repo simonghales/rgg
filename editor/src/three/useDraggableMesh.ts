@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {MutableRefObject, useEffect, useRef, useState} from "react";
 import {useEditableContext} from "../editable/context";
 import {useThree} from "react-three-fiber";
 import { TransformControls as OriginalTransformControls } from "three/examples/jsm/controls/TransformControls";
@@ -23,12 +23,14 @@ const recursiveSetLayer = (object: Object3D) => {
 
 export const useDraggableMesh = (options: {
     translationSnap?: number,
+    passedRef?: MutableRefObject<Object3D>,
 } = {}) => {
     const { camera, gl, scene } = useThree()
     const {uid, getStateValue} = useEditableContext()
     const isEditMode = useIsEditMode()
     const isSelected = useIsOnlyComponentSelected(uid)
-    const ref = useRef<Object3D>()
+    const localRef = useRef<Object3D>()
+    const ref = options.passedRef ?? localRef
     const orbitRef = useOrbitRef()
     const [controls, setControls] = useState<OriginalTransformControls | null>(null)
     const isCanvasEnabled = useIsCanvasInteractable()

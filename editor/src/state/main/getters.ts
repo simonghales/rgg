@@ -104,7 +104,7 @@ export const computeSidebarItems = (
         }
     } = {}
 
-    Object.entries(components).forEach(([key]) => {
+    Object.entries(components).forEach(([key, component]) => {
         const groupKey = groupedComponents[key]
         if (groupKey && groups[groupKey]) {
             if (itemGroups[groupKey]) {
@@ -114,7 +114,7 @@ export const computeSidebarItems = (
                     [key]: true,
                 }
             }
-        } else {
+        } else if (component.isRoot) {
             items.push({
                 key,
                 type: 'component',

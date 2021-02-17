@@ -1,6 +1,6 @@
-import React, {useEffect} from "react"
+import React, {useEffect, useLayoutEffect} from "react"
 import styled from "styled-components";
-import {Leva} from "leva/dist/leva.cjs.js";
+// import {Leva} from "leva/dist/leva.cjs.js";
 import EditorProvider from "./EditorProvider";
 import SideMenu from "./SideMenu";
 import TopBar from "./TopBar";
@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet";
 import StateMenu from "./state/StateMenu";
 import {COLORS} from "../ui/colors";
 import AddComponentMenu from "./components/AddComponent/AddComponentMenu";
-import {setEditMode, useIsAddingComponent, useIsEditMode} from "../state/editor";
+import {setEditMode, setTwoDimensional, useIsAddingComponent, useIsEditMode} from "../state/editor";
 import CameraPreview from "./CameraPreview";
 import AddComponentBlocker from "./components/AddComponent/AddComponentBlocker";
 import hotkeys from "hotkeys-js";
@@ -69,9 +69,9 @@ const StyledRight = styled(StyledAside)`
   flex-direction: column;
 `
 
-const StyledLevaContainer = styled.div`
-  flex: 1 1 1px;
-`
+// const StyledLevaContainer = styled.div`
+//   flex: 1 1 1px;
+// `
 
 const useHotkeysListener = () => {
 
@@ -84,7 +84,12 @@ const useHotkeysListener = () => {
 export const Editor: React.FC<{
     children: any, // this shouldn't be necessary but typescript was complaining?....
     gameOnly?: boolean,
-}> = ({children, gameOnly = false}) => {
+    twoDimensional?: boolean,
+}> = ({children, gameOnly = false, twoDimensional = false}) => {
+
+    useLayoutEffect(() => {
+        setTwoDimensional(twoDimensional)
+    }, [twoDimensional])
 
     const isAddingComponent = useIsAddingComponent()
     const isEditMode = useIsEditMode()
@@ -136,9 +141,9 @@ export const Editor: React.FC<{
                         </StyledCenter>
                         <StyledRight>
                             <StateMenu/>
-                            <StyledLevaContainer>
-                                <Leva fillParent/>
-                            </StyledLevaContainer>
+                            {/*<StyledLevaContainer>*/}
+                            {/*    <Leva fillParent/>*/}
+                            {/*</StyledLevaContainer>*/}
                         </StyledRight>
                     </StyledMain>
                 </StyledContainer>

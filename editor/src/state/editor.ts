@@ -18,6 +18,7 @@ export const editorStateProxy = proxy<{
     addComponentPosition: {
         x: number,
         y: number,
+        z: number,
     }
 }>({
     orbitRef: null,
@@ -29,6 +30,7 @@ export const editorStateProxy = proxy<{
     addComponentPosition: {
         x: 0,
         y: 0,
+        z: 0,
     }
 })
 
@@ -89,7 +91,18 @@ export const useEditorStore = create<StoreState>(() => ({
     activeComponentState: {},
     addingComponent: false,
     editMode: true,
+    twoDimensional: false,
 }))
+
+export const setTwoDimensional = (twoDimensional: boolean) => {
+    useEditorStore.setState({
+        twoDimensional,
+    })
+}
+
+export const useIsTwoDimensional = () => {
+    return useEditorStore(state => state.twoDimensional)
+}
 
 export const useIsEditMode = () => {
     return useEditorStore(state => state.editMode)

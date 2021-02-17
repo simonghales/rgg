@@ -8,13 +8,16 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.3.1",
     "@react-three/drei": "^2.2.17",
+    "cannon-es": "^0.16.0",
     "editor": "^1.0.0",
     "planck-js": "^0.3.23",
     "react": "^17.0.1",
     "react-app-polyfill": "^1.0.0",
     "react-dom": "^17.0.1",
     "react-three-game-engine": "^0.14.1",
+    "rgg-engine": "^0.4.2",
     "zustand": "^3.3.1"
   },
   "alias": {

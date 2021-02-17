@@ -1,5 +1,5 @@
 {
-  "version": "0.1.21",
+  "version": "0.1.22",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -17,7 +17,8 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "postinstall": "cd node_modules/leva && npm install && cd packages/leva && npm install"
   },
   "peerDependencies": {
     "@react-three/drei": "^2.2.19",
@@ -74,10 +75,11 @@
     "zustand": "^3.3.1"
   },
   "dependencies": {
+    "@playcanvas/pcui": "^1.1.11",
     "antd": "^4.12.2",
     "file-saver": "^2.0.5",
     "hotkeys-js": "^3.8.2",
-    "leva": "https://pkg.csb.dev/gsimone/leva/commit/cfe3e89d/leva",
+    "leva": "https://github.com/simonghales/leva.git",
     "react-helmet": "^6.1.0",
     "react-icons": "^4.1.0",
     "react-onclickoutside": "^6.10.0",

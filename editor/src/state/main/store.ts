@@ -24,5 +24,6 @@ export const useStateStore = create<StateStore>(persist(() => (initialStoreState
         }
     },
     version: 4,
-    blacklist: ['selectedComponents', 'selectedComponent']
+    blacklist: []
+    // blacklist: ['selectedComponents', 'selectedComponent']
 }))
