@@ -1,15 +1,19 @@
 import styled, {css} from "styled-components";
 import {COLORS} from "./colors";
 
-export const cssResetButton = css`
+export const cssResetInput = css`
   font: inherit;
   color: inherit;
   padding: 0;
   border: 0;
   margin: 0;
-  cursor: pointer;
   background: none;
   border: none;
+`
+
+export const cssResetButton = css`
+  ${cssResetInput};
+  cursor: pointer;
 `
 
 export const StyledButton = styled.button`

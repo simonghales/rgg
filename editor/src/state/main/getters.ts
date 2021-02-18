@@ -1,6 +1,7 @@
 import {useStateStore} from "./store";
 import {ComponentsStore, useComponentsStore} from "../components/components";
 import {SidebarItem, StateStore} from "./types";
+import {useEditorStore} from "../editor";
 
 export const getSelectedComponent = () => {
     return useStateStore.getState().selectedComponent
@@ -158,4 +159,8 @@ export const getUnsavedComponent = (componentId: string) => {
 export const getUnsavedComponentInitialProps = (componentId: string) => {
     const unsavedComponent = getUnsavedComponent(componentId)
     return unsavedComponent?.initialProps ?? {}
+}
+
+export const getComponentState = (componentId: string) => {
+    return useEditorStore.getState().activeComponentState[componentId]
 }

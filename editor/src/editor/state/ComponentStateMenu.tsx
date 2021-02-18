@@ -8,7 +8,9 @@ import {updateComponentModifiedState} from "../../state/main/actions";
 import {SPACE_UNITS} from "../../ui/units";
 import { StyledThickerButton } from "../../ui/buttons";
 import {COLORS} from "../../ui/colors";
-import SubComponentsMenu from "./SubComponentsMenu";
+import SubComponentsMenu, {CUSTOM_CONFIG_KEY, RIGIDBODY_3D_KEY} from "./SubComponentsMenu";
+import {getComponentState} from "../../state/main/getters";
+import {Context} from "./ComponentStateMenu.context";
 
 const useControls: any = {}
 const store: any = {}
@@ -127,11 +129,13 @@ const StyledContent = styled.div`
 const StyledBottom = styled.div`
   border-top: 1px solid ${COLORS.faint};
   padding: ${SPACE_UNITS.mediumPlus}px ${SPACE_UNITS.medium}px;
+  overflow: hidden;
 `
 
 const StyledComponents = styled.div`
   border-top: 1px solid ${COLORS.faint};
   padding: ${SPACE_UNITS.mediumPlus}px ${SPACE_UNITS.medium}px;
+  overflow: hidden;
 `
 
 const ComponentStateMenu: React.FC<{
@@ -142,29 +146,56 @@ const ComponentStateMenu: React.FC<{
     uid
     }) => {
 
+    const componentState = useActiveComponentState(uid)
+
+    const hasCustomConfig = componentState && componentState[CUSTOM_CONFIG_KEY]
+
+    const {
+        addComponent,
+    } = useMemo(() => ({
+        addComponent: () => {
+            const state = getComponentState(uid)
+            if (state) {
+                const rigidBodyState = state[RIGIDBODY_3D_KEY]
+                if (rigidBodyState && rigidBodyState.value !== undefined) {
+                    return
+                }
+            }
+            updateComponentModifiedState(uid, RIGIDBODY_3D_KEY, {
+                enabled: true,
+            })
+        },
+    }), [uid])
+
     return (
-        <StyledContainer>
-            <StyledHeader>
-                <StyledHeading>{name}</StyledHeading>
-            </StyledHeader>
-            <StyledBody>
-                {/*<Leva fillParent/>*/}
-                {/*<StateManager key={uid} uid={uid}/>*/}
-                <StyledContent>
-                    <div>
-                        Top settings
-                    </div>
-                    <StyledComponents>
-                        <SubComponentsMenu/>
-                    </StyledComponents>
-                    <StyledBottom>
-                        <StyledThickerButton full>
-                            Add Component
-                        </StyledThickerButton>
-                    </StyledBottom>
-                </StyledContent>
-            </StyledBody>
-        </StyledContainer>
+        <Context.Provider value={{componentId: uid}}>
+            <StyledContainer>
+                <StyledHeader>
+                    <StyledHeading>{name}</StyledHeading>
+                </StyledHeader>
+                <StyledBody>
+                    {/*<Leva fillParent/>*/}
+                    {/*<StateManager key={uid} uid={uid}/>*/}
+                    <StyledContent>
+                        <div>
+                            Top settings
+                        </div>
+                        {
+                            hasCustomConfig && componentState && (
+                                <StyledComponents>
+                                    <SubComponentsMenu componentState={componentState} key={uid} />
+                                </StyledComponents>
+                            )
+                        }
+                        <StyledBottom>
+                            <StyledThickerButton full onClick={addComponent}>
+                                Add Component
+                            </StyledThickerButton>
+                        </StyledBottom>
+                    </StyledContent>
+                </StyledBody>
+            </StyledContainer>
+        </Context.Provider>
     )
 }
 

@@ -3,6 +3,7 @@ import {proxy, ref, useProxy} from "valtio";
 import {useEffect, useRef} from "react";
 import {OrthographicCamera, PerspectiveCamera} from "three";
 import {ComponentStateData} from "./main/types";
+import {SelectedComponentState} from "./types";
 
 export const editorMutableState = {
     pendingAddingComponent: false,
@@ -85,6 +86,7 @@ type StoreState = {
     },
     addingComponent: boolean,
     editMode: boolean,
+    twoDimensional: boolean,
 }
 
 export const useEditorStore = create<StoreState>(() => ({

@@ -35,6 +35,9 @@ type Options = {
     defaultValue?: any,
     config?: {
         [key: string]: any,
+    },
+    _editorConfig?: {
+        type: string,
     }
 }
 

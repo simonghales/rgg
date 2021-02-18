@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback} from "react";
 import styled from "styled-components";
 import {FaCheck} from "react-icons/fa";
 import {COLORS} from "./colors";
@@ -53,10 +53,18 @@ const StyledVisual = styled.div`
 
 `
 
-export const InputCheckbox: React.FC = () => {
+export const InputCheckbox: React.FC<{
+    checked: boolean,
+    onChange: (value: boolean) => void,
+}> = ({checked, onChange: passedOnChange}) => {
+
+    const onChange = useCallback((event: any) => {
+        passedOnChange(event.target.checked)
+    }, [passedOnChange])
+
     return (
         <StyledContainer>
-            <input type="checkbox"/>
+            <input checked={checked} type="checkbox" onChange={onChange}/>
             <StyledVisual>
                 <FaCheck size={10}/>
             </StyledVisual>

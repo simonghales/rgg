@@ -1,53 +1,31 @@
-import React from "react"
-import styled from "styled-components";
-import { StyledHeading } from "../../ui/typography";
-import {SPACE_UNITS} from "../../ui/units";
-import {InputCheckbox} from "../../ui/inputs";
-import {FaCaretDown} from "react-icons/fa";
-import {cssResetButton} from "../../ui/buttons";
-import RigidBodyConfig from "./RigidBodyConfig";
+import React, {useMemo} from "react"
+import RigidBody from "./rigidbody/RigidBody";
+import {ComponentIndividualStateData, ComponentStateData} from "../../state/main/types";
 
-const StyledComponent = styled.div`
-  display: grid;
-  grid-template-rows: auto auto;
-  grid-row-gap: ${SPACE_UNITS.medium}px;
-`
+export const CUSTOM_CONFIG_KEY = '_customConfig'
+export const RIGIDBODY_3D_KEY = '_rigidBody3d'
 
-const StyledComponentHeader = styled.header`
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-column-gap: ${SPACE_UNITS.small}px;
-  align-items: center;
-`
+const checkIfHasRigidBody3d = (rigidBody3d: ComponentIndividualStateData) => {
+    return rigidBody3d && rigidBody3d.value !== undefined
+}
 
-const StyledOptionsButton = styled.button`
-  ${cssResetButton};
-`
-
-const SubComponentsMenu: React.FC = () => {
+const SubComponentsMenu: React.FC<{
+    componentState: ComponentStateData,
+}> = ({componentState}) => {
+    const rigidBody3d = componentState[RIGIDBODY_3D_KEY]
+    const hasRigidBody3d = useMemo(() => {
+        return checkIfHasRigidBody3d(rigidBody3d)
+    }, [rigidBody3d])
     return (
         <div>
             <ul>
-                <li>
-                    <StyledComponent>
-                        <StyledComponentHeader>
-                            <div>
-                                <InputCheckbox/>
-                            </div>
-                            <div>
-                                <StyledHeading>RigidBody 3D</StyledHeading>
-                            </div>
-                            <div>
-                                <StyledOptionsButton>
-                                    <FaCaretDown/>
-                                </StyledOptionsButton>
-                            </div>
-                        </StyledComponentHeader>
-                        <div>
-                            <RigidBodyConfig/>
-                        </div>
-                    </StyledComponent>
-                </li>
+                {
+                    hasRigidBody3d && rigidBody3d && (
+                        <li>
+                            <RigidBody state={rigidBody3d}/>
+                        </li>
+                    )
+                }
             </ul>
         </div>
     )

@@ -50,6 +50,8 @@ const Mesh: React.FC<{
 
 const Custom: React.FC = () => {
     const ref = useRef<any>()
+    useEditableProp('_customConfig')
+    const rigidBody3d = useEditableProp('_rigidBody3d')
     const includeRigidBody = useEditableProp('includeRigidBody', {
         defaultValue: true,
     })

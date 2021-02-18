@@ -107,10 +107,14 @@ export const setSelectedComponent = (selected: boolean, uid: string, override: b
     })
 }
 
-export const updateComponentModifiedState = (uid: string, key: string, value: any) => {
+export const updateComponentModifiedState = (uid: string, key: string, value: any | ((state: any) => any)) => {
     storeSnapshot()
     const component = getComponent(uid)
     useStateStore.setState(state => {
+        if (typeof value === 'function') {
+            const originalValue = state.components[uid]?.modifiedState[key]?.value
+            value = value(originalValue)
+        }
         return {
             components: {
                 ...state.components,

@@ -13,7 +13,7 @@ export const GlobalStyle = createGlobalStyle`
     font-family: 'Roboto', Helvetica, Arial, sans-serif;
   }
 
-  * {
+  *, *::before, *::after {
     box-sizing: border-box;
   }
   
