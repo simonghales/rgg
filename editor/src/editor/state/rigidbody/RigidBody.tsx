@@ -8,7 +8,7 @@ import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import RigidBodyConfig from "./RigidBodyConfig";
 import {ComponentIndividualStateData} from "../../../state/main/types";
 import {updateComponentModifiedState} from "../../../state/main/actions";
-import {RIGIDBODY_3D_KEY} from "../SubComponentsMenu";
+import {CUSTOM_CONFIG_KEYS} from "../SubComponentsMenu";
 import {useComponentId} from "../ComponentStateMenu.context";
 
 const cssCollapsed = css`
@@ -49,7 +49,7 @@ const RigidBody: React.FC<{
     const componentId = useComponentId()
 
     useEffect(() => {
-        updateComponentModifiedState(componentId, RIGIDBODY_3D_KEY, (value: any) => {
+        updateComponentModifiedState(componentId, CUSTOM_CONFIG_KEYS.rigidBody3d, (value: any) => {
             return {
                 ...value,
                 enabled,

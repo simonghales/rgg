@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react"
+import React, {useCallback, useState} from "react"
 import NumberInput from "../../../ui/inputs/NumberInput";
 import styled from "styled-components";
 import SelectInput, {SelectInputOption} from "../../../ui/inputs/SelectInput";
 import RigidBodyConfigColliders from "./RigidBodyConfigColliders";
 import {ComponentIndividualStateData} from "../../../state/main/types";
-import {useComponentId} from "../ComponentStateMenu.context";
-import {updateComponentModifiedState} from "../../../state/main/actions";
-import {RIGIDBODY_3D_KEY} from "../SubComponentsMenu";
+import {useSyncValue} from "./hooks";
+import {getMass} from "./state";
+import {RigidBodyState, RigidBodyType} from "./types";
 
 const StyledList = styled.ul`
 
@@ -19,12 +19,6 @@ const StyledList = styled.ul`
     }
 
 `
-
-export enum RigidBodyType {
-    DYNAMIC = 'DYNAMIC',
-    STATIC = 'STATIC',
-    KINEMATIC = 'KINEMATIC',
-}
 
 const options: SelectInputOption[] = [
     {
@@ -41,16 +35,29 @@ const options: SelectInputOption[] = [
     },
 ]
 
-const DynamicConfig: React.FC = () => {
+const DynamicConfig: React.FC<{
+    state: ComponentIndividualStateData,
+}> = ({state}) => {
+
+    const [mass, setMass] = useState(getMass(state))
+
+    useSyncValue(mass, useCallback((value: any, state: any) => {
+        return {
+            ...state,
+            mass: value,
+        }
+    }, []))
+
     return (
         <li>
-            <NumberInput label="Mass" value={1}/>
+            <NumberInput label="Mass" value={mass} onChange={setMass}/>
         </li>
     )
 }
 
 const getBodyType = (state: ComponentIndividualStateData) => {
-    return state.value?.bodyType ?? RigidBodyType.DYNAMIC
+    const value: RigidBodyState = state.value
+    return value?.bodyType ?? RigidBodyType.DYNAMIC
 }
 
 const RigidBodyConfig: React.FC<{
@@ -58,16 +65,13 @@ const RigidBodyConfig: React.FC<{
 }> = ({state}) => {
 
     const [bodyType, setBodyType] = useState<string>(getBodyType(state))
-    const componentId = useComponentId()
 
-    useEffect(() => {
-        updateComponentModifiedState(componentId, RIGIDBODY_3D_KEY, (value: any) => {
-            return {
-                ...value,
-                bodyType,
-            }
-        })
-    }, [componentId, bodyType])
+    useSyncValue(bodyType, useCallback((value: any, state: any) => {
+        return {
+            ...state,
+            bodyType: value,
+        }
+    }, []))
 
     return (
         <div>
@@ -77,12 +81,12 @@ const RigidBodyConfig: React.FC<{
                 </li>
                 {
                     bodyType === RigidBodyType.DYNAMIC && (
-                        <DynamicConfig/>
+                        <DynamicConfig state={state}/>
                     )
                 }
             </StyledList>
             <div>
-                <RigidBodyConfigColliders/>
+                <RigidBodyConfigColliders state={state}/>
             </div>
         </div>
     )

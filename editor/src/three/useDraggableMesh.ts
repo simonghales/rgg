@@ -10,6 +10,7 @@ import {useHotkeys} from "../inputs/hooks";
 import {useIsOnlyComponentSelected} from "../state/main/hooks";
 import {updateComponentModifiedState} from "../state/main/actions";
 import hotkeys from "hotkeys-js";
+import {CUSTOM_CONFIG_KEYS} from "../editor/state/SubComponentsMenu";
 
 const TransformControls: any = CustomTransformControls
 
@@ -91,22 +92,18 @@ export const useDraggableMesh = (options: {
 
             if (!ref.current) return
 
-            const previousPosition = getStateValue('position')
+            const previousPosition = getStateValue(CUSTOM_CONFIG_KEYS.position)
 
-            const {
-                x: prevX,
-                y: prevY,
-                z: prevZ,
-            } = (previousPosition ?? {})
+            const [
+                prevX,
+                prevY,
+                prevZ,
+            ] = (previousPosition ?? [0, 0, 0])
 
             const {x, y, z} = ref.current.position
 
             if (prevX != undefined && prevX !== x || prevY != undefined && prevY !== y || prevZ != undefined && prevY !== z) {
-                updateComponentModifiedState(uid, 'position', {
-                    x,
-                    y,
-                    z
-                })
+                updateComponentModifiedState(uid, CUSTOM_CONFIG_KEYS.position, [x, y, z])
             }
 
         })

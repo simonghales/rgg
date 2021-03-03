@@ -12,6 +12,8 @@ import { useSetDefaultCamera } from './three/EditCanvas.context';
 import EditTools from './three/EditTools';
 import { useDraggableMesh } from './three/useDraggableMesh';
 import { useGrabbableMesh } from './three/useGrabbableMesh';
+import { CUSTOM_CONFIG_KEYS } from "./editor/state/SubComponentsMenu";
+import {RigidBodyCollider, RigidBodyColliderShape, RigidBodyState, RigidBodyType } from "./editor/state/rigidbody/types";
 
 export {
   useEditableProp,
@@ -26,4 +28,9 @@ export {
   setMainCamera,
   useDraggableMesh,
   loadState,
+  CUSTOM_CONFIG_KEYS,
+  RigidBodyState,
+  RigidBodyType,
+  RigidBodyColliderShape,
+  RigidBodyCollider,
 }

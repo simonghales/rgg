@@ -9,6 +9,7 @@ import {
 } from "../state/editor";
 import {getCreatable, useCreatable} from "../state/creatables";
 import {addNewUnsavedComponent, setSelectedComponent} from "../state/main/actions";
+import {CUSTOM_CONFIG_KEYS} from "../editor/state/SubComponentsMenu";
 
 const EditFloor: React.FC = () => {
 
@@ -65,11 +66,7 @@ const EditFloor: React.FC = () => {
                         const {x, y, z} = event.point
                         const position = transformPosition([x, y, z])
                         const addedComponent = addNewUnsavedComponent(component, {
-                            position: {
-                                x: position[0],
-                                y: position[1],
-                                z: position[2],
-                            }
+                            [CUSTOM_CONFIG_KEYS.position]: [position[0], position[1], position[2]]
                         })
                         setSelectedComponent(true, addedComponent.uid)
                         // if (hotkeys.shift) {

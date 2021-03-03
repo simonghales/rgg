@@ -67,6 +67,7 @@ const StyledMainMiddle = styled.div`
 const StyledRight = styled(StyledAside)`
   display: flex;
   flex-direction: column;
+  max-width: 260px;
 `
 
 // const StyledLevaContainer = styled.div`

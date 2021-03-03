@@ -17,7 +17,7 @@
     "react-app-polyfill": "^1.0.0",
     "react-dom": "^17.0.1",
     "react-three-game-engine": "^0.14.1",
-    "rgg-engine": "^0.4.2",
+    "rgg-engine": "^0.4.3",
     "zustand": "^3.3.1"
   },
   "alias": {

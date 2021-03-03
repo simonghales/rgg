@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from "react"
+import React, {Component, useEffect, useMemo, useRef, useState} from "react"
 import {StyledHeading} from "../../ui/typography";
 import {useActiveComponentState} from "../../state/editor";
 // import {useControls, store} from "leva/dist/leva.cjs.js"
@@ -8,9 +8,11 @@ import {updateComponentModifiedState} from "../../state/main/actions";
 import {SPACE_UNITS} from "../../ui/units";
 import { StyledThickerButton } from "../../ui/buttons";
 import {COLORS} from "../../ui/colors";
-import SubComponentsMenu, {CUSTOM_CONFIG_KEY, RIGIDBODY_3D_KEY} from "./SubComponentsMenu";
+import SubComponentsMenu, {CUSTOM_CONFIG_KEYS} from "./SubComponentsMenu";
 import {getComponentState} from "../../state/main/getters";
 import {Context} from "./ComponentStateMenu.context";
+import {ComponentStateData} from "../../state/main/types";
+import PredefinedConfig from "./PredefinedConfig";
 
 const useControls: any = {}
 const store: any = {}
@@ -138,6 +140,34 @@ const StyledComponents = styled.div`
   overflow: hidden;
 `
 
+const predefinedConfigKeys = [
+    CUSTOM_CONFIG_KEYS.customConfig,
+    CUSTOM_CONFIG_KEYS.rigidBody3d,
+    CUSTOM_CONFIG_KEYS.position,
+    CUSTOM_CONFIG_KEYS.scale,
+]
+
+const filterComponentState = (componentState: ComponentStateData): {
+    predefinedConfig: ComponentStateData,
+    customConfig: ComponentStateData,
+} => {
+    const predefinedConfig: ComponentStateData = {}
+    const customConfig: ComponentStateData = {}
+
+    Object.entries(componentState).forEach(([key, entry]) => {
+        if (predefinedConfigKeys.includes(key)) {
+            predefinedConfig[key] = entry
+        } else {
+            customConfig[key] = entry
+        }
+    })
+
+    return {
+        predefinedConfig,
+        customConfig,
+    }
+}
+
 const ComponentStateMenu: React.FC<{
     name: string,
     uid: string,
@@ -148,7 +178,14 @@ const ComponentStateMenu: React.FC<{
 
     const componentState = useActiveComponentState(uid)
 
-    const hasCustomConfig = componentState && componentState[CUSTOM_CONFIG_KEY]
+    const hasCustomConfig = componentState && componentState[CUSTOM_CONFIG_KEYS.customConfig]
+
+    const {
+        predefinedConfig,
+        customConfig,
+    } = filterComponentState(componentState ?? {})
+
+    console.log('predefinedConfig', predefinedConfig, customConfig)
 
     const {
         addComponent,
@@ -156,12 +193,12 @@ const ComponentStateMenu: React.FC<{
         addComponent: () => {
             const state = getComponentState(uid)
             if (state) {
-                const rigidBodyState = state[RIGIDBODY_3D_KEY]
+                const rigidBodyState = state[CUSTOM_CONFIG_KEYS.rigidBody3d]
                 if (rigidBodyState && rigidBodyState.value !== undefined) {
                     return
                 }
             }
-            updateComponentModifiedState(uid, RIGIDBODY_3D_KEY, {
+            updateComponentModifiedState(uid, CUSTOM_CONFIG_KEYS.rigidBody3d, {
                 enabled: true,
             })
         },
@@ -177,9 +214,7 @@ const ComponentStateMenu: React.FC<{
                     {/*<Leva fillParent/>*/}
                     {/*<StateManager key={uid} uid={uid}/>*/}
                     <StyledContent>
-                        <div>
-                            Top settings
-                        </div>
+                        <PredefinedConfig state={predefinedConfig} key={uid}/>
                         {
                             hasCustomConfig && componentState && (
                                 <StyledComponents>
@@ -187,11 +222,15 @@ const ComponentStateMenu: React.FC<{
                                 </StyledComponents>
                             )
                         }
-                        <StyledBottom>
-                            <StyledThickerButton full onClick={addComponent}>
-                                Add Component
-                            </StyledThickerButton>
-                        </StyledBottom>
+                        {
+                            hasCustomConfig && (
+                                <StyledBottom>
+                                    <StyledThickerButton full onClick={addComponent}>
+                                        Add Component
+                                    </StyledThickerButton>
+                                </StyledBottom>
+                            )
+                        }
                     </StyledContent>
                 </StyledBody>
             </StyledContainer>

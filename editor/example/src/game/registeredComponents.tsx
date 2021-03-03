@@ -1,7 +1,7 @@
 import {registerComponent} from "rgg-editor";
 import React from "react";
 import Scenery from "./Scenery";
-import {Ball} from "./RapierContents";
+import {Ball, CustomBox} from "./RapierContents";
 
 registerComponent('scenery', 'Scenery', () => <Scenery/>, {
     transformPlace: (position: [number, number, number]) => {
@@ -10,3 +10,5 @@ registerComponent('scenery', 'Scenery', () => <Scenery/>, {
 })
 
 registerComponent('ball', 'Ball', () => <Ball/>)
+
+registerComponent('box', 'Box', () => <CustomBox/>)
