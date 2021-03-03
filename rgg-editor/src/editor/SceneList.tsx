@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, {useMemo, useState} from "react"
+import React, {useEffect, useMemo, useState} from "react"
 import Tree, {
     mutateTree,
     moveItemOnTree,
@@ -10,7 +10,19 @@ import Tree, {
     TreeDestinationPosition,
 } from '@atlaskit/tree';
 import {styled} from "./ui/sitches.config"
-import {FaFolder, FaFolderOpen, FaCube, FaTrash} from "react-icons/fa";
+import {FaFolder, FaFolderOpen, FaCube, FaTrash, FaCaretDown, FaCaretUp} from "react-icons/fa";
+import {setComponentsTree, setSelectedComponents} from "./state/main/actions";
+import {useSelectedComponents} from "./state/main/hooks";
+import {useComponentsStore} from "./state/components/store";
+import {ComponentState} from "./state/components/types";
+import {getMainStateStoreState, useMainStateStore} from "./state/main/store";
+import {sortBy} from "lodash-es";
+import {useComponent} from "./state/components/hooks";
+
+export const useIsItemSelected = (id: string) => {
+    const selectedComponents = Object.keys(useSelectedComponents())
+    return selectedComponents.includes(id)
+}
 
 enum TreeItemType {
     group = 'group',
@@ -23,44 +35,57 @@ enum SceneItemIcon {
     component = 'component'
 }
 
-const useSceneTree = (): TreeData => {
-    return useState<TreeData>({
-        rootId: 'root',
-        items: {
-            'root': {
-                id: 'root',
-                children: [
-                    '0',
-                    '1',
-                ],
-            },
-            '0': {
-                id: '0',
-                children: [],
-                data: {
-                    title: 'Test',
-                    type: TreeItemType.component,
-                }
-            },
-            '1': {
-                id: '1',
-                children: ['2'],
-                data: {
-                    title: 'Test 2',
-                    type: TreeItemType.group,
-                },
-                isExpanded: true,
-            },
-            '2': {
-                id: '2',
-                children: [],
-                data: {
-                    title: 'Component',
-                    type: TreeItemType.component,
-                }
-            },
+const ROOT_ID = '__root'
+
+const generateTree = (components: {
+    [key: string]: ComponentState,
+}): TreeData => {
+    const items = {}
+    const rootChildren: string[] = []
+    Object.entries(components).forEach(([id, component]) => {
+        items[id] = {
+            id,
+            children: component.children,
+            data: {
+                title: component.name,
+                type: TreeItemType.component,
+            }
+        }
+        if (component.isRoot) {
+            rootChildren.push(id)
         }
     })
+    items[ROOT_ID] = {
+        id: ROOT_ID,
+        children: rootChildren,
+    }
+    const componentsTree = getMainStateStoreState().componentsTree
+    Object.values(items).forEach((item) => {
+        if (componentsTree[item.id]) {
+            const last = item.children.length;
+            const sortedChildren = sortBy(item.children, (child) => {
+                return componentsTree[item.id].children.indexOf(child) !== -1 ? componentsTree[item.id].children.indexOf(child) : last;
+            })
+            item.children = sortedChildren
+        }
+    })
+    return {
+        rootId: ROOT_ID,
+        items: items,
+    }
+}
+
+const useSceneTree = (): TreeData => {
+
+    const components = useComponentsStore(state => state.components)
+
+    const [tree, setTree] = useState<TreeData>(() => generateTree(components))
+
+    useEffect(() => {
+        setTree(generateTree(components))
+    }, [components])
+
+    return [tree, setTree]
 }
 
 const ItemIcon: React.FC<{
@@ -80,15 +105,33 @@ const StyledChildrenContainer = styled('div', {
     paddingLeft: `${sidePadding}px`,
 })
 
-const SceneChildren: React.FC<{
+const useItemData = (id: string) => {
+    const component = useComponent(id)
+    return component
+}
+
+const SceneChild: React.FC<{
     id: string,
 }> = ({id}) => {
-    if (id !== '2') return null
+    const data = useItemData(id)
+    return (
+        <SceneItem id={id} icon={<ItemIcon iconType={SceneItemIcon.component}/>} draggable={false} itemChildren={Object.keys(data.children)}>
+            {data.name}
+        </SceneItem>
+    )
+}
+
+const SceneChildren: React.FC<{
+    id: string,
+    itemChildren: string[],
+}> = ({id, itemChildren}) => {
     return (
         <StyledChildrenContainer>
-            <SceneItem id="test" icon={<ItemIcon iconType={SceneItemIcon.component}/>} draggable={false}>
-                Child goes here...
-            </SceneItem>
+            {
+                itemChildren.map((childId) => (
+                    <SceneChild id={childId} key={childId}/>
+                ))
+            }
         </StyledChildrenContainer>
     )
 }
@@ -119,6 +162,17 @@ const StyledClickable = styled(StyledButton, {
     transition: 'all 250ms ease',
     '&:hover': {
         backgroundColor: 'rgba(0,0,0,0.25)'
+    },
+    variants: {
+        appearance: {
+            selected: {
+                color: '$white',
+                backgroundColor: '$purple',
+                '&:hover': {
+                    backgroundColor: '$purple',
+                }
+            }
+        }
     }
 })
 
@@ -174,12 +228,31 @@ const StyledTrash = styled(StyledIcon, {
     }
 })
 
+const StyledToggleIcon = styled('span', {
+    display: 'inline-flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '2px',
+    marginLeft: '2px',
+    '&:hover': {
+        color: '$white',
+    }
+})
+
+const selectItem = (id: string) => {
+    setSelectedComponents({
+        [id]: true,
+    })
+}
+
 const SceneItem: React.FC<{
     id: string,
+    itemChildren: string[],
     iconProps?: any,
     icon?: any,
     draggable?: boolean,
     isGroup?: boolean,
+    isExpanded?: boolean,
     onClick?: () => void,
 }> = ({children,
                            iconProps = {},
@@ -187,25 +260,44 @@ const SceneItem: React.FC<{
                            id,
                            isGroup,
                             draggable = true,
+                           isExpanded = false,
+                           itemChildren,
                            onClick: passedOnClick}) => {
+
+    const isSelected = useIsItemSelected(id)
 
     const {onClick} = useMemo(() => ({
         onClick: () => {
-            if (passedOnClick) {
-                passedOnClick()
-            }
+            selectItem(id)
         }
-    }), [passedOnClick])
+    }), [])
 
     return (
         <>
             <StyledDraggableContainer>
-                <StyledClickable onClick={onClick}>
+                <StyledClickable onClick={onClick} appearance={isSelected ? 'selected' : ''}>
                     <StyledIcon {...iconProps} style={draggable ? 'interactive' : ''}>
                         {icon}
                     </StyledIcon>
                     <div>
                         {children}
+                        {
+                            isGroup && (
+                                <StyledToggleIcon onClick={(event) => {
+                                    event.preventDefault()
+                                    event.stopPropagation()
+                                    passedOnClick()
+                                }}>
+                                    {
+                                        isExpanded ? (
+                                            <FaCaretUp size={11}/>
+                                        ) : (
+                                            <FaCaretDown size={11}/>
+                                        )
+                                    }
+                                </StyledToggleIcon>
+                            )
+                        }
                     </div>
                     <StyledTrash style="interactive">
                         <FaTrash size={10}/>
@@ -214,7 +306,7 @@ const SceneItem: React.FC<{
             </StyledDraggableContainer>
             {
                 !isGroup && (
-                    <SceneChildren id={id}/>
+                    <SceneChildren id={id} itemChildren={itemChildren}/>
                 )
             }
         </>
@@ -265,9 +357,11 @@ const Draggable: React.FC<RenderItemParams> = ({item, onExpand, onCollapse, prov
             {...provided.draggableProps}>
             <SceneItem
                 id={item.id}
+                itemChildren={item.children}
                 iconProps={dragHandleProps}
                 onClick={isGroup ? onHandleClicked : undefined}
-                icon={<ItemIcon iconType={iconType}/>} isGroup={isGroup} draggable={!cantDrag}>
+                icon={<ItemIcon iconType={iconType}/>} isGroup={isGroup} draggable={!cantDrag}
+                isExpanded={isExpanded}>
                 {item.data ? item.data.title : ''}
             </SceneItem>
         </div>
@@ -302,9 +396,9 @@ export const SceneList: React.FC = () => {
                 return;
             }
             const destinationItem = tree.items[destination.parentId]
-            if (destination.parentId !== 'root' && (!destinationItem || destinationItem.data.type !== TreeItemType.group)) return
+            if (destination.parentId !== ROOT_ID && (!destinationItem || destinationItem.data.type !== TreeItemType.group)) return
             const updatedTree = moveItemOnTree(tree, source, destination)
-            // todo - reference updated tree and update the new order
+            setComponentsTree(updatedTree)
             setState(updatedTree);
         },
     }), [tree])
