@@ -14,6 +14,9 @@ import { styled } from "./ui/sitches.config"
 import {ManagerSidebar, StyledPlainButton} from "./ManagerSidebar";
 import {FaRedo, FaUndo} from "react-icons/fa";
 import {StateSidebar} from "./StateSidebar";
+import {useHotkeysListener} from "./hotkeys";
+import {AddingComponentMenu} from "./AddingComponentMenu";
+import {ContextMenu} from "./ContextMenu";
 
 const StyledHeaderSide = styled('div', {
     width: '300px',
@@ -91,6 +94,7 @@ const StyledMain = styled('div', {
 const StyledSidebar = styled('div', {
     width: '$sidebar',
     backgroundColor: '$darkGreyLighter',
+    position: 'relative',
 })
 
 const StyledContent = styled('div', {
@@ -99,13 +103,14 @@ const StyledContent = styled('div', {
 })
 
 export const Editor: React.FC = ({children}) => {
+    useHotkeysListener()
     return (
         <>
             <GoogleFontLoader
                 fonts={[
                     {
                         font: 'Roboto',
-                        weights: [400, 600, 700],
+                        weights: [400, 500, 600, 700],
                     },
                 ]}
             />
@@ -114,6 +119,7 @@ export const Editor: React.FC = ({children}) => {
                 <StyledMain>
                     <StyledSidebar>
                         <ManagerSidebar/>
+                        <AddingComponentMenu/>
                     </StyledSidebar>
                     <div>
                         {children}
@@ -124,6 +130,7 @@ export const Editor: React.FC = ({children}) => {
                         <StateSidebar/>
                     </StyledSidebar>
                 </StyledMain>
+                <ContextMenu/>
             </StyledContainer>
         </>
     )

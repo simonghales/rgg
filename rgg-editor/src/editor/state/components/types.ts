@@ -7,7 +7,10 @@ export type ComponentState = {
     name: string,
     children: string[],
     isRoot: boolean,
+    componentId?: string,
     componentType?: string,
     unsaved?: boolean,
-    initialProps?: AnyProps
+    initialProps?: AnyProps,
+    parentId?: string,
+    rootParentId?: string,
 }

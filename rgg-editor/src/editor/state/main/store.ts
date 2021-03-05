@@ -5,8 +5,13 @@ import {MainStateStore} from "./types";
 export const initialStoreState: MainStateStore = {
     componentNames: {},
     components: {},
+    sharedComponents: {},
     selectedComponents: {},
     componentsTree: {},
+    unsavedComponents: {},
+    deactivatedComponents: {},
+    groups: {},
+    groupedComponents: {},
 }
 
 export let revertState: MainStateStore = initialStoreState
@@ -19,7 +24,7 @@ export const useMainStateStore = create<MainStateStore>(persist(() => (initialSt
             revertState = state
         }
     },
-    version: 4,
+    version: 5,
     blacklist: []
 }))
 

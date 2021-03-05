@@ -1,7 +1,17 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {Editable, Editor, useEditableProp} from "../../src";
+import {Canvas} from "react-three-fiber";
+import {
+    Editable,
+    EditCanvas,
+    Editor,
+    InteractiveMesh,
+    predefinedPropKeys,
+    useEditableProp,
+    useEditCanvasProps
+} from "../../src";
+import { Sphere } from '@react-three/drei';
 
 const Child = () => {
     const testValue = useEditableProp('test', {
@@ -18,13 +28,37 @@ const Test = () => {
     const testValue = useEditableProp('test', {
         defaultValue: 'hello world!',
     })
+    const rotation = useEditableProp(predefinedPropKeys.rotation)
+    const scale = useEditableProp(predefinedPropKeys.scale)
+    const position = useEditableProp(predefinedPropKeys.position)
     return (
         <div>
             TEST: {testValue}
-            <Editable id="child">
+            <Editable id="child" _config={{
+                type: 'child',
+            }}>
                 <Child/>
             </Editable>
         </div>
+    )
+}
+
+const Ball = () => {
+    return (
+        <InteractiveMesh>
+            <Sphere/>
+        </InteractiveMesh>
+    )
+}
+
+const Scene = ({children}: any) => {
+    const canvasProps = useEditCanvasProps()
+    return (
+        <Canvas {...canvasProps}>
+            <EditCanvas>
+                {children}
+            </EditCanvas>
+        </Canvas>
     )
 }
 
@@ -32,18 +66,12 @@ const App = () => {
   return (
     <div>
         <Editor>
-            <p>
-                SCENE GOES HERE......
-            </p>
-            <Editable id="test">
-                <Test/>
-            </Editable>
-            <Editable id="test2">
-                <Test/>
-            </Editable>
-            <Editable id="test3" test="manual value...">
-                <Child/>
-            </Editable>
+            <Scene>
+                <ambientLight intensity={0.5} />
+                <Editable id="ball">
+                    <Ball/>
+                </Editable>
+            </Scene>
         </Editor>
     </div>
   );

@@ -9,3 +9,7 @@ export const useComponentInitialProps = (id: string): AnyProps => {
     const component = useComponent(id)
     return component?.initialProps ?? {}
 }
+
+export const useComponentCanHaveChildren = (id: string) => {
+    return useComponentsStore(state => state.componentsThatCanHaveChildren[id]) ?? false
+}

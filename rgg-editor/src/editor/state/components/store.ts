@@ -7,12 +7,16 @@ export type ComponentsStore = {
     },
     deactivatedComponents: {
         [key: string]: ComponentState,
-    }
+    },
+    componentsThatCanHaveChildren: {
+        [key: string]: boolean,
+    },
 }
 
 export const useComponentsStore = create<ComponentsStore>(() => ({
     components: {},
     deactivatedComponents: {},
+    componentsThatCanHaveChildren: {},
 }))
 
 export const setComponentInitialProps = (uid: string, initialProps: AnyProps) => {
@@ -31,6 +35,28 @@ export const setComponentInitialProps = (uid: string, initialProps: AnyProps) =>
     })
 }
 
+export const setComponentCanHaveChildren = (id: string) => {
+    useComponentsStore.setState(state => {
+        return {
+            componentsThatCanHaveChildren: {
+                ...state.componentsThatCanHaveChildren,
+                [id]: true,
+            }
+        }
+    })
+    return () => {
+        useComponentsStore.setState(state => {
+            const updated = {
+                ...state.componentsThatCanHaveChildren,
+            }
+            delete updated[id]
+            return {
+                componentsThatCanHaveChildren: updated,
+            }
+        })
+    }
+}
+
 export const setComponentChildren = (uid: string, children: string[]) => {
     // @ts-ignore
     useComponentsStore.setState(state => {
@@ -47,7 +73,16 @@ export const setComponentChildren = (uid: string, children: string[]) => {
     })
 }
 
-export const addComponent = (uid: string, name: string, children: string[], isRoot: boolean, unsaved: boolean, initialProps: AnyProps = {}) => {
+export const addComponent = (uid: string,
+                             name: string,
+                             children: string[],
+                             isRoot: boolean,
+                             unsaved: boolean,
+                             initialProps: AnyProps = {},
+                             componentId: string,
+                             parentId: string,
+                             rootParentId: string,
+                             ) => {
     useComponentsStore.setState(state => {
         return {
             components: {
@@ -59,6 +94,9 @@ export const addComponent = (uid: string, name: string, children: string[], isRo
                     isRoot,
                     unsaved,
                     initialProps,
+                    componentId,
+                    parentId,
+                    rootParentId,
                 }
             }
         }
@@ -77,7 +115,14 @@ export const removeComponent = (uid: string) => {
     })
 }
 
-export const addDeactivatedComponent = (uid: string, name: string, children: string[], isRoot: boolean, unsaved: boolean) => {
+export const addDeactivatedComponent = (uid: string,
+                                        name: string,
+                                        children: string[],
+                                        isRoot: boolean,
+                                        unsaved: boolean,
+                                        parentId: string,
+                                        rootParentId: string,
+) => {
     useComponentsStore.setState(state => {
         return {
             deactivatedComponents: {
@@ -87,7 +132,9 @@ export const addDeactivatedComponent = (uid: string, name: string, children: str
                     name,
                     children,
                     isRoot,
-                    unsaved
+                    unsaved,
+                    parentId,
+                    rootParentId,
                 }
             }
         }

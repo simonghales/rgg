@@ -1,11 +1,22 @@
-import React from "react"
+import React, {useState} from "react"
 import {SceneList, StyledButton} from "./SceneList";
 import { styled } from "./ui/sitches.config";
+import {setSelectedComponents} from "./state/main/actions";
+import {addingComponentClosed, setDisplayAddingComponent, uiProxy} from "./state/ui";
 
 const StyledContainer = styled('div', {
     display: 'grid',
     height: '100%',
     gridTemplateRows: 'auto 1fr auto',
+})
+
+export const StyledTextButton = styled(StyledButton, {
+    cursor: 'pointer',
+    color: '$midPurple',
+    '&:hover': {
+        color: '$lightPurple',
+        textDecoration: 'underline',
+    }
 })
 
 export const StyledPlainButton = styled(StyledButton, {
@@ -37,12 +48,21 @@ export const StyledPlainButton = styled(StyledButton, {
           }
         },
         shape: {
+            tiny: {
+              padding: '0 $1b',
+              fontSize: '$1',
+            },
             full: {
                 width: '100%',
             },
             thinner: {
                 padding: '0 $2b',
                 height: '25px',
+            },
+            thinnerWide: {
+                padding: '0 $2b',
+                height: '25px',
+                width: '100%',
             },
             round: {
                 padding: '0',
@@ -73,20 +93,46 @@ export const StyledPaddedBox = styled('div', {
     }
 })
 
+const StyledHeader = styled(StyledPaddedBox, {
+    display: 'grid',
+    alignItems: 'center',
+    gridTemplateColumns: '1fr auto',
+    columnGap: '$2',
+})
+
+export enum VIEWS {
+    active = 'active',
+    deactivated = 'deactivated',
+}
+
 export const ManagerSidebar: React.FC = () => {
+
+    const [selectedView, setSelectedView] = useState(VIEWS.active)
 
     return (
         <StyledContainer>
-            <StyledPaddedBox visual="top">
+            <StyledHeader visual="top">
                 <StyledHeading>
                     Scene
                 </StyledHeading>
-            </StyledPaddedBox>
-            <StyledBox>
-                <SceneList/>
+                <div>
+                    <select value={selectedView} onChange={event => setSelectedView(event.target.value as VIEWS)}>
+                        <option value={VIEWS.active}>Active</option>
+                        <option value={VIEWS.deactivated}>Deactivated</option>
+                    </select>
+                </div>
+            </StyledHeader>
+            <StyledBox onClick={() => {
+                if (!uiProxy.displayAddingComponent && addingComponentClosed < Date.now() - 50) {
+                    setSelectedComponents({})
+                }
+            }}>
+                <SceneList view={selectedView}/>
             </StyledBox>
             <StyledPaddedBox visual="bottom">
-                <StyledPlainButton shape="full">
+                <StyledPlainButton shape="full" onClick={() => {
+                    setDisplayAddingComponent(true)
+                }}>
                     Add Component
                 </StyledPlainButton>
             </StyledPaddedBox>

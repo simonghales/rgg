@@ -10,7 +10,9 @@ export const { css, styled } = createStyled({
             $faint: '#22222b',
             $purple: '#3e3ca2',
             $faintPurple: '#56566f',
+            $midPurple: '#636380',
             $darkPurple: '#212052',
+            $pink: '#d72859',
         },
         sizes: {
             $sidebar: '220px',
@@ -18,6 +20,7 @@ export const { css, styled } = createStyled({
             $headerHeight: '42px',
         },
         space: {
+            $0b: '2px',
             $1: '4px',
             $1b: '6px',
             $2: '8px',
@@ -36,11 +39,17 @@ export const { css, styled } = createStyled({
         },
         fontWeights: {
             $regular: '400',
+            $semi: '500',
             $medium: '600',
             $bold: '700',
         },
         radii: {
+            $1: '3px',
             $2: '6px',
+        },
+        zIndices: {
+            $high: '9999999',
+            $max: '99999999999',
         }
     }
 });
