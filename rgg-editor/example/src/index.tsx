@@ -7,7 +7,7 @@ import {
     EditCanvas,
     Editor,
     InteractiveMesh,
-    predefinedPropKeys,
+    predefinedPropKeys, registerAddable,
     useEditableProp,
     useEditCanvasProps
 } from "../../src";
@@ -50,6 +50,10 @@ const Ball = () => {
         </InteractiveMesh>
     )
 }
+
+registerAddable('ball', Ball, {
+    name: 'Ball'
+})
 
 const Scene = ({children}: any) => {
     const canvasProps = useEditCanvasProps()

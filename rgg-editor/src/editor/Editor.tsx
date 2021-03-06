@@ -17,6 +17,10 @@ import {StateSidebar} from "./StateSidebar";
 import {useHotkeysListener} from "./hotkeys";
 import {AddingComponentMenu} from "./AddingComponentMenu";
 import {ContextMenu} from "./ContextMenu";
+import { StyledBox } from "./ui/generics"
+import {BiExpand, BiMove, BiRotateLeft} from "react-icons/bi";
+import {StyledButton} from "./SceneList";
+import {EditorTransformMode, setTransformMode, useTransformMode} from "./state/editor";
 
 const StyledHeaderSide = styled('div', {
     width: '300px',
@@ -98,9 +102,61 @@ const StyledSidebar = styled('div', {
 })
 
 const StyledContent = styled('div', {
-    width: '100%',
-    height: '100%',
+    position: 'relative',
 })
+
+const StyledBoxButton = styled(StyledButton, {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '26px',
+    height: '26px',
+    cursor: 'pointer',
+    variants: {
+        appearance: {
+            active: {
+                backgroundColor: '$purple',
+                color: '$white',
+            }
+        }
+    }
+})
+
+const OverlayControls: React.FC = () => {
+
+    const transformMode = useTransformMode()
+
+    return (
+        <StyledBox css={{
+            position: 'absolute',
+            top: '$1',
+            right: '$1',
+            zIndex: '$high',
+            display: 'grid',
+            gridTemplateColumns: 'auto auto auto',
+            backgroundColor: '$darkGrey',
+        }}>
+            <StyledBoxButton appearance={transformMode === EditorTransformMode.translate ? 'active' : ''}
+            onClick={() => {
+                setTransformMode(EditorTransformMode.translate)
+            }}>
+                <BiMove size={16}/>
+            </StyledBoxButton>
+            <StyledBoxButton appearance={transformMode === EditorTransformMode.rotate ? 'active' : ''}
+            onClick={() => {
+                setTransformMode(EditorTransformMode.rotate)
+            }}>
+                <BiRotateLeft size={16}/>
+            </StyledBoxButton>
+            <StyledBoxButton appearance={transformMode === EditorTransformMode.scale ? 'active' : ''}
+            onClick={() => {
+                setTransformMode(EditorTransformMode.scale)
+            }}>
+                <BiExpand size={15}/>
+            </StyledBoxButton>
+        </StyledBox>
+    )
+}
 
 export const Editor: React.FC = ({children}) => {
     useHotkeysListener()
@@ -121,9 +177,10 @@ export const Editor: React.FC = ({children}) => {
                         <ManagerSidebar/>
                         <AddingComponentMenu/>
                     </StyledSidebar>
-                    <div>
+                    <StyledContent>
                         {children}
-                    </div>
+                        <OverlayControls/>
+                    </StyledContent>
                     <StyledSidebar css={{
                         width: '$sidebarPlus',
                     }}>

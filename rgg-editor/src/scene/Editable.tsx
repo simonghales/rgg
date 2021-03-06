@@ -66,7 +66,7 @@ export const useIsEditableSelected = () => {
 
 export const useEditableIsSoleSelected = () => {
     const {isSelected} = useEditableContext()
-    return isSelected.selected && isSelected.single
+    return (isSelected.selected && isSelected.single) ?? false
 }
 
 export const useEditableId = () => {

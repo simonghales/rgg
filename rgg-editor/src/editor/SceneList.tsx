@@ -460,6 +460,20 @@ const SceneItem: React.FC<{
     const name = customName || passedName
 
     useEffect(() => {
+        if (isSelected) {
+            // buttonRef.current.focus()
+        }
+    }, [isSelected])
+
+    useEffect(() => {
+        if (isSelected && focused) {
+            return () => {
+                buttonRef.current.blur()
+            }
+        }
+    }, [isSelected, focused])
+
+    useEffect(() => {
         if (focused && isSelected) {
 
             const callback = () => {

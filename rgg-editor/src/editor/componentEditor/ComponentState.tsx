@@ -59,6 +59,10 @@ const PropInput: React.FC<{
 
     const [inputValue, setInputValue] = useState(value)
 
+    useEffect(() => {
+        setInputValue(value)
+    }, [value])
+
     const inputId = `input-${propKey}`
 
     const propConfig = useMemo(() => {
