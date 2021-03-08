@@ -1,4 +1,7 @@
 import {proxy, useProxy} from "valtio";
+import {getAddable} from "../../scene/addables";
+import {addUnsavedComponent, setSelectedComponents} from "./main/actions";
+import {predefinedPropKeys} from "../componentEditor/config";
 
 export const uiProxy = proxy<{
     displayAddingComponent: boolean,
@@ -24,6 +27,27 @@ export const uiProxy = proxy<{
     },
     hoveredComponents: {}
 })
+
+export const useAddingComponent = () => {
+    return useProxy(uiProxy).addingComponent
+}
+
+export const addComponent = (addableId: string, parent: string, position?: {x: number, y: number, z: number}) => {
+    console.log('position', position)
+    const addable = getAddable(addableId)
+    const id = addUnsavedComponent(addable, parent, {
+        [predefinedPropKeys.position]: position,
+    })
+    setSelectedComponents({
+        [id]: true,
+    })
+}
+
+export const addStoredComponent = (position: {x: number, y: number, z: number}) => {
+    addComponent(uiProxy.addingComponent, uiProxy.addingComponentParent, position)
+    uiProxy.addingComponent = ''
+    uiProxy.addingComponentParent = ''
+}
 
 export const setComponentHovered = (id: string) => {
     uiProxy.hoveredComponents = {

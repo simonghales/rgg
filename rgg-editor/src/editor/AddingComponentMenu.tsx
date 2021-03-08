@@ -1,7 +1,13 @@
 import React from "react"
 import OutsideClickHandler from 'react-outside-click-handler';
 import { styled } from "./ui/sitches.config"
-import {setAddingComponent, setDisplayAddingComponentParent, setDisplayAddingComponent, uiProxy} from "./state/ui";
+import {
+    setAddingComponent,
+    setDisplayAddingComponentParent,
+    setDisplayAddingComponent,
+    uiProxy,
+    addComponent
+} from "./state/ui";
 import {useProxy} from "valtio";
 import {ItemIcon, SceneItemIcon, StyledClickable, StyledIcon} from "./SceneList";
 import {FaMousePointer} from "react-icons/fa";
@@ -35,14 +41,6 @@ const StyledIconWrapper = styled('span', {
 const closeAddingComponent = () => {
     setDisplayAddingComponent(false)
     setDisplayAddingComponentParent('')
-}
-
-export const addComponent = (addableId: string, parent: string) => {
-    const addable = getAddable(addableId)
-    const id = addUnsavedComponent(addable, parent)
-    setSelectedComponents({
-        [id]: true,
-    })
 }
 
 const AddableComponent: React.FC<{

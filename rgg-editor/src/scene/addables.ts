@@ -1,6 +1,5 @@
 import create from "zustand";
 import {EmptyObject} from "./defaultComponents/EmptyObject";
-import {predefinedPropKeys} from "../editor/componentEditor/config";
 
 export interface Addable {
     id: string,

@@ -8886,6 +8886,11 @@ shellwords@^0.1.1:
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
   integrity sha512-vFwSUfQvqybiICwZY5+DAWIPLKsWO31Q91JSKl3UYv+K5c2QRPzn0qzec6QPu1Qc9eHYItiP3NdJqNVqetYAww==
 
+shortcuts@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/shortcuts/-/shortcuts-1.6.2.tgz#69cb38ac884c6a21ccd3f3455eac4ea214d6e50e"
+  integrity sha512-aE+bHHNO5eoZaAxdBUjCVXFX/2wKR2d2KvZ8UxRmSS1gp91YaWEYjVEGLJyEOxpaHSt7wwqmcx44G+4QTDDP/w==
+
 side-channel@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/side-channel/-/side-channel-1.0.4.tgz#efce5c8fdc104ee751b25c58d4290011fa5ea2cf"

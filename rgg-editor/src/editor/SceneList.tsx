@@ -30,6 +30,7 @@ import hotkeys from "hotkeys-js";
 import {displayComponentContextMenu, setDisplayAddingComponent, useIsComponentHovered} from "./state/ui";
 import {VIEWS} from "./ManagerSidebar";
 import {MainStateStore} from "./state/main/types";
+import {SelectedComponentListeners} from "./SelectedComponentListeners";
 
 export const useIsItemSelected = (id: string) => {
     const selectedComponents = Object.keys(useSelectedComponents())
@@ -461,14 +462,14 @@ const SceneItem: React.FC<{
 
     useEffect(() => {
         if (isSelected) {
-            // buttonRef.current.focus()
+            buttonRef.current.focus()
         }
     }, [isSelected])
 
     useEffect(() => {
         if (isSelected && focused) {
             return () => {
-                buttonRef.current.blur()
+                buttonRef.current?.blur()
             }
         }
     }, [isSelected, focused])
@@ -562,6 +563,9 @@ const SceneItem: React.FC<{
 
     return (
         <>
+            {
+                focused && <SelectedComponentListeners/>
+            }
             <StyledDraggableContainer>
                 <StyledWrapper>
                     <StyledClickable ref={buttonRef} onClick={onClick} onFocus={onFocus} onBlur={onBlur}

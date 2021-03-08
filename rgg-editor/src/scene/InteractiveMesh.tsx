@@ -97,7 +97,7 @@ export const InteractiveMesh: React.FC = ({children}) => {
 
     const groupRef = useRef<Object3D>(null!)
 
-    useMeshHelper(groupRef, isSoleSelected || pointerOver)
+    useMeshHelper(groupRef, isSelected || pointerOver)
     useDraggableMesh(id, isSoleSelected, {
         passedRef: groupRef,
     })

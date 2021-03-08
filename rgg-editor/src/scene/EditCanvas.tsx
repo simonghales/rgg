@@ -11,6 +11,8 @@ import {useDraggableMesh} from "./useDraggableMesh";
 import {Object3D, Box3, Vector3} from "three";
 import {useCallbackRef} from "../custom/hooks";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
+import {AddingComponentPlane} from "../editor/AddingComponentPlane";
+import {useAddingComponent} from "../editor/state/ui";
 
 const useComponentsAreSelected = () => {
     const selectedComponents = useSelectedComponents()
@@ -76,6 +78,14 @@ const MultipleSelectedGroup: React.FC = () => {
         const zDifference = groupRef.current.position.z - startingPositionRef.current.z
         Object.keys(selectedComponents).forEach((componentId) => {
             setComponentPropValue(componentId, predefinedPropKeys.position, (value: any) => {
+                if (!value) {
+                    // todo - get proper default?
+                    value = {
+                        x: 0,
+                        y: 0,
+                        z: 0,
+                    }
+                }
                 return {
                     x: value.x + xDifference,
                     y: value.y + yDifference,
@@ -116,11 +126,19 @@ const MultipleSelectedGroup: React.FC = () => {
 }
 
 const EditTools: React.FC = () => {
+
+    const addingComponent = useAddingComponent()
+
     return (
         <>
             <EditFloor/>
             <EditCamera/>
             <MultipleSelectedGroup/>
+            {
+                addingComponent && (
+                    <AddingComponentPlane/>
+                )
+            }
         </>
     )
 }

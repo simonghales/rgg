@@ -1,4 +1,4 @@
-import {proxy, useProxy} from "valtio";
+import {proxy, ref, useProxy} from "valtio";
 import {OrthographicCamera, PerspectiveCamera} from "three";
 
 export enum EditorTransformMode {
@@ -21,7 +21,7 @@ export const editorStateProxy = proxy<{
         x: number,
         y: number,
         z: number,
-    }
+    },
 }>({
     transformMode: EditorTransformMode.translate,
     groupPortalRef: null,
@@ -49,4 +49,27 @@ export const useTransformMode = () => {
 
 export const setTransformMode = (mode: EditorTransformMode) => {
     editorStateProxy.transformMode = mode
+}
+
+export enum PendingPasteType {
+    COMPONENTS = 'COMPONENTS'
+}
+
+export type PendingPaste = {
+    type: PendingPasteType,
+    data: any,
+}
+
+export const clipboardProxy = proxy<{
+    pendingPaste: PendingPaste | null
+}>({
+    pendingPaste: null,
+})
+
+export const addToClipboard = (pendingPaste: PendingPaste) => {
+    clipboardProxy.pendingPaste = ref(pendingPaste)
+}
+
+export const clearClipboard = () => {
+    clipboardProxy.pendingPaste = null
 }

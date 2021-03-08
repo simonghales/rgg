@@ -1,10 +1,13 @@
 import {getMainStateStoreState, setMainStateStoreState} from "./store";
 import {TreeData} from "@atlaskit/tree";
 import {MainStateStore} from "./types";
-import {Addable} from "../../../scene/addables";
+import {Addable, getAddable} from "../../../scene/addables";
 import {generateUid, getCombinedId} from "../../../utils/ids";
 import {predefinedPropKeys} from "../../componentEditor/config";
 import {ROOT_ID} from "../../SceneList";
+import {addToClipboard, clearClipboard, clipboardProxy, PendingPasteType} from "../editor";
+import {getSelectedComponents, getUnsavedComponent} from "./getters";
+import {ComponentState} from "../components/types";
 
 export const resetComponentProp = (componentId: string, propKey: string) => {
     setMainStateStoreState(state => {
@@ -127,7 +130,7 @@ export const setComponentTreeItemExpanded = (id: string, isExpanded: boolean) =>
     })
 }
 
-export const addUnsavedComponent = (addable: Addable, parent: string) => {
+export const addUnsavedComponent = (addable: Addable, parent: string, initialProps?: any) => {
     const id = generateUid()
     setMainStateStoreState(state => {
         return {
@@ -139,7 +142,10 @@ export const addUnsavedComponent = (addable: Addable, parent: string) => {
                     componentId: addable.id,
                     children: [],
                     isRoot: !parent,
-                    initialProps: addable.props,
+                    initialProps: {
+                        ...(addable.props ?? {}),
+                        ...(initialProps ?? {})
+                    },
                 }
             }
         }
@@ -153,13 +159,45 @@ export const addUnsavedComponent = (addable: Addable, parent: string) => {
     return getCombinedId([parent, id])
 }
 
+const getGroupChildren = (groupId: string) => {
+    const state = getMainStateStoreState()
+    const groupChildren: string[] = []
+    Object.entries(state.groupedComponents).forEach(([componentId, componentIdGroup]) => {
+        if (componentIdGroup === groupId) {
+            groupChildren.push(componentId)
+        }
+    })
+    return groupChildren
+}
+
+export const deleteGroup = (id: string) => {
+    const children = getGroupChildren(id)
+    children.forEach(childId => {
+        deleteComponent(childId)
+    })
+    setMainStateStoreState(state => {
+        const updatedGroups = {
+            ...state.groups,
+        }
+        delete updatedGroups[id]
+        return {
+            groups: updatedGroups
+        }
+    })
+}
+
 export const deleteComponent = (id: string) => {
-    if (getMainStateStoreState().unsavedComponents[id]) {
+    const state = getMainStateStoreState()
+    if (state.groups[id]) {
+        deleteGroup(id)
+    } else if (state.unsavedComponents[id]) {
         deleteUnsavedComponent(id)
     } else {
         addDeactivatedComponent(id)
     }
+    // todo - deselect deleted components
 }
+
 
 export const deleteSelectedComponents = () => {
     const selectedComponents = getMainStateStoreState().selectedComponents
@@ -292,4 +330,77 @@ export const setGroupName = (id: string, name: string) => {
             }
         }
     })
+}
+
+export const copySelectedComponents = () => {
+    addToClipboard({
+        type: PendingPasteType.COMPONENTS,
+        data: getSelectedComponents(),
+    })
+}
+
+const cloneComponentWithinState = (state: MainStateStore, componentId: string) => {
+    const newId = generateUid()
+    if (state.unsavedComponents[componentId]) {
+        state.unsavedComponents = {
+            ...state.unsavedComponents,
+            [newId]: {
+                ...state.unsavedComponents[componentId],
+                uid: newId,
+                children: [],
+            },
+        }
+    }
+    if (state.components[componentId]) {
+        state.components = {
+            ...state.components,
+            [newId]: state.components[componentId],
+        }
+    }
+    if (state.groupedComponents[componentId]) {
+        state.groupedComponents = {
+            ...state.groupedComponents,
+            [newId]: state.groupedComponents[componentId],
+        }
+    }
+    return newId
+}
+
+export const cloneComponents = (components: string[]) => {
+    const newIds: string[] = []
+    setMainStateStoreState(state => {
+        const updatedState: any = {
+            ...state,
+        }
+        components.forEach(componentId => {
+            const id = cloneComponentWithinState(updatedState, componentId)
+            newIds.push(id)
+        })
+        return updatedState
+    })
+    return newIds
+}
+
+const handlePasteComponents = (components: string[]) => {
+    const addedComponents: {
+        [key: string]: true
+    } = {}
+    const newIds = cloneComponents(components)
+    newIds.forEach(componentId => {
+        addedComponents[componentId] = true
+    })
+    setSelectedComponents(addedComponents)
+}
+
+export const handlePaste = () => {
+    if (clipboardProxy.pendingPaste) {
+        switch (clipboardProxy.pendingPaste.type) {
+            case PendingPasteType.COMPONENTS:
+                handlePasteComponents(Object.keys(clipboardProxy.pendingPaste.data))
+                break;
+            default:
+                break;
+        }
+    }
+    clearClipboard()
 }

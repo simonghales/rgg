@@ -21,6 +21,7 @@ import { StyledBox } from "./ui/generics"
 import {BiExpand, BiMove, BiRotateLeft} from "react-icons/bi";
 import {StyledButton} from "./SceneList";
 import {EditorTransformMode, setTransformMode, useTransformMode} from "./state/editor";
+import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 
 const StyledHeaderSide = styled('div', {
     width: '300px',
@@ -170,6 +171,7 @@ export const Editor: React.FC = ({children}) => {
                     },
                 ]}
             />
+            <GlobalHotkeysListener/>
             <StyledContainer>
                 <Header/>
                 <StyledMain>
