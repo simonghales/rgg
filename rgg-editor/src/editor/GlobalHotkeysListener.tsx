@@ -1,18 +1,20 @@
 import React from "react"
 import {useShortcut} from "./shortcuts";
 import {handlePaste} from "./state/main/actions";
+import {redoState, undoState} from "./state/history/actions";
 
 export const GlobalHotkeysListener: React.FC = () => {
 
     useShortcut([{
         shortcut: 'CmdOrCtrl+Z',
         handler: () => {
-            // undoState()
+            console.log('undo state!')
+            undoState()
         }
     }, {
         shortcut: 'CmdOrCtrl+Shift+Z',
         handler: () => {
-            // redoState()
+            redoState()
         }
     }, {
         shortcut: 'CmdOrCtrl+S',

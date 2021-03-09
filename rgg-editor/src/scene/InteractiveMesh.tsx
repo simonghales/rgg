@@ -2,13 +2,13 @@ import React, {MutableRefObject, useEffect, useMemo, useRef, useState} from "rea
 import {useEditableProp} from "./useEditableProp";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
 import {setComponentHovered} from "../editor/state/ui";
-import {useEditableId, useEditableIsSoleSelected, useIsEditableSelected} from "./Editable";
+import {useEditableContext, useEditableId, useEditableIsSoleSelected, useIsEditableSelected} from "./Editable";
 import {setSelectedComponents} from "../editor/state/main/actions";
 import {BoxHelper, Object3D} from "three";
 import {useHelper} from "@react-three/drei";
 import {isCommandPressed, isShiftPressed} from "../editor/hotkeys";
 import {useDraggableMesh} from "./useDraggableMesh";
-import {editorStateProxy, useGroupPortalRef} from "../editor/state/editor";
+import {editorStateProxy, useGroupPortalRef, useIsEditMode} from "../editor/state/editor";
 import {ref} from "valtio";
 
 export const EDITOR_LAYER = 31
@@ -37,6 +37,7 @@ export const InteractiveMesh: React.FC = ({children}) => {
     const isSoleSelected = useEditableIsSoleSelected()
     const isMultipleSelected = isSelected && !isSoleSelected
     const groupPortalRef = useGroupPortalRef()
+    const {setSharedProp} = useEditableContext()
 
     useEffect(() => {
         if (!isMultipleSelected || !groupPortalRef) return
@@ -115,6 +116,12 @@ export const InteractiveMesh: React.FC = ({children}) => {
         return
     }, [isSoleSelected])
 
+    useEffect(() => {
+        setSharedProp('meshRef', groupRef)
+    }, [setSharedProp, groupRef])
+
+    const isEditMode = useIsEditMode()
+
     const content = (
         <group ref={groupRef}
                position={[position.x, position.y, position.z]}
@@ -129,7 +136,7 @@ export const InteractiveMesh: React.FC = ({children}) => {
                    }, !add)
                }}
                onPointerOver={onPointerOver}
-               onPointerOut={onPointerOut}>
+               onPointerOut={onPointerOut} key={isEditMode ? "edit" : "play"}>
             {children}
         </group>
     )

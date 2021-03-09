@@ -9,9 +9,10 @@ import {
     InteractiveMesh,
     predefinedPropKeys, registerAddable,
     useEditableProp,
-    useEditCanvasProps
+    useEditCanvasProps, useIsEditMode
 } from "../../src";
-import { Sphere } from '@react-three/drei';
+import {Box, Sphere} from '@react-three/drei';
+import RGGEngine from "./RGGEngine";
 
 const Child = () => {
     const testValue = useEditableProp('test', {
@@ -45,9 +46,9 @@ const Test = () => {
 
 const Ball = () => {
     return (
-        <InteractiveMesh>
+        // <InteractiveMesh>
             <Sphere/>
-        </InteractiveMesh>
+        // </InteractiveMesh>
     )
 }
 
@@ -55,13 +56,29 @@ registerAddable('ball', Ball, {
     name: 'Ball'
 })
 
+const BoxWrapper = () => {
+    return (
+        // <InteractiveMesh>
+            <Box>
+                <meshBasicMaterial color="#444" />
+            </Box>
+        // </InteractiveMesh>
+    )
+}
+
+registerAddable('box', BoxWrapper, {
+    name: 'Box'
+})
+
 const Scene = ({children}: any) => {
     const canvasProps = useEditCanvasProps()
     return (
         <Canvas {...canvasProps}>
-            <EditCanvas>
-                {children}
-            </EditCanvas>
+            <RGGEngine>
+                <EditCanvas>
+                    {children}
+                </EditCanvas>
+            </RGGEngine>
         </Canvas>
     )
 }

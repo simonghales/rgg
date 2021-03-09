@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useLayoutEffect, useMemo, useState} from "react";
+import React, {createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState} from "react";
 import {
     addComponent,
     addDeactivatedComponent, removeComponent,
@@ -9,6 +9,7 @@ import {useIsDeactivated, useSelectedComponents} from "../editor/state/main/hook
 import {setComponentProps} from "../editor/state/props";
 import {EditableModules} from "./EditableModules";
 import {getCombinedId} from "../utils/ids";
+import {InteractiveMesh} from "./InteractiveMesh";
 
 interface Config {
     name?: string,
@@ -38,7 +39,11 @@ interface ContextInterface {
     isSelected: {
         selected: boolean,
         single?: boolean,
-    }
+    },
+    sharedProps: {
+        [key: string]: any,
+    },
+    setSharedProp: (key: string, value: any) => void,
 }
 
 const Context = createContext<ContextInterface>({
@@ -52,11 +57,18 @@ const Context = createContext<ContextInterface>({
     },
     isSelected: {
         selected: false,
-    }
+    },
+    sharedProps: {},
+    setSharedProp: () => {},
 })
 
 export const useEditableContext = () => {
     return useContext(Context)
+}
+
+export const useEditableSharedProp = (key: string) => {
+    const {sharedProps} = useEditableContext()
+    return sharedProps[key]
 }
 
 export const useIsEditableSelected = () => {
@@ -182,6 +194,17 @@ export const Editable: React.FC<Props> = ({
         return parentPath.concat(id)
     }, [parentPath])
 
+    const [sharedProps, setSharedProps] = useState<{
+        [key: string]: any,
+    }>({})
+
+    const setSharedProp = useCallback((key: string, value: any) => {
+        setSharedProps(state => ({
+            ...state,
+            [key]: value,
+        }))
+    }, [setSharedProps])
+
     if (isDeactivated) return null
 
     return (
@@ -194,10 +217,14 @@ export const Editable: React.FC<Props> = ({
             parentPath: updatedParentPath,
             registerWithParent: registerChildren,
             isSelected,
+            sharedProps,
+            setSharedProp,
         }}>
-            <EditableModules>
-                {children}
-            </EditableModules>
+            <InteractiveMesh>
+                <EditableModules>
+                    {children}
+                </EditableModules>
+            </InteractiveMesh>
         </Context.Provider>
     );
 };

@@ -5,8 +5,8 @@ import {InteractiveMesh} from "../InteractiveMesh";
 export const EmptyObject: React.FC = () => {
 
     return (
-        <InteractiveMesh>
+        // <InteractiveMesh>
             <EditableChildren/>
-        </InteractiveMesh>
+        // </InteractiveMesh>
     )
 }

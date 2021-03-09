@@ -8,6 +8,7 @@ export enum EditorTransformMode {
 }
 
 export const editorStateProxy = proxy<{
+    editMode: boolean,
     transformMode: EditorTransformMode,
     groupPortalRef: any,
     orbitRef: any,
@@ -23,6 +24,7 @@ export const editorStateProxy = proxy<{
         z: number,
     },
 }>({
+    editMode: true,
     transformMode: EditorTransformMode.translate,
     groupPortalRef: null,
     orbitRef: null,
@@ -38,6 +40,14 @@ export const editorStateProxy = proxy<{
         z: 0,
     }
 })
+
+export const useIsEditMode = () => {
+    return useProxy(editorStateProxy).editMode
+}
+
+export const setEditMode = (editMode: boolean) => {
+    editorStateProxy.editMode = editMode
+}
 
 export const useGroupPortalRef = () => {
     return useProxy(editorStateProxy).groupPortalRef

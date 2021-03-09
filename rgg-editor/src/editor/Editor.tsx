@@ -20,7 +20,7 @@ import {ContextMenu} from "./ContextMenu";
 import { StyledBox } from "./ui/generics"
 import {BiExpand, BiMove, BiRotateLeft} from "react-icons/bi";
 import {StyledButton} from "./SceneList";
-import {EditorTransformMode, setTransformMode, useTransformMode} from "./state/editor";
+import {EditorTransformMode, setEditMode, setTransformMode, useIsEditMode, useTransformMode} from "./state/editor";
 import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 
 const StyledHeaderSide = styled('div', {
@@ -46,14 +46,19 @@ const StyledHeaderOptions = styled(StyledHeaderSide, {
 })
 
 const Header: React.FC = () => {
+    const isEditMode = useIsEditMode()
     return (
         <StyledHeader>
             <StyledHeaderSide>
                 <h3>RGG</h3>
             </StyledHeaderSide>
             <StyledHeaderMiddle>
-                <StyledPlainButton shape="thinner">
-                    Play
+                <StyledPlainButton shape="thinner" onClick={() => {
+                    setEditMode(!isEditMode)
+                }}>
+                    {
+                        isEditMode ? "Play" : "Edit"
+                    }
                 </StyledPlainButton>
             </StyledHeaderMiddle>
             <StyledHeaderOptions>

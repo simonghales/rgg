@@ -8,6 +8,7 @@ import {ROOT_ID} from "../../SceneList";
 import {addToClipboard, clearClipboard, clipboardProxy, PendingPasteType} from "../editor";
 import {getSelectedComponents, getUnsavedComponent} from "./getters";
 import {ComponentState} from "../components/types";
+import {storeSnapshot} from "../history/actions";
 
 export const resetComponentProp = (componentId: string, propKey: string) => {
     setMainStateStoreState(state => {
@@ -200,6 +201,7 @@ export const deleteComponent = (id: string) => {
 
 
 export const deleteSelectedComponents = () => {
+    storeSnapshot()
     const selectedComponents = getMainStateStoreState().selectedComponents
     Object.keys(selectedComponents).forEach((component) => {
         deleteComponent(component)
@@ -382,6 +384,7 @@ export const cloneComponents = (components: string[]) => {
 }
 
 const handlePasteComponents = (components: string[]) => {
+    storeSnapshot()
     const addedComponents: {
         [key: string]: true
     } = {}

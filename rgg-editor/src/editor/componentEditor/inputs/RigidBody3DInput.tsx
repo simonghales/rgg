@@ -113,7 +113,7 @@ const RigidBody3DColliderInput: React.FC<{
     onChange: (newValue: any) => void,
     onDelete: () => void,
 }> = ({collider, onChange, onDelete}) => {
-    const {colliderType, key, radius = 0.5, hx = 0.5, hy = 0.5, hz = 0.5} = collider
+    const {colliderType, key, radius = 1, hx = 0.5, hy = 0.5, hz = 0.5} = collider
     const {
         updateValue,
     } = useMemo(() => ({

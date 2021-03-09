@@ -8,9 +8,10 @@ import {useHotkeys} from "../custom/hooks";
 import {setComponentPropValue} from "../editor/state/main/actions";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
 import {useProxy} from "valtio";
-import {editorStateProxy, EditorTransformMode, useTransformMode} from "../editor/state/editor";
+import {editorStateProxy, EditorTransformMode, useIsEditMode, useTransformMode} from "../editor/state/editor";
 import {EDITOR_LAYER} from "./InteractiveMesh";
 import {isShiftPressed} from "../editor/hotkeys";
+import {storeSnapshot} from "../editor/state/history/actions";
 
 const TransformControls: any = CustomTransformControls
 
@@ -20,10 +21,6 @@ const recursiveSetLayer = (object: Object3D) => {
     // } else {
         object.children.forEach((child) => recursiveSetLayer(child))
     // }
-}
-
-export const useIsEditMode = () => {
-    return true
 }
 
 export const useIsCanvasInteractable = () => {
@@ -38,9 +35,7 @@ export const useDraggableMesh = (id: string, isSelected: boolean, options: {
     onDraggingChanged?: (event: any) => void,
 } = {}) => {
     const { camera, gl, scene } = useThree()
-    // const {uid, getStateValue} = useEditableContext()
     const isEditMode = useIsEditMode()
-    // const isSelected = useIsOnlyComponentSelected(uid)
     const localRef = useRef<Object3D>(null!)
     const ref = options.passedRef ?? localRef
     const orbitRef = useProxy(editorStateProxy).orbitRef
@@ -118,6 +113,7 @@ export const useDraggableMesh = (id: string, isSelected: boolean, options: {
 
     const onMouseUp = useCallback(() => {
         if (!ref.current) return
+        storeSnapshot()
 
         if (transformMode === EditorTransformMode.translate) {
             const {x, y, z} = ref.current.position

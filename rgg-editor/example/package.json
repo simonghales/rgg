@@ -12,6 +12,8 @@
   },
   "alias": {
     "react": "../node_modules/react",
+    "@dimforge/rapier3d-compat": "../node_modules/@dimforge/rapier3d-compat",
+    "rgg-engine": "../node_modules/rgg-engine",
     "react-dom": "../node_modules/react-dom/profiling",
     "react-three-fiber": "../node_modules/react-three-fiber",
     "three": "../node_modules/three",

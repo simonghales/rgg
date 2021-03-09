@@ -3,6 +3,7 @@ import {Prop} from "../state/props";
 import {predefinedProps} from "./config";
 import {setComponentPropValue} from "../state/main/actions";
 import UnknownInput from "./inputs/UnknownInput";
+import {storeSnapshot} from "../state/history/actions";
 
 const Context = createContext<{
     propType: string,
@@ -30,6 +31,7 @@ export const Module: React.FC<{
     const [inputValue, setInputValue] = useState(value)
 
     const updateValue = useCallback((newValue: any) => {
+        storeSnapshot()
         setComponentPropValue(componentId, propKey, newValue)
         if (passedOnChange) {
             passedOnChange(newValue)
