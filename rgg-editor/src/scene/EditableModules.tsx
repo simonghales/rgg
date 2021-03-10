@@ -9,7 +9,7 @@ import {
     RigidBodyColliderShape,
     RigidBodyType
 } from "../editor/componentEditor/inputs/RigidBody3DInput";
-import {Euler, Object3D, Quaternion} from "three";
+import {Euler, Object3D, Quaternion, Vector3} from "three";
 import {AddBodyDef, ColliderDef } from "rgg-engine/dist/physics/helpers/rapier3d/types";
 import {useRapier3DBody} from "rgg-engine";
 import {useIsEditMode} from "../editor/state/editor";
@@ -81,15 +81,15 @@ const getQuaternionFromEuler = (x: number, y: number, z: number) => {
     return quaternion
 }
 
+const v3 = new Vector3()
+
+const getMeshWorldPosition = (object: Object3D) => {
+    return object.getWorldPosition(v3)
+}
+
 const RigidBody3DModule: React.FC<Props & {
     meshRef: MutableRefObject<Object3D>
 }> = ({value, meshRef}) => {
-
-    const {x, y, z} = useEditableProp(predefinedPropKeys.position) ?? {
-        x: 0,
-        y: 0,
-        z: 0,
-    }
 
     const {
         x: rX,
@@ -101,7 +101,10 @@ const RigidBody3DModule: React.FC<Props & {
         z: 0,
     }
 
-    useRapier3DBody(() => generateRigidBodySpec(value, [x, y, z], [rX, rY, rZ]), {
+    useRapier3DBody(() => {
+        const position = meshRef.current.position
+        return generateRigidBodySpec(value, [position.x, position.y, position.z], [rX, rY, rZ])
+    }, {
         ref: meshRef,
     })
 
@@ -134,9 +137,14 @@ const RigidBody3DModuleVisualizer: React.FC<Props & {
 }> = ({value, visible}) => {
 
     const {colliders = []} = value
+    const scale = useEditableProp(predefinedPropKeys.scale) ?? {
+        x: 1,
+        y: 1,
+        z: 1,
+    }
 
     return (
-        <group visible={visible}>
+        <group visible={visible} scale={[1 / scale.x, 1 / scale.y, 1 / scale.z]}>
             {colliders.map((collider) => (
                 <ColliderVisualiser collider={collider} key={collider.key}/>
             ))}

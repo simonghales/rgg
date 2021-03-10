@@ -109,8 +109,6 @@ export const Editable: React.FC<Props> = ({
                                                 ...props,
                                           }) => {
 
-    console.log('Editable')
-
     const {
         isRoot,
         parentPath,

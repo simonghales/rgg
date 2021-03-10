@@ -24,6 +24,7 @@ import {EditorTransformMode, setEditMode, setTransformMode, useIsEditMode, useTr
 import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 import {getMainStateStoreState} from "./state/main/store";
 import {useComponentsStore} from "./state/components/store";
+import {redoState, undoState} from "./state/history/actions";
 
 const StyledHeaderSide = styled('div', {
     width: '300px',
@@ -73,10 +74,10 @@ const Header: React.FC = () => {
                 <StyledPlainButton shape="thinner" appearance="faint">
                     Discard
                 </StyledPlainButton>
-                <StyledPlainButton shape="round" appearance="faint">
+                <StyledPlainButton shape="round" appearance="faint" onClick={undoState}>
                     <FaUndo size={9}/>
                 </StyledPlainButton>
-                <StyledPlainButton shape="round" appearance="faint" disabled>
+                <StyledPlainButton shape="round" appearance="faint" disabled onClick={redoState}>
                     <FaRedo size={9}/>
                 </StyledPlainButton>
                 <StyledPlainButton shape="thinner">

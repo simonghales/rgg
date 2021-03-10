@@ -33,6 +33,7 @@ export const useMeshHelper = (ref: MutableRefObject<Object3D>, active: boolean) 
 
 export const InteractiveMesh: React.FC = ({children}) => {
     const id = useEditableId()
+    const {parentPath} = useEditableContext()
     const isSelected = useIsEditableSelected()
     const isSoleSelected = useEditableIsSoleSelected()
     const isMultipleSelected = isSelected && !isSoleSelected
@@ -73,6 +74,7 @@ export const InteractiveMesh: React.FC = ({children}) => {
     })
 
     const [pointerOver, setPointerOver] = useState(false)
+    const isEditMode = useIsEditMode()
 
     useEffect(() => {
         if (pointerOver) {
@@ -82,23 +84,45 @@ export const InteractiveMesh: React.FC = ({children}) => {
     }, [pointerOver, id])
 
     const {
+        onPointerUp,
         onPointerOver,
         onPointerOut,
     } = useMemo(() => ({
+        onPointerUp: (event: any) => {
+            if (!isEditMode) return
+            let skip = false
+            event.intersections.forEach(({eventObject}: any) => {
+                const eventObjectId = eventObject.userData.id
+                if (eventObjectId !== id && parentPath.includes(eventObjectId)) {
+                    skip = true
+                }
+            })
+            if (skip) {
+                return
+            }
+            event.stopPropagation()
+            const add = isShiftPressed() || isCommandPressed()
+            if (editorStateProxy.transformActive) return
+            setSelectedComponents({
+                [id]: true,
+            }, !add)
+        },
         onPointerOver: (event: any) => {
+            if (!isEditMode) return
             event.stopPropagation()
             if (editorStateProxy.transformActive) return
             setPointerOver(true)
         },
         onPointerOut: (event: any) => {
+            if (!isEditMode) return
             event.stopPropagation()
             setPointerOver(false)
         },
-    }), [])
+    }), [isEditMode, parentPath])
 
     const groupRef = useRef<Object3D>(null!)
 
-    useMeshHelper(groupRef, isSelected || pointerOver)
+    useMeshHelper(groupRef, (isSelected || pointerOver) && isEditMode)
     useDraggableMesh(id, isSoleSelected, {
         passedRef: groupRef,
     })
@@ -120,8 +144,6 @@ export const InteractiveMesh: React.FC = ({children}) => {
         setSharedProp('meshRef', groupRef)
     }, [setSharedProp, groupRef])
 
-    const isEditMode = useIsEditMode()
-
     useEffect(() => {
         if (!isEditMode) return
         groupRef.current.position.set(position.x, position.y, position.z)
@@ -131,16 +153,11 @@ export const InteractiveMesh: React.FC = ({children}) => {
 
     const content = (
         <group ref={groupRef}
-               onPointerUp={(event) => {
-                   event.stopPropagation()
-                   const add = isShiftPressed() || isCommandPressed()
-                   if (editorStateProxy.transformActive) return
-                   setSelectedComponents({
-                       [id]: true,
-                   }, !add)
-               }}
+               onPointerUp={onPointerUp}
                onPointerOver={onPointerOver}
-               onPointerOut={onPointerOut}>
+               onPointerOut={onPointerOut} userData={{
+                   id,
+                }}>
             {children}
         </group>
     )
