@@ -1,6 +1,6 @@
 import {getMainStateStoreState, setMainStateStoreState} from "./store";
 import {TreeData} from "@atlaskit/tree";
-import {MainStateStore} from "./types";
+import {MainStateStore, StoredComponentState} from "./types";
 import {Addable, getAddable} from "../../../scene/addables";
 import {generateUid, getCombinedId} from "../../../utils/ids";
 import {predefinedPropKeys} from "../../componentEditor/config";
@@ -341,22 +341,51 @@ export const copySelectedComponents = () => {
     })
 }
 
-const cloneComponentWithinState = (state: MainStateStore, componentId: string) => {
-    const newId = generateUid()
-    if (state.unsavedComponents[componentId]) {
+const getComponentPropValue = (component: StoredComponentState, propKey: string) => {
+    const {modifiedState = {}} = component
+    return modifiedState[propKey]
+}
+
+const cloneComponentWithinState = (state: MainStateStore, componentId: string, componentIdWithParentId: string, parentId?: string) => {
+    console.log('looking for', componentId)
+    const rawId = generateUid()
+    const newId = parentId ? getCombinedId([parentId, rawId]) : rawId
+    const unsavedComponent = state.unsavedComponents[componentId]
+    if (unsavedComponent) {
         state.unsavedComponents = {
             ...state.unsavedComponents,
-            [newId]: {
-                ...state.unsavedComponents[componentId],
-                uid: newId,
+            [rawId]: {
+                ...unsavedComponent,
+                uid: rawId,
                 children: [],
             },
         }
     }
-    if (state.components[componentId]) {
+    const component = state.components[componentIdWithParentId]
+    if (component) {
         state.components = {
             ...state.components,
-            [newId]: state.components[componentId],
+            [newId]: component,
+        }
+        const childrenProp = getComponentPropValue(component, predefinedPropKeys.children)
+        if (childrenProp) {
+            const {value: children = []} = childrenProp as {
+                value: string[],
+            }
+            const newChildren: string[] = []
+            children.forEach(childId => {
+                newChildren.push(cloneComponentWithinState(state, childId, getCombinedId([componentId, childId]), newId))
+            })
+            state.components[newId] = {
+                ...component,
+                modifiedState: {
+                    ...(component.modifiedState ?? {}),
+                    [predefinedPropKeys.children]: {
+                        value: newChildren,
+                    }
+                }
+
+            }
         }
     }
     if (state.groupedComponents[componentId]) {
@@ -365,7 +394,8 @@ const cloneComponentWithinState = (state: MainStateStore, componentId: string) =
             [newId]: state.groupedComponents[componentId],
         }
     }
-    return newId
+    console.log('newId', newId, rawId)
+    return rawId
 }
 
 export const cloneComponents = (components: string[]) => {
@@ -375,7 +405,7 @@ export const cloneComponents = (components: string[]) => {
             ...state,
         }
         components.forEach(componentId => {
-            const id = cloneComponentWithinState(updatedState, componentId)
+            const id = cloneComponentWithinState(updatedState, componentId, componentId)
             newIds.push(id)
         })
         return updatedState

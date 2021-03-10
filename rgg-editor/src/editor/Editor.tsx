@@ -22,6 +22,8 @@ import {BiExpand, BiMove, BiRotateLeft} from "react-icons/bi";
 import {StyledButton} from "./SceneList";
 import {EditorTransformMode, setEditMode, setTransformMode, useIsEditMode, useTransformMode} from "./state/editor";
 import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
+import {getMainStateStoreState} from "./state/main/store";
+import {useComponentsStore} from "./state/components/store";
 
 const StyledHeaderSide = styled('div', {
     width: '300px',
@@ -62,6 +64,12 @@ const Header: React.FC = () => {
                 </StyledPlainButton>
             </StyledHeaderMiddle>
             <StyledHeaderOptions>
+                <StyledPlainButton shape="thinner" appearance="faint" onClick={() => {
+                    console.log(getMainStateStoreState())
+                    console.log(useComponentsStore.getState())
+                }}>
+                    Debug
+                </StyledPlainButton>
                 <StyledPlainButton shape="thinner" appearance="faint">
                     Discard
                 </StyledPlainButton>
@@ -93,18 +101,19 @@ const StyledContainer = styled(StyledDefaultContainer, {
     right: 0,
     bottom: 0,
     display: 'grid',
-    gridTemplateRows: 'auto 1fr',
+    gridTemplateRows: 'auto minmax(0, 1fr)',
 })
 
 const StyledMain = styled('div', {
     display: 'grid',
-    gridTemplateColumns: 'auto 1fr auto',
+    gridTemplateColumns: 'auto minmax(0, 1fr) auto',
 })
 
 const StyledSidebar = styled('div', {
     width: '$sidebar',
     backgroundColor: '$darkGreyLighter',
     position: 'relative',
+    maxHeight: '100%',
 })
 
 const StyledContent = styled('div', {

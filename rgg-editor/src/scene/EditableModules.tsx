@@ -9,7 +9,7 @@ import {
     RigidBodyColliderShape,
     RigidBodyType
 } from "../editor/componentEditor/inputs/RigidBody3DInput";
-import {Object3D} from "three";
+import {Euler, Object3D, Quaternion} from "three";
 import {AddBodyDef, ColliderDef } from "rgg-engine/dist/physics/helpers/rapier3d/types";
 import {useRapier3DBody} from "rgg-engine";
 import {useIsEditMode} from "../editor/state/editor";
@@ -55,20 +55,30 @@ const generateRigidBodyColliders = (colliders: RigidBody3dPropValue['colliders']
     return defs
 }
 
-const generateRigidBodySpec = (config: RigidBody3dPropValue, position: [number, number, number]): AddBodyDef => {
+const generateRigidBodySpec = (config: RigidBody3dPropValue, position: [number, number, number], rotation: [number, number, number] = [0, 0, 0]): AddBodyDef => {
 
     const colliders = generateRigidBodyColliders(config.colliders)
 
     const mass = config.mass ?? 1
 
+    const quaternion = getQuaternionFromEuler(rotation[0], rotation[1], rotation[2])
+
     return {
         body: {
             type: getBodyType(config.bodyType),
             position: position,
+            quaternion: [quaternion.x, quaternion.y, quaternion.z, quaternion.w],
             mass,
         },
         colliders
     }
+}
+
+const getQuaternionFromEuler = (x: number, y: number, z: number) => {
+    const euler = new Euler(x, y, z)
+    const quaternion = new Quaternion()
+    quaternion.setFromEuler(euler)
+    return quaternion
 }
 
 const RigidBody3DModule: React.FC<Props & {
@@ -81,9 +91,17 @@ const RigidBody3DModule: React.FC<Props & {
         z: 0,
     }
 
-    // todo - get rotation as well...
+    const {
+        x: rX,
+        y: rY,
+        z: rZ,
+    } = useEditableProp(predefinedPropKeys.rotation) ?? {
+        x: 0,
+        y: 0,
+        z: 0,
+    }
 
-    useRapier3DBody(() => generateRigidBodySpec(value, [x, y, z]), {
+    useRapier3DBody(() => generateRigidBodySpec(value, [x, y, z], [rX, rY, rZ]), {
         ref: meshRef,
     })
 
@@ -111,16 +129,18 @@ const ColliderVisualiser: React.FC<{
     return null
 }
 
-const RigidBody3DModuleVisualizer: React.FC<Props> = ({value}) => {
+const RigidBody3DModuleVisualizer: React.FC<Props & {
+    visible: boolean,
+}> = ({value, visible}) => {
 
     const {colliders = []} = value
 
     return (
-        <>
+        <group visible={visible}>
             {colliders.map((collider) => (
                 <ColliderVisualiser collider={collider} key={collider.key}/>
             ))}
-        </>
+        </group>
     )
 }
 
@@ -140,11 +160,7 @@ const RigidBody3DModuleWrapper: React.FC<Props> = ({value}) => {
                     <RigidBody3DModule meshRef={meshRef} value={value}/>
                 )
             }
-            {
-                isEditMode && (
-                    <RigidBody3DModuleVisualizer value={value}/>
-                )
-            }
+            <RigidBody3DModuleVisualizer value={value} visible={isEditMode}/>
         </>
     )
 }

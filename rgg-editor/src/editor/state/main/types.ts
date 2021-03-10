@@ -1,6 +1,6 @@
 import {ComponentState} from "../components/types";
 
-type StoredComponentState = {
+export type StoredComponentState = {
     modifiedState?: StateData
     overriddenState?: {
         [key: string]: boolean,

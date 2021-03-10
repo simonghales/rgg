@@ -9,7 +9,7 @@ type Options = {
     splitKey?: string;
 }
 
-export const useHotkeys = (event: string, callback: () => void, options?: Options) => {
+export const useHotkeys = (event: string, callback: any, options?: Options) => {
 
     useEffect(() => {
         if (options) {

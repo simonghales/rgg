@@ -114,6 +114,7 @@ export const useDraggableMesh = (id: string, isSelected: boolean, options: {
     const onMouseUp = useCallback(() => {
         if (!ref.current) return
         storeSnapshot()
+        console.log('MOUSE UP!')
 
         if (transformMode === EditorTransformMode.translate) {
             const {x, y, z} = ref.current.position

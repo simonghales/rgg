@@ -1,20 +1,36 @@
-import React from "react"
+import React, {useRef} from "react"
 import {useShortcut} from "./shortcuts";
 import {handlePaste} from "./state/main/actions";
 import {redoState, undoState} from "./state/history/actions";
 
+const delay = 100
+
 export const GlobalHotkeysListener: React.FC = () => {
+
+    const localStateRef = useRef({
+        lastUndo: 0,
+        lastRedo: 0,
+        lastPaste: 0,
+        lastSave: 0,
+    })
 
     useShortcut([{
         shortcut: 'CmdOrCtrl+Z',
         handler: () => {
-            console.log('undo state!')
-            undoState()
+            const now = Date.now()
+            if (now > localStateRef.current.lastUndo + delay) {
+                localStateRef.current.lastUndo = now
+                undoState()
+            }
         }
     }, {
         shortcut: 'CmdOrCtrl+Shift+Z',
         handler: () => {
-            redoState()
+            const now = Date.now()
+            if (now > localStateRef.current.lastRedo + delay) {
+                localStateRef.current.lastRedo = now
+                redoState()
+            }
         }
     }, {
         shortcut: 'CmdOrCtrl+S',
@@ -25,7 +41,11 @@ export const GlobalHotkeysListener: React.FC = () => {
     }, {
         shortcut: 'CmdOrCtrl+V',
         handler: () => {
-            handlePaste()
+            const now = Date.now()
+            if (now > localStateRef.current.lastPaste + delay) {
+                localStateRef.current.lastPaste = now
+                handlePaste()
+            }
         }
     }])
 

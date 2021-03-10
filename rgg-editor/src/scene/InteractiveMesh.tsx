@@ -122,11 +122,15 @@ export const InteractiveMesh: React.FC = ({children}) => {
 
     const isEditMode = useIsEditMode()
 
+    useEffect(() => {
+        if (!isEditMode) return
+        groupRef.current.position.set(position.x, position.y, position.z)
+        groupRef.current.rotation.set(rotation.x, rotation.y, rotation.z)
+        groupRef.current.scale.set(scale.x, scale.y, scale.z)
+    }, [isEditMode, position, rotation, scale])
+
     const content = (
         <group ref={groupRef}
-               position={[position.x, position.y, position.z]}
-               rotation={[rotation.x, rotation.y, rotation.z]}
-               scale={[scale.x, scale.y, scale.z]}
                onPointerUp={(event) => {
                    event.stopPropagation()
                    const add = isShiftPressed() || isCommandPressed()
@@ -136,7 +140,7 @@ export const InteractiveMesh: React.FC = ({children}) => {
                    }, !add)
                }}
                onPointerOver={onPointerOver}
-               onPointerOut={onPointerOut} key={isEditMode ? "edit" : "play"}>
+               onPointerOut={onPointerOut}>
             {children}
         </group>
     )

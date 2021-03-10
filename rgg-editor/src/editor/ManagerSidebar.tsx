@@ -7,7 +7,7 @@ import {addingComponentClosed, setDisplayAddingComponent, uiProxy} from "./state
 const StyledContainer = styled('div', {
     display: 'grid',
     height: '100%',
-    gridTemplateRows: 'auto 1fr auto',
+    gridTemplateRows: 'auto minmax(0, 1fr) auto',
 })
 
 export const StyledTextButton = styled(StyledButton, {
@@ -77,7 +77,9 @@ export const StyledHeading = styled('h3', {
     fontSize: '$1b'
 })
 
-const StyledBox = styled('div', {})
+const StyledBox = styled('div', {
+    maxHeight: '100%',
+})
 
 export const StyledPaddedBox = styled('div', {
     padding: '$2b $3',
