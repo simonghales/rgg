@@ -13,6 +13,7 @@ import {
 } from "../../src";
 import {Box, Sphere} from '@react-three/drei';
 import RGGEngine from "./RGGEngine";
+import Player from "./Player";
 
 const Child = () => {
     const testValue = useEditableProp('test', {
@@ -89,8 +90,8 @@ const App = () => {
         <Editor>
             <Scene>
                 <ambientLight intensity={0.5} />
-                <Editable id="ball">
-                    <Ball/>
+                <Editable id={"player"}>
+                    <Player/>
                 </Editable>
             </Scene>
         </Editor>

@@ -59,7 +59,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-three-fiber": "^5.3.19",
-    "rgg-engine": "^0.4.3",
+    "rgg-engine": "link:.yalc/rgg-engine",
     "size-limit": "^4.9.2",
     "three": "^0.126.1",
     "tsdx": "^0.14.1",

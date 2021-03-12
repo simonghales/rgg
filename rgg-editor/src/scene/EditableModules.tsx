@@ -1,8 +1,8 @@
-import React, {MutableRefObject, useState} from "react"
+import React, {MutableRefObject, useEffect, useState} from "react"
 import {BodyStatus} from "@dimforge/rapier3d-compat";
 import {useEditableProp} from "./useEditableProp";
 import {modulesProp, predefinedPropKeys} from "../editor/componentEditor/config";
-import {useEditableSharedProp} from "./Editable";
+import {useEditableContext, useEditableId, useEditableSharedProp} from "./Editable";
 import {
     ColliderValue,
     RigidBody3dPropValue,
@@ -11,7 +11,7 @@ import {
 } from "../editor/componentEditor/inputs/RigidBody3DInput";
 import {Euler, Object3D, Quaternion, Vector3} from "three";
 import {AddBodyDef, ColliderDef } from "rgg-engine/dist/physics/helpers/rapier3d/types";
-import {useRapier3DBody} from "rgg-engine";
+import {useBodyApi, useRapier3DBody} from "rgg-engine";
 import {useIsEditMode} from "../editor/state/editor";
 import {Box, Sphere } from "@react-three/drei";
 
@@ -63,6 +63,8 @@ const generateRigidBodySpec = (config: RigidBody3dPropValue, position: [number, 
 
     const quaternion = getQuaternionFromEuler(rotation[0], rotation[1], rotation[2])
 
+    const customBody = config.customBodyDef?.customBody ?? ''
+
     return {
         body: {
             type: getBodyType(config.bodyType),
@@ -70,7 +72,8 @@ const generateRigidBodySpec = (config: RigidBody3dPropValue, position: [number, 
             quaternion: [quaternion.x, quaternion.y, quaternion.z, quaternion.w],
             mass,
         },
-        colliders
+        colliders,
+        customBody,
     }
 }
 
@@ -91,6 +94,9 @@ const RigidBody3DModule: React.FC<Props & {
     meshRef: MutableRefObject<Object3D>
 }> = ({value, meshRef}) => {
 
+    const id = useEditableId()
+    const {setSharedProp} = useEditableContext()
+
     const {
         x: rX,
         y: rY,
@@ -106,7 +112,14 @@ const RigidBody3DModule: React.FC<Props & {
         return generateRigidBodySpec(value, [position.x, position.y, position.z], [rX, rY, rZ])
     }, {
         ref: meshRef,
+        id,
     })
+
+    const api = useBodyApi(id)
+
+    useEffect(() => {
+        setSharedProp('rigidBody3dApi', api)
+    }, [api])
 
     return null
 }

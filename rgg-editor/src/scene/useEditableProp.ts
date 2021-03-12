@@ -1,5 +1,5 @@
-import {useEditableContext, useEditableIsSoleSelected} from "./Editable";
-import {useLayoutEffect, useMemo, useState} from "react";
+import {useEditableContext, useEditableIsSoleSelected, useEditableSharedProp} from "./Editable";
+import {useCallback, useLayoutEffect, useMemo, useState} from "react";
 import {useComponentInitialProps} from "../editor/state/components/hooks";
 import {Prop, PropOrigin, setComponentProps} from "../editor/state/props";
 import {useComponentState, useSharedComponent} from "../editor/state/main/hooks";
@@ -10,12 +10,14 @@ interface Config {
     id?: string,
     defaultValue?: any,
     hidden?: boolean,
+    sync?: boolean,
 }
 
 const useProp = (key: string, componentId: string, componentTypeId: string, defaultValue: any, hidden: boolean): Prop => {
     const initialProps = useComponentInitialProps(componentId)
     const {modifiedState = {}, overriddenState = {}} = useComponentState(componentId)
     const {appliedState = {}} = useSharedComponent(componentTypeId)
+
     return useMemo(() => {
         const applied = appliedState[key]
         const appliedValue = applied?.value
@@ -69,10 +71,14 @@ export const useEditableProp = (key: string, config: Config = {}) => {
     const {
         id: editableId,
         componentTypeId,
+        setSharedProp
     } = useEditableContext()
     const {hidden = false} = config
     const isSelected = useEditableIsSoleSelected()
     const [id] = useState(() => config.id ? config.id : editableId)
+    const {sync = false} = config
+
+    const sharedProp = useEditableSharedProp(key)
 
     const prop = useProp(key, id, componentTypeId, config.defaultValue, hidden)
 
@@ -93,5 +99,12 @@ export const useEditableProp = (key: string, config: Config = {}) => {
         })
     }, [isSelected, prop])
 
-    return prop.value
+    const {value} = prop
+
+    useLayoutEffect(() => {
+        if (!sync) return
+        setSharedProp(key, value)
+    }, [sync])
+
+    return (!sync && sharedProp) ? sharedProp : prop.value
 }

@@ -100,7 +100,10 @@ export type RigidBody3dPropValue = {
     enabled?: boolean,
     bodyType?: RigidBodyType,
     mass?: number,
-    colliders?: ColliderValue[]
+    colliders?: ColliderValue[],
+    customBodyDef?: {
+        [key: string]: any,
+    }
 }
 
 const StyledColliderContainer = styled('div', {

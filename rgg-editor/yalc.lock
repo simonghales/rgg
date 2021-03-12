@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "rgg-engine": {
+      "signature": "25727abec095e0a7807e757bd4ffbc7d",
+      "link": true,
+      "replaced": "^0.4.4-beta.5"
+    }
+  }
+}
