@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect} from "react"
 import {Rapier3DPhysicsConsumer} from "rgg-engine";
 import {STEP_RATE} from "./config";
 import {useIsEditMode} from "../../src";

@@ -58,10 +58,13 @@ registerAddable('ball', Ball, {
 })
 
 const BoxWrapper = () => {
+    const color = useEditableProp('color', {
+        defaultValue: '#444'
+    })
     return (
         // <InteractiveMesh>
             <Box>
-                <meshBasicMaterial color="#444" />
+                <meshBasicMaterial color={color} />
             </Box>
         // </InteractiveMesh>
     )

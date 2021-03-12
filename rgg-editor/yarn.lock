@@ -8724,10 +8724,10 @@ rgba-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/rgba-regex/-/rgba-regex-1.0.0.tgz#43374e2e2ca0968b0ef1523460b7d730ff22eeb3"
   integrity sha1-QzdOLiyglosO8VI0YLfXMP8i7rM=
 
-rgg-engine@^0.4.4-beta.5:
-  version "0.4.4-beta.5"
-  resolved "https://registry.yarnpkg.com/rgg-engine/-/rgg-engine-0.4.4-beta.5.tgz#d97c6af5058cdb2c00abb719b36f1622cd4b9a57"
-  integrity sha512-HxzAtV/KkjtvSkWSm2hoSNP3B9jgVioJyz8CPDJSuZntA9mv7o/G1L0Oe5ex500qYJClnNilfgJn9z4gY3D/kg==
+rgg-engine@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/rgg-engine/-/rgg-engine-0.4.4.tgz#8811ff6fe9d52997d9b6bcf874632b1faadb23f9"
+  integrity sha512-8Akl44m3m7VXwHtTyLzvlBEqcViyroCdzSHXhEoA4k0pUV6/hABPxIjBIvFZ+mj/2eC3UsNdismWwTxlq/2GeA==
   dependencies:
     react-nil "^0.0.3"
     shapes "^0.4.0"

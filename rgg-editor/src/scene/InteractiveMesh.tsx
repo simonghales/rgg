@@ -144,8 +144,11 @@ export const InteractiveMesh: React.FC = ({children}) => {
         setSharedProp('meshRef', groupRef)
     }, [setSharedProp, groupRef])
 
+    const firstCallRef = useRef(true)
+
     useEffect(() => {
-        if (!isEditMode) return
+        if (!isEditMode && !firstCallRef.current) return
+        firstCallRef.current = false
         groupRef.current.position.set(position.x, position.y, position.z)
         groupRef.current.rotation.set(rotation.x, rotation.y, rotation.z)
         groupRef.current.scale.set(scale.x, scale.y, scale.z)
