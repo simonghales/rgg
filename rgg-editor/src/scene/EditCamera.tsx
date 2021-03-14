@@ -9,8 +9,10 @@ import {isSpacePressed} from "../editor/hotkeys";
 
 const offsets = {
     x: 0,
-    y: 2,
-    z: 5,
+    // y: 2,
+    // z: 5,
+    y: 25,
+    z: 20,
 }
 
 const EditCamera: React.FC = () => {
