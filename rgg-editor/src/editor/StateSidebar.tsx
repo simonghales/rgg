@@ -1,9 +1,8 @@
 import React, {createContext, useContext} from "react"
 import { styled } from "./ui/sitches.config"
-import {StyledHeading, StyledPaddedBox, StyledPlainButton} from "./ManagerSidebar";
+import {StyledHeading, StyledPaddedBox} from "./ManagerSidebar";
 import {ComponentState} from "./componentEditor/ComponentState";
 import {useComponentName, useSoleSelectedComponent} from "./state/main/hooks";
-import {useComponentProps} from "./state/props";
 import {useComponent} from "./state/components/hooks";
 
 const StyledContainer = styled('div', {

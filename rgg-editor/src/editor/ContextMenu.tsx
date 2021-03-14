@@ -5,7 +5,6 @@ import {useProxy} from "valtio";
 import {uiProxy} from "./state/ui";
 import {StyledButton} from "./SceneList";
 import {deleteSelectedComponents, groupComponents, removeDeactivatedComponents} from "./state/main/actions";
-import {useMainStateStore} from "./state/main/store";
 import {useComponentsStore} from "./state/components/store";
 
 const StyledContainer = styled('div', {

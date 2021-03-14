@@ -106,7 +106,7 @@ export const Editable: React.FC<Props> = ({
                                               children,
                                               id,
                                               _config: config = {},
-                                                ...props,
+                                                ...props
                                           }) => {
 
     const {

@@ -19,7 +19,7 @@ export const StyledTextButton = styled(StyledButton, {
     }
 })
 
-export const StyledPlainButton = styled(StyledButton, {
+export const StyledPlainButton: any = styled(StyledButton, {
     fontSize: '$1b',
     fontWeight: '$medium',
     border: '2px solid $purple',

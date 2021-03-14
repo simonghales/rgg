@@ -121,7 +121,7 @@ const StyledContent = styled('div', {
     position: 'relative',
 })
 
-const StyledBoxButton = styled(StyledButton, {
+const StyledBoxButton: any = styled(StyledButton, {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

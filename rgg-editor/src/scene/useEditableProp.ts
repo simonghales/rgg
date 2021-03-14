@@ -1,5 +1,5 @@
 import {useEditableContext, useEditableIsSoleSelected, useEditableSharedProp} from "./Editable";
-import {useCallback, useLayoutEffect, useMemo, useState} from "react";
+import {useLayoutEffect, useMemo, useState} from "react";
 import {useComponentInitialProps} from "../editor/state/components/hooks";
 import {Prop, PropOrigin, setComponentProps} from "../editor/state/props";
 import {useComponentState, useSharedComponent} from "../editor/state/main/hooks";

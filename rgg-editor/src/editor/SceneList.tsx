@@ -273,7 +273,7 @@ const StyledRound = styled('div', {
     transition: 'all 250ms ease',
 })
 
-export const StyledIcon = styled(StyledRound, {
+export const StyledIcon: any = styled(StyledRound, {
     border: '2px solid transparent',
 
     variants: {
@@ -635,11 +635,11 @@ const Draggable: React.FC<RenderItemParams> = ({item, onExpand, onCollapse, prov
         onKeyDown,
         onMouseDown,
         onTouchStart,
-        ...otherProps,
+        ...otherProps
     } = provided?.dragHandleProps ?? {}
 
     const dragHandleProps = cantDrag ? {
-        ...otherProps,
+        ...otherProps
     } : {
         onBlur,
         onDragStart,

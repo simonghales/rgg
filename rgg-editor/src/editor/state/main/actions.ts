@@ -1,13 +1,12 @@
 import {getMainStateStoreState, setMainStateStoreState} from "./store";
 import {TreeData} from "@atlaskit/tree";
 import {MainStateStore, StoredComponentState} from "./types";
-import {Addable, getAddable} from "../../../scene/addables";
+import {Addable} from "../../../scene/addables";
 import {generateUid, getCombinedId} from "../../../utils/ids";
 import {predefinedPropKeys} from "../../componentEditor/config";
 import {ROOT_ID} from "../../SceneList";
 import {addToClipboard, clearClipboard, clipboardProxy, PendingPasteType} from "../editor";
-import {getSelectedComponents, getUnsavedComponent} from "./getters";
-import {ComponentState} from "../components/types";
+import {getSelectedComponents} from "./getters";
 import {storeSnapshot} from "../history/actions";
 
 export const resetComponentProp = (componentId: string, propKey: string) => {

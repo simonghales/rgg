@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useMemo, useState} from "react"
+import React, {useEffect, useMemo, useState} from "react"
 import {styled} from "../ui/sitches.config"
 import {Prop, PropOrigin, useComponentProps} from "../state/props";
-import {resetComponentProp, setComponentPropValue} from "../state/main/actions";
+import {setComponentPropValue} from "../state/main/actions";
 import {useComponent} from "../state/components/hooks";
 import {
     modulesProp,
@@ -12,7 +12,6 @@ import {
     rotationProp,
     scaleProp
 } from "./config";
-import UnknownInput from "./inputs/UnknownInput";
 import {ComponentModules, Module} from "./ComponentModules";
 import {PropInputOptions} from "./inputs/Options";
 import {StyledPaddedBox, StyledPlainButton} from "../ManagerSidebar";

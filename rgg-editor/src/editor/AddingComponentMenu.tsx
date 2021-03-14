@@ -11,8 +11,7 @@ import {
 import {useProxy} from "valtio";
 import {ItemIcon, SceneItemIcon, StyledClickable, StyledIcon} from "./SceneList";
 import {FaMousePointer} from "react-icons/fa";
-import {getAddable, useAddableStore} from "../scene/addables";
-import {addUnsavedComponent, setSelectedComponents} from "./state/main/actions";
+import {useAddableStore} from "../scene/addables";
 
 const StyledContainer = styled('div', {
     position: 'absolute',
@@ -58,7 +57,7 @@ const AddableComponent: React.FC<{
             <div>
                 {label}
             </div>
-            <StyledIcon appearance="clickable" onClick={event => {
+            <StyledIcon appearance="clickable" onClick={(event: any) => {
                 event.stopPropagation()
                 setAddingComponent(addableId)
                 closeAddingComponent()

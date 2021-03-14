@@ -85,7 +85,7 @@ export const setAddingComponent = (id: string) => {
     uiProxy.addingComponentParent = uiProxy.displayAddingComponentParent
 }
 
-export const setDisplayAddingComponent = (adding: boolean, parent?: string = '') => {
+export const setDisplayAddingComponent = (adding: boolean, parent: string = '') => {
     if (adding) {
         setDisplayAddingComponentParent(parent)
     }

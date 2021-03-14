@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useEffect, useState} from "react"
+import React, {MutableRefObject, useEffect} from "react"
 import {BodyStatus} from "@dimforge/rapier3d-compat";
 import {useEditableProp} from "./useEditableProp";
 import {modulesProp, predefinedPropKeys} from "../editor/componentEditor/config";
@@ -9,7 +9,7 @@ import {
     RigidBodyColliderShape,
     RigidBodyType
 } from "../editor/componentEditor/inputs/RigidBody3DInput";
-import {Euler, Object3D, Quaternion, Vector3} from "three";
+import {Euler, Object3D, Quaternion} from "three";
 import {AddBodyDef, ColliderDef } from "rgg-engine/dist/physics/helpers/rapier3d/types";
 import {useBodyApi, useRapier3DBody} from "rgg-engine";
 import {useIsEditMode} from "../editor/state/editor";
@@ -82,12 +82,6 @@ const getQuaternionFromEuler = (x: number, y: number, z: number) => {
     const quaternion = new Quaternion()
     quaternion.setFromEuler(euler)
     return quaternion
-}
-
-const v3 = new Vector3()
-
-const getMeshWorldPosition = (object: Object3D) => {
-    return object.getWorldPosition(v3)
 }
 
 const RigidBody3DModule: React.FC<Props & {
