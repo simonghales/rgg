@@ -4,7 +4,7 @@ import EditFloor from "./EditFloor";
 import EditCamera from "./EditCamera";
 import {setComponentPropValue, setSelectedComponents} from "../editor/state/main/actions";
 import {useSelectedComponents} from "../editor/state/main/hooks";
-import {editorStateProxy} from "../editor/state/editor";
+import {editorStateProxy, useIsEditMode} from "../editor/state/editor";
 import {ref} from "valtio";
 import {useMeshHelper} from "./InteractiveMesh";
 import {useDraggableMesh} from "./useDraggableMesh";
@@ -22,10 +22,12 @@ const useComponentsAreSelected = () => {
 export const useEditCanvasProps = () => {
 
     const componentsSelected = useComponentsAreSelected()
+    const isEditMode = useIsEditMode()
 
     return useMemo(() => {
         return {
             onPointerMissed: () => {
+                if (!isEditMode) return
                 if (componentsSelected) {
                     setSelectedComponents({})
                 }
@@ -144,10 +146,15 @@ const EditTools: React.FC = () => {
 }
 
 export const EditCanvas: React.FC = ({children}) => {
+    const isEditMode = useIsEditMode()
     return (
         <>
             {children}
-            <EditTools/>
+            {
+                isEditMode && (
+                    <EditTools/>
+                )
+            }
             <TemporaryComponents/>
         </>
     )

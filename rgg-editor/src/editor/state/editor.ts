@@ -24,7 +24,7 @@ export const editorStateProxy = proxy<{
         z: number,
     },
 }>({
-    editMode: false, // todo - set back to true
+    editMode: true,
     transformMode: EditorTransformMode.translate,
     groupPortalRef: null,
     orbitRef: null,

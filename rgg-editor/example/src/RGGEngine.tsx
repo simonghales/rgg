@@ -5,6 +5,7 @@ import {useIsEditMode} from "../../src";
 
 const worker = new Worker("../src/webWorker.ts")
 
+
 const RGGEngine: React.FC = ({children}) => {
     const isEditing = useIsEditMode()
     return (

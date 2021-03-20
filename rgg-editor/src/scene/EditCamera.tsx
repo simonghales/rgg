@@ -3,7 +3,7 @@ import {PerspectiveCamera as PCamera, Vector3} from "three";
 import {OrbitControls, PerspectiveCamera} from "@react-three/drei";
 import {useThree} from "react-three-fiber";
 import {ref, useProxy} from "valtio";
-import {editorStateProxy} from "../editor/state/editor";
+import {editorStateProxy, useIsEditMode} from "../editor/state/editor";
 import {useCallbackRef, useHotkeys} from "../custom/hooks";
 import {isSpacePressed} from "../editor/hotkeys";
 
@@ -18,14 +18,25 @@ const offsets = {
 const EditCamera: React.FC = () => {
     const cameraRef = useRef<PCamera>(null!)
     const orbitRef = useRef<OrbitControls>(null!)
+    const isEditMode = useIsEditMode()
     const {
         setDefaultCamera,
     } = useThree()
 
+    useLayoutEffect(() => {
+        if (isEditMode) {
+            setDefaultCamera(cameraRef.current)
+        }
+    }, [isEditMode])
+
     useEffect(() => {
-        setDefaultCamera(cameraRef.current)
         editorStateProxy.orbitRef = ref(orbitRef)
     }, [])
+
+    useEffect(() => {
+        if (!orbitRef.current) return
+        orbitRef.current.enabled = isEditMode
+    }, [isEditMode])
 
     useLayoutEffect(() => {
         cameraRef.current.layers.enable(31)
