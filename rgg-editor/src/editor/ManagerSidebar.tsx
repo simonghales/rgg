@@ -3,6 +3,7 @@ import {SceneList, StyledButton} from "./SceneList";
 import { styled } from "./ui/sitches.config";
 import {setSelectedComponents} from "./state/main/actions";
 import {addingComponentClosed, setDisplayAddingComponent, uiProxy} from "./state/ui";
+import {SceneTreeView} from "./sceneTree/SceneTreeView";
 
 const StyledContainer = styled('div', {
     display: 'grid',
@@ -124,12 +125,14 @@ export const ManagerSidebar: React.FC = () => {
                     </select>
                 </div>
             </StyledHeader>
-            <StyledBox onClick={() => {
+            <StyledBox style={{
+                overflowY: 'auto',
+            }} onClick={() => {
                 if (!uiProxy.displayAddingComponent && addingComponentClosed < Date.now() - 50) {
                     setSelectedComponents({})
                 }
             }}>
-                <SceneList view={selectedView}/>
+                <SceneTreeView/>
             </StyledBox>
             <StyledPaddedBox visual="bottom">
                 <StyledPlainButton shape="full" onClick={() => {

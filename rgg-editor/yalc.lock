@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "rgg-engine": {
-      "signature": "54fe07dcc1a83e12c0460d9f8867e4e9",
+      "signature": "146f4e7358420c2d23e7891654578e6d",
       "link": true,
       "replaced": "^0.4.5-beta.1"
     }

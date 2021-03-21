@@ -1,19 +1,15 @@
 import React from "react"
 import GoogleFontLoader from "react-google-font-loader"
 import "./ui/sitches.config"
-
 import {styled} from "./ui/sitches.config"
 import {ManagerSidebar} from "./ManagerSidebar";
 import {StateSidebar} from "./StateSidebar";
 import {useHotkeysListener} from "./hotkeys";
 import {AddingComponentMenu} from "./AddingComponentMenu";
 import {ContextMenu} from "./ContextMenu";
-import {StyledBox} from "./ui/generics"
-import {BiExpand, BiMove, BiRotateLeft} from "react-icons/bi";
-import {StyledButton} from "./SceneList";
-import {EditorTransformMode, setTransformMode, useTransformMode} from "./state/editor";
 import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 import {Header} from "./TopBar";
+import {OverlayControls} from "./OverlayControls";
 
 const StyledDefaultContainer = styled('div', {
     color: '$lightPurple',
@@ -30,11 +26,13 @@ const StyledContainer = styled(StyledDefaultContainer, {
     bottom: 0,
     display: 'grid',
     gridTemplateRows: 'auto minmax(0, 1fr)',
+    overflow: 'hidden',
 })
 
 const StyledMain = styled('div', {
     display: 'grid',
     gridTemplateColumns: 'auto minmax(0, 1fr) auto',
+    overflow: 'hidden',
 })
 
 const StyledSidebar = styled('div', {
@@ -42,64 +40,12 @@ const StyledSidebar = styled('div', {
     backgroundColor: '$darkGreyLighter',
     position: 'relative',
     maxHeight: '100%',
+    overflowY:  'hidden',
 })
 
 const StyledContent = styled('div', {
     position: 'relative',
 })
-
-const StyledBoxButton: any = styled(StyledButton, {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '26px',
-    height: '26px',
-    cursor: 'pointer',
-    variants: {
-        appearance: {
-            active: {
-                backgroundColor: '$purple',
-                color: '$white',
-            }
-        }
-    }
-})
-
-const OverlayControls: React.FC = () => {
-
-    const transformMode = useTransformMode()
-
-    return (
-        <StyledBox css={{
-            position: 'absolute',
-            top: '$1',
-            right: '$1',
-            zIndex: '$high',
-            display: 'grid',
-            gridTemplateColumns: 'auto auto auto',
-            backgroundColor: '$darkGrey',
-        }}>
-            <StyledBoxButton appearance={transformMode === EditorTransformMode.translate ? 'active' : ''}
-            onClick={() => {
-                setTransformMode(EditorTransformMode.translate)
-            }}>
-                <BiMove size={16}/>
-            </StyledBoxButton>
-            <StyledBoxButton appearance={transformMode === EditorTransformMode.rotate ? 'active' : ''}
-            onClick={() => {
-                setTransformMode(EditorTransformMode.rotate)
-            }}>
-                <BiRotateLeft size={16}/>
-            </StyledBoxButton>
-            <StyledBoxButton appearance={transformMode === EditorTransformMode.scale ? 'active' : ''}
-            onClick={() => {
-                setTransformMode(EditorTransformMode.scale)
-            }}>
-                <BiExpand size={15}/>
-            </StyledBoxButton>
-        </StyledBox>
-    )
-}
 
 export const Editor: React.FC = ({children}) => {
     useHotkeysListener()
