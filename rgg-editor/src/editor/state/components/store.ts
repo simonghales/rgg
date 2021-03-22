@@ -19,6 +19,8 @@ export const useComponentsStore = create<ComponentsStore>(() => ({
     componentsThatCanHaveChildren: {},
 }))
 
+export const componentsSelector = (state: ComponentsStore) => state.components
+
 export const setComponentInitialProps = (uid: string, initialProps: AnyProps) => {
     // @ts-ignore
     useComponentsStore.setState(state => {

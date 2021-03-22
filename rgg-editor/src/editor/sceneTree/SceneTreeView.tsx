@@ -1,21 +1,27 @@
-import React, {useState} from "react";
-import SortableTree, {TreeItem} from 'react-sortable-tree';
+import React, {useMemo} from "react";
+import SortableTree, {ExtendedNodeData, TreeItem} from 'react-sortable-tree';
 import 'react-sortable-tree/style.css';
 import { styled } from "../ui/sitches.config";
 import {SceneNodeRenderer} from "./SceneNodeRenderer";
+import {useTreeData} from "./useTreeData";
 
-const treeData: TreeItem[] = [
-    {
-        id: 'a',
-        expanded: true,
-        children: [{
-            id: 'b',
-        }],
-    },
-    {
-        id: 'c',
-    }
-]
+const canNodeHaveChildren = (node: any) => {
+    return node.canHaveChildren ?? false
+}
+
+const canDrag = (data: ExtendedNodeData) => {
+    return data.node.canDrag ?? true
+}
+
+const checkIfTreeIsValid = (data: TreeItem[]) => {
+    let valid = true
+    data.forEach(node => {
+        if (node.children && node.children.length > 0 && !node.canHaveChildren) {
+            valid = false
+        }
+    })
+    return valid
+}
 
 const StyledContainer = styled('div', {
     height: '100%',
@@ -34,12 +40,23 @@ const StyledContainer = styled('div', {
 
 export const SceneTreeView: React.FC = () => {
 
-    const [data, setData] = useState(treeData)
+    const [data, setData] = useTreeData()
+
+    const {
+        onChange,
+    } = useMemo(() => ({
+        onChange: (updatedData: TreeItem[]) => {
+            if (!checkIfTreeIsValid(updatedData)) {
+                return
+            }
+            setData(updatedData)
+        }
+    }), [setData])
 
     return (
         <StyledContainer>
-            <SortableTree treeData={data} onChange={setData} rowHeight={32} scaffoldBlockPxWidth={16}
-                          nodeContentRenderer={SceneNodeRenderer}/>
+            <SortableTree treeData={data} onChange={onChange} canDrag={canDrag} rowHeight={32} scaffoldBlockPxWidth={8}
+                          nodeContentRenderer={SceneNodeRenderer} canNodeHaveChildren={canNodeHaveChildren}/>
         </StyledContainer>
     );
 };

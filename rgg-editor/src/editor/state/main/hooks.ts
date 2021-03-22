@@ -1,4 +1,5 @@
 import {useMainStateStore} from "./store";
+import {useCallback} from "react";
 
 export const useSelectedComponents = () => {
     return useMainStateStore(state => state.selectedComponents)
@@ -34,5 +35,9 @@ export const useIsDeactivated = (id: string) => {
 }
 
 export const useComponentName = (id: string) => {
-    return useMainStateStore(state => state.componentNames[id]?.name) ?? ''
+    return useMainStateStore(useCallback(state => state.componentNames[id]?.name, [id])) ?? ''
+}
+
+export const useGroup = (id: string) => {
+    return useMainStateStore(useCallback(state => state.groups[id], [id]))
 }

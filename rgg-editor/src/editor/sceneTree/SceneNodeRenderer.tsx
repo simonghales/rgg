@@ -1,74 +1,66 @@
-import React, {useMemo} from "react";
-import {isDescendant, NodeRendererProps} from "react-sortable-tree";
-import { styled } from "../ui/sitches.config";
+import React, {useEffect, useMemo, useRef} from "react";
+import {NodeRendererProps} from "react-sortable-tree";
+import {ScreenTreeNode} from "./ScreenTreeNode";
 
 interface Props extends NodeRendererProps
 
-const StyledWrapper = styled('div', {
-})
-
-const StyledContainer = styled('div', {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    alignItems: 'center',
-})
-
-const StyledGrabHandle = styled('div', {
-    width: '16px',
-    height: '16px',
-    cursor: 'pointer',
-})
-
-const StyledNameWrapper = styled('div', {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    columnGap: '$1b',
-})
-
 export const SceneNodeRenderer: React.FC<Props> = ({
                                                        node,
-                                                       connectDragSource,
-                                                        connectDragPreview,
-                                                       canDrag,
-    draggedNode,
-    didDrop,
-    isDragging,
                                                        path,
+                                                       connectDragSource,
+                                                       connectDragPreview,
+                                                       didDrop,
+                                                       isDragging,
+                                                       toggleChildrenVisibility,
+                                                       treeIndex,
+                                                        canDrag,
                                                    }) => {
 
-    console.log('path', path, node)
+    const {id} = node
 
-    const handle = useMemo(() => {
-        return connectDragSource(
-            <div className="dragHandle">
-                <StyledGrabHandle/>
-            </div>, {
-            dropEffect: 'copy',
-        });
-    }, [canDrag, node])
+    const {
+        onIconClick,
+    } = useMemo(() => ({
+        onIconClick: () => {
+            if (toggleChildrenVisibility &&
+                node.children &&
+                node.children.length > 0) {
+                toggleChildrenVisibility({
+                    node,
+                    path,
+                    treeIndex,
+                })
+            }
+        }
+    }), [toggleChildrenVisibility, node, path, treeIndex])
 
-    const isDraggedDescendant = draggedNode && isDescendant(draggedNode, node);
+    const onIconClickRef = useRef(onIconClick)
+
+    useEffect(() => {
+        onIconClickRef.current = onIconClick
+    }, [onIconClick])
+
     const isLandingPadActive = !didDrop && isDragging;
 
+    const hasChildren = (node.children && node.children.length > 0)
+
+    const expanded = node.expanded ?? false
+
+    const isGroup = node.isGroup ?? false
+
     return (
-        <StyledWrapper>
+        <div>
             {
                 connectDragPreview(
                     <div>
-                        <StyledContainer>
-                            {handle}
-                            <StyledNameWrapper>
-                                <div>
-                                    NAME: {node.id} TESTING TESTING TESTING TESTING
-                                </div>
-                                <div>
-                                    Toggle...
-                                </div>
-                            </StyledNameWrapper>
-                        </StyledContainer>
+                        <ScreenTreeNode canDrag={canDrag} expanded={expanded} isGroup={isGroup}
+                                        hasChildren={hasChildren ?? false} onIconClickRef={onIconClickRef}
+                                        connectDragSource={connectDragSource} id={id}
+                                        isLandingPadActive={isLandingPadActive}/>
                     </div>
                 )
             }
-        </StyledWrapper>
+        </div>
     );
+
 };
