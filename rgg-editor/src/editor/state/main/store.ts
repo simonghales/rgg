@@ -7,6 +7,7 @@ export const initialStoreState: MainStateStore = {
     components: {},
     sharedComponents: {},
     selectedComponents: {},
+    sceneTree: [],
     componentsTree: {},
     unsavedComponents: {},
     deactivatedComponents: {},

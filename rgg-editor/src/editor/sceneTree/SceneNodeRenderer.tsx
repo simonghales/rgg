@@ -53,10 +53,10 @@ export const SceneNodeRenderer: React.FC<Props> = ({
             {
                 connectDragPreview(
                     <div>
-                        <ScreenTreeNode canDrag={canDrag} expanded={expanded} isGroup={isGroup}
+                        <ScreenTreeNode canDrag={canDrag} expanded={expanded} isGroup={isGroup} treeIndex={treeIndex}
                                         hasChildren={hasChildren ?? false} onIconClickRef={onIconClickRef}
                                         connectDragSource={connectDragSource} id={id}
-                                        isLandingPadActive={isLandingPadActive}/>
+                                        isLandingPadActive={isLandingPadActive} key={id}/>
                     </div>
                 )
             }

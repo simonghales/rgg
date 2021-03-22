@@ -11,6 +11,12 @@ type SharedComponent = {
     appliedState?: StateData,
 }
 
+export type SceneTreeItem = {
+    id: string,
+    children?: SceneTreeItem[],
+    expanded?: boolean,
+}
+
 export type MainStateStore = {
     componentNames: {
         [key: string]: {
@@ -26,6 +32,7 @@ export type MainStateStore = {
     selectedComponents: {
         [key: string]: boolean,
     },
+    sceneTree: SceneTreeItem[],
     componentsTree: {
         [key: string]: {
             children: string[],

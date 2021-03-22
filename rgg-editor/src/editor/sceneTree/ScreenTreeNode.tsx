@@ -5,6 +5,9 @@ import {FaCube, FaFolder, FaFolderOpen} from "react-icons/fa";
 import {StyledHeading} from "../ui/typography";
 import {useComponentName, useGroup} from "../state/main/hooks";
 import {useComponent} from "../state/components/hooks";
+import {setSelectedComponents} from "../state/main/actions";
+import {useIsComponentHovered} from "../state/ui";
+import {useIsItemSelected} from "../SceneList";
 
 const StyledWrapper = styled('div', {
     paddingRight: '$2',
@@ -19,15 +22,20 @@ const StyledContainer = styled('div', {
     padding: '$1',
     cursor: 'pointer',
     borderRadius: '$1',
-    '&:hover': {
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
     variants: {
         theme: {
+            default: {
+                '&:hover': {
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                },
+            },
             active: {
                 backgroundColor: 'rgba(0,0,0,0.5)',
             },
-            parentDragging: {},
+            selected: {
+                backgroundColor: '$purple',
+                color: '$white',
+            },
         },
     },
 })
@@ -59,7 +67,6 @@ const StyledName = styled(StyledHeading, {
 
 const useGroupData = (id: string) => {
     const group = useGroup(id)
-    console.log('group', group, id)
     return group?.name ?? ''
 }
 
@@ -80,6 +87,7 @@ const useName = (id: string, isGroup: boolean) => {
 
 const Component: React.FC<{
     id: string,
+    treeIndex: number,
     isGroup: boolean,
     canDrag: boolean,
     expanded: boolean,
@@ -89,7 +97,8 @@ const Component: React.FC<{
     onIconClickRef: MutableRefObject<() => void>,
 }> = ({
           id,
-            isGroup,
+          treeIndex,
+          isGroup,
           canDrag,
           expanded,
           hasChildren,
@@ -99,6 +108,8 @@ const Component: React.FC<{
       }) => {
 
     const name = useName(id, isGroup)
+    const isHovered = useIsComponentHovered(id)
+    const isSelected = useIsItemSelected(id)
 
     const icon = useMemo(() => {
         if (isGroup) {
@@ -114,10 +125,14 @@ const Component: React.FC<{
         onClick,
     } = useMemo(() => ({
         onClick: (event: MouseEvent) => {
-            console.log('click')
             event.stopPropagation()
+            // console.log('click', id, treeIndex)
+            console.log('set selected', id)
+            setSelectedComponents({
+                [id]: true,
+            })
         },
-    }), [])
+    }), [treeIndex])
 
     const handle = useMemo(() => {
         const content = (
@@ -140,7 +155,7 @@ const Component: React.FC<{
         <StyledWrapper>
             <StyledContainer onClick={onClick}
                              theme={
-                                 isLandingPadActive ? 'active' : ''
+                                 isSelected ? 'selected' : (isLandingPadActive || isHovered) ? 'active' : 'default'
                              }>
                 {handle}
                 <StyledNameWrapper>

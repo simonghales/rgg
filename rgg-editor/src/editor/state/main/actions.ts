@@ -1,6 +1,6 @@
 import {getMainStateStoreState, setMainStateStoreState} from "./store";
 import {TreeData} from "@atlaskit/tree";
-import {MainStateStore, StoredComponentState} from "./types";
+import {MainStateStore, SceneTreeItem, StoredComponentState} from "./types";
 import {Addable} from "../../../scene/addables";
 import {generateUid, getCombinedId} from "../../../utils/ids";
 import {predefinedPropKeys} from "../../componentEditor/config";
@@ -8,6 +8,7 @@ import {ROOT_ID} from "../../SceneList";
 import {addToClipboard, clearClipboard, clipboardProxy, PendingPasteType} from "../editor";
 import {getSelectedComponents} from "./getters";
 import {storeSnapshot} from "../history/actions";
+import {ExtendedTreeItem} from "../../sceneTree/useTreeData";
 
 export const resetComponentProp = (componentId: string, propKey: string) => {
     setMainStateStoreState(state => {
@@ -435,4 +436,23 @@ export const handlePaste = () => {
         }
     }
     clearClipboard()
+}
+
+const mapExtendedTreeItemToSceneTreeItem = (data: ExtendedTreeItem): SceneTreeItem => {
+    return {
+        id: data.id,
+        children: data.children ? (data.children as ExtendedTreeItem[]).map(mapExtendedTreeItemToSceneTreeItem) : [],
+        expanded: data.expanded,
+    }
+}
+
+export const convertTreeItemsToSceneTree = (data: ExtendedTreeItem[]) => {
+    return data.map(mapExtendedTreeItemToSceneTreeItem)
+}
+
+export const setSceneTree = (data: ExtendedTreeItem[]) => {
+    const sceneTree: SceneTreeItem[] = convertTreeItemsToSceneTree(data)
+    setMainStateStoreState({
+        sceneTree,
+    })
 }
