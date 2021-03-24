@@ -1,4 +1,5 @@
 import React from "react"
+import {GlobalHotKeys} from "react-hotkeys";
 import GoogleFontLoader from "react-google-font-loader"
 import "./ui/sitches.config"
 import {styled} from "./ui/sitches.config"
@@ -10,6 +11,7 @@ import {ContextMenu} from "./ContextMenu";
 import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 import {Header} from "./TopBar";
 import {OverlayControls} from "./OverlayControls";
+import {hotkeysHandlers, keyMap} from "./state/inputs";
 
 const StyledDefaultContainer = styled('div', {
     color: '$lightPurple',
@@ -50,7 +52,7 @@ const StyledContent = styled('div', {
 export const Editor: React.FC = ({children}) => {
     useHotkeysListener()
     return (
-        <>
+        <GlobalHotKeys handlers={hotkeysHandlers} keyMap={keyMap}>
             <GoogleFontLoader
                 fonts={[
                     {
@@ -79,6 +81,6 @@ export const Editor: React.FC = ({children}) => {
                 </StyledMain>
                 <ContextMenu/>
             </StyledContainer>
-        </>
+        </GlobalHotKeys>
     )
 }

@@ -54,6 +54,9 @@ export type MainStateStore = {
     groupedComponents: {
         [key: string]: string,
     },
+    componentsVisibility: {
+        [key: string]: boolean,
+    },
 }
 
 export type StateData = {

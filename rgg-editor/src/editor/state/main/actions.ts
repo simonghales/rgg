@@ -91,6 +91,20 @@ export const updateSelectedComponents = (updateFn: (state: any) => any) => {
     }))
 }
 
+export const deselectComponents = (components: string[]) => {
+    setMainStateStoreState(state => {
+        const selected = {
+            ...state.selectedComponents,
+        }
+        components.forEach(id => {
+            delete selected[id]
+        })
+        return {
+            selectedComponents: selected,
+        }
+    })
+}
+
 export const setSelectedComponents = (selected: {
     [id: string]: true,
 }, replace: boolean = true) => {
@@ -414,6 +428,7 @@ export const cloneComponents = (components: string[]) => {
 }
 
 const handlePasteComponents = (components: string[]) => {
+    console.log('handlePasteComponents', components)
     storeSnapshot()
     const addedComponents: {
         [key: string]: true
@@ -454,5 +469,16 @@ export const setSceneTree = (data: ExtendedTreeItem[]) => {
     const sceneTree: SceneTreeItem[] = convertTreeItemsToSceneTree(data)
     setMainStateStoreState({
         sceneTree,
+    })
+}
+
+export const setComponentVisibility = (id: string, visible: boolean) => {
+    setMainStateStoreState(state => {
+        return {
+            componentsVisibility: {
+                ...state.componentsVisibility,
+                [id]: visible,
+            }
+        }
     })
 }

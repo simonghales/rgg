@@ -1,15 +1,18 @@
 import React, {MutableRefObject, useEffect, useMemo, useRef, useState} from "react"
 import {useEditableProp} from "./useEditableProp";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
-import {setComponentHovered} from "../editor/state/ui";
+import {setComponentHovered, useIsComponentHovered} from "../editor/state/ui";
 import {useEditableContext, useEditableId, useEditableIsSoleSelected, useIsEditableSelected} from "./Editable";
 import {setSelectedComponents} from "../editor/state/main/actions";
 import {BoxHelper, Object3D} from "three";
 import {useHelper} from "@react-three/drei";
-import {isCommandPressed, isShiftPressed} from "../editor/hotkeys";
 import {useDraggableMesh} from "./useDraggableMesh";
 import {editorStateProxy, useGroupPortalRef, useIsEditMode} from "../editor/state/editor";
 import {ref} from "valtio";
+import {useIsHidden} from "../editor/state/main/hooks";
+import { Context } from "./InteractiveMesh.context";
+import { isCommandPressed } from "../editor/state/inputs";
+import { isShiftPressed } from "../editor/state/inputs";
 
 export const EDITOR_LAYER = 31
 
@@ -39,6 +42,8 @@ export const InteractiveMesh: React.FC = ({children}) => {
     const isMultipleSelected = isSelected && !isSoleSelected
     const groupPortalRef = useGroupPortalRef()
     const {setSharedProp} = useEditableContext()
+    const isHovered = useIsComponentHovered(id)
+    const isHidden = useIsHidden(id)
 
     useEffect(() => {
         if (!isMultipleSelected || !groupPortalRef) return
@@ -83,13 +88,21 @@ export const InteractiveMesh: React.FC = ({children}) => {
         return
     }, [pointerOver, id])
 
+    const canInteract = isEditMode && !isHidden
+
+    useEffect(() => {
+        if (!canInteract) {
+            setPointerOver(false)
+        }
+    }, [canInteract])
+
     const {
         onPointerUp,
         onPointerOver,
         onPointerOut,
     } = useMemo(() => ({
         onPointerUp: (event: any) => {
-            if (!isEditMode) return
+            if (!canInteract) return
             let skip = false
             event.intersections.forEach(({eventObject}: any) => {
                 const eventObjectId = eventObject.userData.id
@@ -108,21 +121,21 @@ export const InteractiveMesh: React.FC = ({children}) => {
             }, !add)
         },
         onPointerOver: (event: any) => {
-            if (!isEditMode) return
+            if (!canInteract) return
             event.stopPropagation()
             if (editorStateProxy.transformActive) return
             setPointerOver(true)
         },
         onPointerOut: (event: any) => {
-            if (!isEditMode) return
+            if (!canInteract) return
             event.stopPropagation()
             setPointerOver(false)
         },
-    }), [isEditMode, parentPath])
+    }), [canInteract, parentPath])
 
     const groupRef = useRef<Object3D>(null!)
 
-    useMeshHelper(groupRef, (isSelected || pointerOver) && isEditMode)
+    useMeshHelper(groupRef, (isSelected || pointerOver || isHovered) && isEditMode)
     useDraggableMesh(id, isSoleSelected, {
         passedRef: groupRef,
     })
@@ -155,14 +168,19 @@ export const InteractiveMesh: React.FC = ({children}) => {
     }, [isEditMode, position, rotation, scale])
 
     const content = (
-        <group ref={groupRef}
-               onPointerUp={onPointerUp}
-               onPointerOver={onPointerOver}
-               onPointerOut={onPointerOut} userData={{
-                   id,
-                }}>
-            {children}
-        </group>
+        <Context.Provider value={{
+            parentHidden: isHidden,
+        }}>
+            <group ref={groupRef}
+                   visible={!isHidden || !isEditMode}
+                   onPointerUp={onPointerUp}
+                   onPointerOver={onPointerOver}
+                   onPointerOut={onPointerOut} userData={{
+                       id,
+                    }}>
+                {children}
+            </group>
+        </Context.Provider>
     )
 
     return content

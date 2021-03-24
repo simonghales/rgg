@@ -13,6 +13,7 @@ export const initialStoreState: MainStateStore = {
     deactivatedComponents: {},
     groups: {},
     groupedComponents: {},
+    componentsVisibility: {},
 }
 
 export let revertState: MainStateStore = initialStoreState

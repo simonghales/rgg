@@ -49,18 +49,23 @@ export const addStoredComponent = (position: {x: number, y: number, z: number}) 
     uiProxy.addingComponentParent = ''
 }
 
-export const setComponentHovered = (id: string) => {
-    uiProxy.hoveredComponents = {
-        ...uiProxy.hoveredComponents,
-        [id]: true,
-    }
-    return () => {
+export const setComponentHovered = (id: string, hovered: boolean = true) => {
+    const deleteHovered = () => {
         const update = {
             ...uiProxy.hoveredComponents,
         }
         delete update[id]
         uiProxy.hoveredComponents = update
     }
+    if (hovered) {
+        uiProxy.hoveredComponents = {
+            ...uiProxy.hoveredComponents,
+            [id]: true,
+        }
+    } else {
+        deleteHovered()
+    }
+    return deleteHovered
 }
 
 export const useIsComponentHovered = (id: string) => {

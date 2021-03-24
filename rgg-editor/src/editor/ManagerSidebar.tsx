@@ -110,20 +110,12 @@ export enum VIEWS {
 
 export const ManagerSidebar: React.FC = () => {
 
-    const [selectedView, setSelectedView] = useState(VIEWS.active)
-
     return (
         <StyledContainer>
             <StyledHeader visual="top">
                 <StyledHeading>
                     Scene
                 </StyledHeading>
-                <div>
-                    <select value={selectedView} onChange={event => setSelectedView(event.target.value as VIEWS)}>
-                        <option value={VIEWS.active}>Active</option>
-                        <option value={VIEWS.deactivated}>Deactivated</option>
-                    </select>
-                </div>
             </StyledHeader>
             <StyledBox style={{
                 overflowY: 'auto',

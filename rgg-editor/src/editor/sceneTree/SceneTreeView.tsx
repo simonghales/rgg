@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useCallback, useEffect, useMemo, useRef} from "react";
 import SortableTree, {
     ExtendedNodeData,
     FullTree,
@@ -11,7 +11,10 @@ import { styled } from "../ui/sitches.config";
 import {SceneNodeRenderer} from "./SceneNodeRenderer";
 import {ExtendedTreeItem, useTreeData} from "./useTreeData";
 import {isEqual, sortBy} from "lodash-es";
-import {groupComponents, setSceneTree} from "../state/main/actions";
+import {groupComponents, setSceneTree, setSelectedComponents} from "../state/main/actions";
+import { Context } from "./SceneTreeView.context";
+import {sceneTreeViewState} from "./SceneTreeView.state";
+import {storeSnapshot} from "../state/history/actions";
 
 const canNodeHaveChildren = (node: any) => {
     return node.canHaveChildren ?? false
@@ -77,7 +80,6 @@ export const SceneTreeView: React.FC = () => {
         onChange,
     } = useMemo(() => ({
         onMoveNode: (data: NodeData & FullTree & OnMovePreviousAndNextLocation) => {
-            console.log('data', data)
 
             const parentPath = data.prevPath.length > 1 ? data.prevPath[data.prevPath.length - 2] : ''
             const nextParentPath = data.nextPath.length > 1 ? data.nextPath[data.nextPath.length - 2] : ''
@@ -94,22 +96,66 @@ export const SceneTreeView: React.FC = () => {
             }
         },
         onChange: (updatedData: TreeItem[]) => {
+
+            storeSnapshot()
+
             if (!checkIfTreeIsValid(updatedData)) {
                 console.warn('Invalid tree.')
                 return
             }
             setData(updatedData)
             setSceneTree(updatedData as ExtendedTreeItem[])
-        }
+        },
     }), [setData])
 
+    const selectComponentsInRange = useCallback((id: string, treeIndex: number) => {
+        const range: string[] = []
+        const addToRange = (item: ExtendedTreeItem) => {
+            range.push(item.id)
+            if (item.children) {
+                (item.children as ExtendedTreeItem[]).forEach(addToRange)
+            }
+        }
+        (data as ExtendedTreeItem[]).forEach(addToRange)
+        const lastSelectedIndex = range.indexOf(sceneTreeViewState.lastSelected)
+        if (lastSelectedIndex === -1) {
+            // todo - handle
+            return
+        }
+        let lowest = treeIndex
+        let highest = lastSelectedIndex
+        if (treeIndex > lastSelectedIndex) {
+            highest = treeIndex
+            lowest = lastSelectedIndex
+        }
+
+        const selected = range.slice(lowest, highest + 1)
+        const selectedObj: Record<string, true> = {}
+
+        selected.forEach(id => {
+            selectedObj[id] = true
+        })
+
+        setSelectedComponents(selectedObj)
+    }, [data])
+
+    const selectComponentsInRangeRef = useRef(selectComponentsInRange)
+
+    useEffect(() => {
+        selectComponentsInRangeRef.current = selectComponentsInRange
+    }, [selectComponentsInRange])
+
     return (
-        <StyledContainer>
-            <SortableTree treeData={data} onChange={onChange} canDrag={canDrag}
-                          rowHeight={32} scaffoldBlockPxWidth={8}
-                          nodeContentRenderer={SceneNodeRenderer} canNodeHaveChildren={canNodeHaveChildren}
-                          onMoveNode={onMoveNode}
-            />
-        </StyledContainer>
+        <Context.Provider value={{
+            selectComponentsInRangeRef,
+        }}>
+            <StyledContainer>
+                <SortableTree treeData={data} onChange={onChange} canDrag={canDrag}
+                              rowHeight={34} scaffoldBlockPxWidth={8}
+                              nodeContentRenderer={SceneNodeRenderer} canNodeHaveChildren={canNodeHaveChildren}
+                              onMoveNode={onMoveNode}
+                />
+            </StyledContainer>
+        </Context.Provider>
     );
 };

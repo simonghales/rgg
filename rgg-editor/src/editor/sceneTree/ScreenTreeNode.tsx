@@ -1,13 +1,18 @@
 import React, {memo, MutableRefObject, useMemo, useState} from "react"
 import {styled} from "../ui/sitches.config";
 import {NodeRendererProps} from "react-sortable-tree";
-import {FaCube, FaFolder, FaFolderOpen} from "react-icons/fa";
+import {FaCube, FaEye, FaEyeSlash, FaFolder, FaFolderOpen} from "react-icons/fa";
 import {StyledHeading} from "../ui/typography";
-import {useComponentName, useGroup} from "../state/main/hooks";
+import {useComponentName, useGroup, useIsComponentVisible} from "../state/main/hooks";
 import {useComponent} from "../state/components/hooks";
-import {setSelectedComponents} from "../state/main/actions";
-import {useIsComponentHovered} from "../state/ui";
+import {deselectComponents, setComponentVisibility, setSelectedComponents} from "../state/main/actions";
+import {displayComponentContextMenu, setComponentHovered, useIsComponentHovered} from "../state/ui";
 import {useIsItemSelected} from "../SceneList";
+import {isCommandPressed, isShiftPressed} from "../state/inputs";
+import {useSelectComponentsInRangeRef} from "./SceneTreeView.context";
+import {setLastSelected} from "./SceneTreeView.state";
+import {StyledPlainButton} from "../ManagerSidebar";
+import {getMainStateStoreState} from "../state/main/store";
 
 const StyledWrapper = styled('div', {
     paddingRight: '$2',
@@ -15,7 +20,7 @@ const StyledWrapper = styled('div', {
 
 const StyledContainer = styled('div', {
     display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
+    gridTemplateColumns: 'auto 1fr auto',
     alignItems: 'center',
     height: '32px',
     columnGap: '$1b',
@@ -63,6 +68,26 @@ const StyledName = styled(StyledHeading, {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     flex: 1,
+    userSelect: 'none',
+})
+
+const StyledButton = styled(StyledPlainButton, {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '20px',
+    height: '20px',
+    opacity: 0,
+    [`${StyledContainer}:hover &`]: {
+        opacity: 1,
+    },
+    variants: {
+        theme: {
+            active: {
+                opacity: 1,
+            }
+        }
+    }
 })
 
 const useGroupData = (id: string) => {
@@ -110,6 +135,8 @@ const Component: React.FC<{
     const name = useName(id, isGroup)
     const isHovered = useIsComponentHovered(id)
     const isSelected = useIsItemSelected(id)
+    const isVisible = useIsComponentVisible(id)
+    const selectComponentsInRangeRef = useSelectComponentsInRangeRef()
 
     const icon = useMemo(() => {
         if (isGroup) {
@@ -123,16 +150,56 @@ const Component: React.FC<{
 
     const {
         onClick,
+        onPointerEnter,
+        onPointerLeave,
     } = useMemo(() => ({
         onClick: (event: MouseEvent) => {
             event.stopPropagation()
-            // console.log('click', id, treeIndex)
-            console.log('set selected', id)
-            setSelectedComponents({
-                [id]: true,
-            })
+
+            if (isShiftPressed()) {
+                selectComponentsInRangeRef.current(id, treeIndex)
+            } else if (isCommandPressed()) {
+                if (isSelected) {
+                    deselectComponents([id])
+                } else {
+                    setSelectedComponents({
+                        [id]: true,
+                    }, false)
+                    setLastSelected(id)
+                }
+            } else {
+                setSelectedComponents({
+                    [id]: true,
+                })
+                setLastSelected(id)
+            }
+
         },
-    }), [treeIndex])
+        onPointerEnter: () => {
+            setComponentHovered(id)
+        },
+        onPointerLeave: () => {
+            setComponentHovered(id, false)
+        }
+    }), [treeIndex, isSelected, selectComponentsInRangeRef])
+
+    const {
+        toggleVisibility
+    } = useMemo(() => ({
+        toggleVisibility: (event: any) =>{
+            event.stopPropagation()
+            setComponentVisibility(id, !isVisible)
+        }
+    }), [isVisible])
+
+    const {
+        onContextMenu,
+    } = useMemo(() => ({
+        onContextMenu: (event: any) => {
+            event.preventDefault()
+            displayComponentContextMenu(Object.keys(getMainStateStoreState().selectedComponents), [event.clientX, event.clientY])
+        }
+    }), [])
 
     const handle = useMemo(() => {
         const content = (
@@ -154,6 +221,9 @@ const Component: React.FC<{
     return (
         <StyledWrapper>
             <StyledContainer onClick={onClick}
+                             onContextMenu={onContextMenu}
+                             onPointerEnter={onPointerEnter}
+                             onPointerLeave={onPointerLeave}
                              theme={
                                  isSelected ? 'selected' : (isLandingPadActive || isHovered) ? 'active' : 'default'
                              }>
@@ -163,6 +233,13 @@ const Component: React.FC<{
                         {name}
                     </StyledName>
                 </StyledNameWrapper>
+                <div>
+                    <StyledButton onClick={toggleVisibility} theme={!isVisible ? 'active' : ''}>
+                        {
+                            isVisible ? <FaEye size={11}/> : <FaEyeSlash size={11}/>
+                        }
+                    </StyledButton>
+                </div>
             </StyledContainer>
         </StyledWrapper>
     )

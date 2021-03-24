@@ -1,5 +1,6 @@
 import {useMainStateStore} from "./store";
 import {useCallback} from "react";
+import {useIsParentHidden} from "../../../scene/InteractiveMesh.context";
 
 export const useSelectedComponents = () => {
     return useMainStateStore(state => state.selectedComponents)
@@ -40,4 +41,24 @@ export const useComponentName = (id: string) => {
 
 export const useGroup = (id: string) => {
     return useMainStateStore(useCallback(state => state.groups[id], [id]))
+}
+
+export const useIsComponentVisible = (id: string) => {
+    return useMainStateStore(useCallback(state => state.componentsVisibility[id] ?? true, [id]))
+}
+
+export const useComponentGroupId = (id: string) => {
+    return useMainStateStore(useCallback(state => state.groupedComponents[id], [id] ?? ''))
+}
+
+export const useIsParentGroupHidden = (id: string) => {
+    const groupId = useComponentGroupId(id)
+    return !useIsComponentVisible(groupId)
+}
+
+export const useIsHidden = (id: string) => {
+    const parentGroupHidden = useIsParentGroupHidden(id)
+    const parentHidden = useIsParentHidden()
+    const componentVisible = useIsComponentVisible(id)
+    return parentGroupHidden || parentHidden || !componentVisible
 }
