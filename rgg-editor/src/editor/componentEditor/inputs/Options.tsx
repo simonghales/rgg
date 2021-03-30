@@ -1,8 +1,8 @@
 import React, {useCallback, useMemo} from "react";
 import {PropOrigin} from "../../state/props";
-import {resetComponentProp, setSharedComponentPropValue} from "../../state/main/actions";
-import {StyledTextButton} from "../../ManagerSidebar";
-import {styled} from "../../ui/sitches.config";
+import {resetComponentProp, setSharedComponentPropValue} from "../../state/immer/actions";
+import {styled} from "../../ui/stitches.config";
+import {StyledTextButton} from "../../ui/buttons";
 
 const StyledHeaderOptions = styled('div', {
     display: 'flex',

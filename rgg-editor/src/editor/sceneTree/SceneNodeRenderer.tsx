@@ -2,7 +2,9 @@ import React, {useEffect, useMemo, useRef} from "react";
 import {NodeRendererProps} from "react-sortable-tree";
 import {ScreenTreeNode} from "./ScreenTreeNode";
 
-interface Props extends NodeRendererProps
+interface Props extends NodeRendererProps {
+
+}
 
 export const SceneNodeRenderer: React.FC<Props> = ({
                                                        node,

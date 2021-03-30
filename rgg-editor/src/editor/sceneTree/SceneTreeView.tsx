@@ -7,11 +7,11 @@ import SortableTree, {
     TreeItem
 } from 'react-sortable-tree';
 import 'react-sortable-tree/style.css';
-import { styled } from "../ui/sitches.config";
+import { styled } from "../ui/stitches.config";
 import {SceneNodeRenderer} from "./SceneNodeRenderer";
 import {ExtendedTreeItem, useTreeData} from "./useTreeData";
 import {isEqual, sortBy} from "lodash-es";
-import {groupComponents, setSceneTree, setSelectedComponents} from "../state/main/actions";
+import {groupComponents, setSceneTree, setSelectedComponents} from "../state/immer/actions";
 import { Context } from "./SceneTreeView.context";
 import {sceneTreeViewState} from "./SceneTreeView.state";
 import {storeSnapshot} from "../state/history/actions";
@@ -108,7 +108,7 @@ export const SceneTreeView: React.FC = () => {
         },
     }), [setData])
 
-    const selectComponentsInRange = useCallback((id: string, treeIndex: number) => {
+    const selectComponentsInRange = useCallback((_id: string, treeIndex: number) => {
         const range: string[] = []
         const addToRange = (item: ExtendedTreeItem) => {
             range.push(item.id)
@@ -130,13 +130,8 @@ export const SceneTreeView: React.FC = () => {
         }
 
         const selected = range.slice(lowest, highest + 1)
-        const selectedObj: Record<string, true> = {}
 
-        selected.forEach(id => {
-            selectedObj[id] = true
-        })
-
-        setSelectedComponents(selectedObj)
+        setSelectedComponents(selected)
     }, [data])
 
     const selectComponentsInRangeRef = useRef(selectComponentsInRange)

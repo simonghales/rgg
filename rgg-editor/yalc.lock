@@ -2,9 +2,9 @@
   "version": "v1",
   "packages": {
     "rgg-engine": {
-      "signature": "146f4e7358420c2d23e7891654578e6d",
+      "signature": "b7fbb79e8816a4129194b2b7de7734a7",
       "link": true,
-      "replaced": "^0.4.5-beta.1"
+      "replaced": "^0.4.12"
     }
   }
 }

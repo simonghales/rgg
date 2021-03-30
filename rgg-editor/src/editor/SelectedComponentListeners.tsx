@@ -1,6 +1,6 @@
 import React from "react"
 import {useShortcut} from "./shortcuts";
-import {copySelectedComponents, deleteSelectedComponents} from "./state/main/actions";
+import {copySelectedComponents, deleteSelectedComponents} from "./state/immer/actions";
 
 export const SelectedComponentListeners: React.FC = () => {
 

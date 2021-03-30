@@ -1,24 +1,23 @@
-import React, {memo, MutableRefObject, useMemo, useState} from "react"
-import {styled} from "../ui/sitches.config";
+import React, {memo, MutableRefObject, useMemo} from "react"
+import {styled} from "../ui/stitches.config";
 import {NodeRendererProps} from "react-sortable-tree";
 import {FaCube, FaEye, FaEyeSlash, FaFolder, FaFolderOpen} from "react-icons/fa";
 import {StyledHeading} from "../ui/typography";
-import {useComponentName, useGroup, useIsComponentVisible} from "../state/main/hooks";
+import {useComponentName, useGroup, useIsComponentVisible, useIsItemSelected} from "../state/immer/hooks";
 import {useComponent} from "../state/components/hooks";
-import {deselectComponents, setComponentVisibility, setSelectedComponents} from "../state/main/actions";
+import {deselectComponents, setComponentVisibility, setSelectedComponents} from "../state/immer/actions";
 import {displayComponentContextMenu, setComponentHovered, useIsComponentHovered} from "../state/ui";
-import {useIsItemSelected} from "../SceneList";
 import {isCommandPressed, isShiftPressed} from "../state/inputs";
 import {useSelectComponentsInRangeRef} from "./SceneTreeView.context";
 import {setLastSelected} from "./SceneTreeView.state";
-import {StyledPlainButton} from "../ManagerSidebar";
-import {getMainStateStoreState} from "../state/main/store";
+import {StyledRoundButton} from "../ui/buttons";
+import {getStoreState} from "../state/immer/immer";
 
 const StyledWrapper = styled('div', {
     paddingRight: '$2',
 })
 
-const StyledContainer = styled('div', {
+export const StyledComponentContainer = styled('div', {
     display: 'grid',
     gridTemplateColumns: 'auto 1fr auto',
     alignItems: 'center',
@@ -45,7 +44,7 @@ const StyledContainer = styled('div', {
     },
 })
 
-const StyledGrabHandle = styled('div', {
+export const StyledIconWrapper = styled('div', {
     width: '16px',
     height: '16px',
     cursor: 'pointer',
@@ -54,7 +53,10 @@ const StyledGrabHandle = styled('div', {
     alignItems: 'center',
 })
 
-const StyledNameWrapper = styled('div', {
+const StyledGrabHandle = styled(StyledIconWrapper, {
+})
+
+export const StyledNameWrapper = styled('div', {
     display: 'flex',
     alignItems: 'center',
     overflow: 'hidden',
@@ -63,7 +65,7 @@ const StyledNameWrapper = styled('div', {
     }
 })
 
-const StyledName = styled(StyledHeading, {
+export const StyledName = styled(StyledHeading, {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -71,22 +73,19 @@ const StyledName = styled(StyledHeading, {
     userSelect: 'none',
 })
 
-const StyledButton = styled(StyledPlainButton, {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '20px',
-    height: '20px',
+const StyledButton = styled(StyledRoundButton, {
     opacity: 0,
-    [`${StyledContainer}:hover &`]: {
+    borderColor: 'transparent',
+    [`${StyledComponentContainer}:hover &`]: {
         opacity: 1,
+        borderColor: '$purple',
     },
     variants: {
         theme: {
             active: {
                 opacity: 1,
-            }
-        }
+            },
+        },
     }
 })
 
@@ -153,7 +152,7 @@ const Component: React.FC<{
         onPointerEnter,
         onPointerLeave,
     } = useMemo(() => ({
-        onClick: (event: MouseEvent) => {
+        onClick: (event: any) => {
             event.stopPropagation()
 
             if (isShiftPressed()) {
@@ -162,15 +161,11 @@ const Component: React.FC<{
                 if (isSelected) {
                     deselectComponents([id])
                 } else {
-                    setSelectedComponents({
-                        [id]: true,
-                    }, false)
+                    setSelectedComponents([id], false)
                     setLastSelected(id)
                 }
             } else {
-                setSelectedComponents({
-                    [id]: true,
-                })
+                setSelectedComponents([id])
                 setLastSelected(id)
             }
 
@@ -197,7 +192,7 @@ const Component: React.FC<{
     } = useMemo(() => ({
         onContextMenu: (event: any) => {
             event.preventDefault()
-            displayComponentContextMenu(Object.keys(getMainStateStoreState().selectedComponents), [event.clientX, event.clientY])
+            displayComponentContextMenu(Object.keys(getStoreState().selectedComponents), [event.clientX, event.clientY])
         }
     }), [])
 
@@ -218,13 +213,14 @@ const Component: React.FC<{
             }) : content;
     }, [onIconClickRef, icon, canDrag])
 
+
     return (
         <StyledWrapper>
-            <StyledContainer onClick={onClick}
-                             onContextMenu={onContextMenu}
-                             onPointerEnter={onPointerEnter}
-                             onPointerLeave={onPointerLeave}
-                             theme={
+            <StyledComponentContainer onClick={onClick}
+                                      onContextMenu={onContextMenu}
+                                      onPointerEnter={onPointerEnter}
+                                      onPointerLeave={onPointerLeave}
+                                      theme={
                                  isSelected ? 'selected' : (isLandingPadActive || isHovered) ? 'active' : 'default'
                              }>
                 {handle}
@@ -234,13 +230,13 @@ const Component: React.FC<{
                     </StyledName>
                 </StyledNameWrapper>
                 <div>
-                    <StyledButton onClick={toggleVisibility} theme={!isVisible ? 'active' : ''}>
+                    <StyledButton onClick={toggleVisibility} theme={!isVisible ? 'active' : undefined}>
                         {
                             isVisible ? <FaEye size={11}/> : <FaEyeSlash size={11}/>
                         }
                     </StyledButton>
                 </div>
-            </StyledContainer>
+            </StyledComponentContainer>
         </StyledWrapper>
     )
 }

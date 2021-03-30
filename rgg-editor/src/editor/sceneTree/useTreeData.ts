@@ -2,7 +2,7 @@ import {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from "re
 import {TreeItem} from "react-sortable-tree";
 import {componentsSelector, useComponentsStore} from "../state/components/store";
 import {ComponentState} from "../state/components/types";
-import {useMainStateStore} from "../state/main/store";
+import {useMainStateStore} from "../state/immer/immer";
 import {SceneTreeItem} from "../state/main/types";
 
 export interface ExtendedTreeItem extends TreeItem {

@@ -1,12 +1,11 @@
 import React from "react"
-import {GlobalHotKeys} from "react-hotkeys";
+import {configure, GlobalHotKeys} from "react-hotkeys";
 import GoogleFontLoader from "react-google-font-loader"
-import "./ui/sitches.config"
-import {styled} from "./ui/sitches.config"
+import "./ui/stitches.config"
+import {globalStyles, styled} from "./ui/stitches.config"
 import {ManagerSidebar} from "./ManagerSidebar";
 import {StateSidebar} from "./StateSidebar";
-import {useHotkeysListener} from "./hotkeys";
-import {AddingComponentMenu} from "./AddingComponentMenu";
+import {AddingComponentMenu, closeAddingComponent} from "./AddingComponentMenu";
 import {ContextMenu} from "./ContextMenu";
 import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 import {Header} from "./TopBar";
@@ -42,6 +41,10 @@ const StyledSidebar = styled('div', {
     backgroundColor: '$darkGreyLighter',
     position: 'relative',
     maxHeight: '100%',
+})
+
+const StyledSidebarInner = styled('div', {
+    height: '100%',
     overflowY:  'hidden',
 })
 
@@ -49,8 +52,13 @@ const StyledContent = styled('div', {
     position: 'relative',
 })
 
+configure({
+    allowCombinationSubmatches: true,
+})
+
 export const Editor: React.FC = ({children}) => {
-    useHotkeysListener()
+    globalStyles()
+
     return (
         <GlobalHotKeys handlers={hotkeysHandlers} keyMap={keyMap}>
             <GoogleFontLoader
@@ -61,15 +69,16 @@ export const Editor: React.FC = ({children}) => {
                     },
                 ]}
             />
-            <GlobalHotkeysListener/>
             <StyledContainer>
                 <Header/>
                 <StyledMain>
                     <StyledSidebar>
-                        <ManagerSidebar/>
+                        <StyledSidebarInner>
+                            <ManagerSidebar/>
+                        </StyledSidebarInner>
                         <AddingComponentMenu/>
                     </StyledSidebar>
-                    <StyledContent>
+                    <StyledContent onClick={closeAddingComponent}>
                         {children}
                         <OverlayControls/>
                     </StyledContent>

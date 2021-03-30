@@ -1,5 +1,7 @@
 import {proxy} from "valtio";
-import {copySelectedComponents, handlePaste} from "./main/actions";
+import {copySelectedComponents, handlePaste} from "./immer/actions";
+import {KeyMap} from "react-hotkeys";
+import {redoState, undoState} from "./history/actions";
 
 export const inputsProxy = proxy({
     shift: false,
@@ -40,12 +42,20 @@ export const hotkeysHandlers = {
     },
     PASTE: () => {
         handlePaste()
+    },
+    UNDO: () => {
+        undoState()
+    },
+    REDO: () => {
+        redoState()
     }
 }
 
-export const keyMap = {
+export const keyMap: KeyMap = {
     COPY: ["command+c", "ctrl+c"],
     PASTE: ["command+v", "ctrl+v"],
+    UNDO: ["command+z", "ctrl+z"],
+    REDO: ["command+shift+z", "ctrl+shift+z"],
     SHIFT_DOWN: {
         name: "Shift Down",
         sequence: "shift",

@@ -1,9 +1,12 @@
 import {useHistoryStore} from "./store";
-import {useMainStateStore} from "../main/store";
+import {getStoreState, setStoreState} from "../immer/immer";
+import {cloneDeep} from "lodash-es";
 
 export const storeSnapshot = () => {
     useHistoryStore.setState(state => {
-        const pastSnapshots = state.pastSnapshots.concat([useMainStateStore.getState()])
+        const snapshot = cloneDeep(getStoreState())
+        // todo - replace with immer patches
+        const pastSnapshots = state.pastSnapshots.concat([snapshot])
         if (pastSnapshots.length > 20) {
             pastSnapshots.shift()
         }
@@ -18,8 +21,10 @@ export const undoState = () => {
     const pastSnapshots = useHistoryStore.getState().pastSnapshots
     const newSnapshot = pastSnapshots[pastSnapshots.length - 1]
     if (!newSnapshot) return
-    const currentSnapshot = useMainStateStore.getState()
-    useMainStateStore.setState(newSnapshot)
+    const currentSnapshot = getStoreState()
+    setStoreState({
+        ...newSnapshot,
+    })
     useHistoryStore.setState(state => {
         return {
             pastSnapshots: pastSnapshots.slice(0, pastSnapshots.length - 1),
@@ -32,8 +37,8 @@ export const redoState = () => {
     const futureSnapshots = useHistoryStore.getState().futureSnapshots
     const newSnapshot = futureSnapshots[futureSnapshots.length - 1]
     if (!newSnapshot) return
-    const currentSnapshot = useMainStateStore.getState()
-    useMainStateStore.setState(newSnapshot)
+    const currentSnapshot = getStoreState()
+    setStoreState(newSnapshot)
     useHistoryStore.setState(state => {
         return {
             futureSnapshots: futureSnapshots.slice(0, futureSnapshots.length - 1),

@@ -1,9 +1,8 @@
 import React from "react";
 import {EditorTransformMode, setTransformMode, useTransformMode} from "./state/editor";
-import {StyledBox} from "./ui/generics";
+import {StyledBox, StyledButton} from "./ui/generics";
 import {BiExpand, BiMove, BiRotateLeft} from "react-icons/bi";
-import {styled} from "./ui/sitches.config";
-import {StyledButton} from "./SceneList";
+import {styled} from "./ui/stitches.config";
 
 const StyledBoxButton: any = styled(StyledButton, {
     display: 'flex',

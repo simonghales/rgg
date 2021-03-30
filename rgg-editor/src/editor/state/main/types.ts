@@ -59,12 +59,14 @@ export type MainStateStore = {
     },
 }
 
-export type StateData = {
-    [key: string]: {
-        value: any,
-        type?: string,
-        config?: {
-            [key: string]: any,
-        }
+export type PropState = {
+    value: any,
+    type?: string,
+    config?: {
+        [key: string]: any,
     }
+}
+
+export type StateData = {
+    [key: string]: PropState
 }

@@ -5,7 +5,7 @@ import {
     removeDeactivatedComponent,
     setComponentChildren, setComponentInitialProps
 } from "../editor/state/components/store";
-import {useIsDeactivated, useSelectedComponents} from "../editor/state/main/hooks";
+import {useIsDeactivated, useSelectedComponents} from "../editor/state/immer/hooks";
 import {setComponentProps} from "../editor/state/props";
 import {EditableModules} from "./EditableModules";
 import {getCombinedId} from "../utils/ids";

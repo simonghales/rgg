@@ -1,15 +1,15 @@
 import React, {MutableRefObject, useEffect, useMemo, useRef, useState} from "react"
 import {useEditableProp} from "./useEditableProp";
-import {predefinedPropKeys} from "../editor/componentEditor/config";
+import {positionProp, predefinedPropKeys, rotationProp, scaleProp} from "../editor/componentEditor/config";
 import {setComponentHovered, useIsComponentHovered} from "../editor/state/ui";
 import {useEditableContext, useEditableId, useEditableIsSoleSelected, useIsEditableSelected} from "./Editable";
-import {setSelectedComponents} from "../editor/state/main/actions";
+import {setSelectedComponents} from "../editor/state/immer/actions";
 import {BoxHelper, Object3D} from "three";
 import {useHelper} from "@react-three/drei";
 import {useDraggableMesh} from "./useDraggableMesh";
 import {editorStateProxy, useGroupPortalRef, useIsEditMode} from "../editor/state/editor";
 import {ref} from "valtio";
-import {useIsHidden} from "../editor/state/main/hooks";
+import {useIsHidden} from "../editor/state/immer/hooks";
 import { Context } from "./InteractiveMesh.context";
 import { isCommandPressed } from "../editor/state/inputs";
 import { isShiftPressed } from "../editor/state/inputs";
@@ -57,25 +57,13 @@ export const InteractiveMesh: React.FC = ({children}) => {
     }, [isMultipleSelected, groupPortalRef])
 
     const position = useEditableProp(predefinedPropKeys.position, {
-        defaultValue: {
-            x: 0,
-            y: 0,
-            z: 0,
-        }
+        defaultValue: positionProp.defaultValue
     })
     const rotation = useEditableProp(predefinedPropKeys.rotation, {
-        defaultValue: {
-            x: 0,
-            y: 0,
-            z: 0,
-        }
+        defaultValue: rotationProp.defaultValue
     })
     const scale = useEditableProp(predefinedPropKeys.scale, {
-        defaultValue: {
-            x: 1,
-            y: 1,
-            z: 1,
-        }
+        defaultValue: scaleProp.defaultValue
     })
 
     const [pointerOver, setPointerOver] = useState(false)
@@ -116,9 +104,7 @@ export const InteractiveMesh: React.FC = ({children}) => {
             event.stopPropagation()
             const add = isShiftPressed() || isCommandPressed()
             if (editorStateProxy.transformActive) return
-            setSelectedComponents({
-                [id]: true,
-            }, !add)
+            setSelectedComponents([id], !add)
         },
         onPointerOver: (event: any) => {
             if (!canInteract) return

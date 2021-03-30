@@ -5,7 +5,7 @@ import { TransformControls as OriginalTransformControls } from "three/examples/j
 import { TransformControls as CustomTransformControls } from "../custom/TransformControls"
 import {Object3D, Vector3} from "three";
 import {useHotkeys} from "../custom/hooks";
-import {setComponentPropValue} from "../editor/state/main/actions";
+import {setComponentPropValue} from "../editor/state/immer/actions";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
 import {useProxy} from "valtio";
 import {editorStateProxy, EditorTransformMode, useIsEditMode, useTransformMode} from "../editor/state/editor";

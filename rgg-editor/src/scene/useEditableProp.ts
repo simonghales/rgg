@@ -1,8 +1,13 @@
 import {useEditableContext, useEditableIsSoleSelected, useEditableSharedProp} from "./Editable";
 import {useLayoutEffect, useMemo, useState} from "react";
-import {useComponentInitialProps} from "../editor/state/components/hooks";
+import {useComponentInitialProp, useComponentInitialProps} from "../editor/state/components/hooks";
 import {Prop, PropOrigin, setComponentProps} from "../editor/state/props";
-import {useComponentState, useSharedComponent} from "../editor/state/main/hooks";
+import {
+    useComponentModifiedStateProp,
+    useComponentOverriddenStateProp,
+    useComponentState,
+    useSharedComponent, useSharedComponentAppliedStateProp
+} from "../editor/state/immer/hooks";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
 import {setComponentCanHaveChildren} from "../editor/state/components/store";
 
@@ -14,13 +19,13 @@ interface Config {
 }
 
 const useProp = (key: string, componentId: string, componentTypeId: string, defaultValue: any, hidden: boolean): Prop => {
-    const initialProps = useComponentInitialProps(componentId)
-    const {modifiedState = {}, overriddenState = {}} = useComponentState(componentId)
-    const {appliedState = {}} = useSharedComponent(componentTypeId)
+    const initialProp = useComponentInitialProp(componentId, key)
+    const modifiedProp = useComponentModifiedStateProp(componentId, key)
+    const overiddenProp = useComponentOverriddenStateProp(componentId, key)
+    const appliedProp = useSharedComponentAppliedStateProp(componentTypeId, key)
 
     return useMemo(() => {
-        const applied = appliedState[key]
-        const appliedValue = applied?.value
+        const appliedValue = appliedProp?.value
 
         const defaultResult = {
             hidden,
@@ -32,8 +37,8 @@ const useProp = (key: string, componentId: string, componentTypeId: string, defa
             type: PropOrigin.applied,
         }
 
-        if (modifiedState[key] && !overriddenState[key]) {
-            const modifiedValue = modifiedState[key].value
+        if (modifiedProp != undefined && !overiddenProp) {
+            const modifiedValue = modifiedProp.value
             if (modifiedValue !== appliedValue) {
                 return {
                     ...defaultResult,
@@ -44,19 +49,18 @@ const useProp = (key: string, componentId: string, componentTypeId: string, defa
                 return appliedResult
             }
         }
-        if (initialProps[key] && !overriddenState[key]) {
-            const initialValue = initialProps[key]
-            if (initialValue !== appliedValue) {
+        if (initialProp != undefined && !overiddenProp) {
+            if (initialProp !== appliedValue) {
                 return {
                     ...defaultResult,
-                    value: initialProps[key],
+                    value: initialProp,
                     type: PropOrigin.initial,
                 }
             } else {
                 return appliedResult
             }
         }
-        if (applied) {
+        if (appliedValue) {
             return appliedResult
         }
         return {
@@ -64,7 +68,7 @@ const useProp = (key: string, componentId: string, componentTypeId: string, defa
             value: defaultValue,
             type: PropOrigin.default,
         }
-    }, [initialProps, modifiedState, overriddenState, appliedState, defaultValue])
+    }, [initialProp, modifiedProp, overiddenProp, appliedProp, defaultValue])
 }
 
 export const useEditableProp = (key: string, config: Config = {}) => {

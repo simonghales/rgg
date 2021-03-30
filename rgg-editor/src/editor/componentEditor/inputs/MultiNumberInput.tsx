@@ -1,5 +1,5 @@
 import React from "react"
-import { styled } from "../../ui/sitches.config";
+import { styled } from "../../ui/stitches.config";
 import {InputProps} from "./TextInput";
 import UnknownInput from "./UnknownInput";
 

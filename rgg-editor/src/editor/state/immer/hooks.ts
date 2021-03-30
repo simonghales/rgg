@@ -1,9 +1,13 @@
-import {useMainStateStore} from "./store";
+import {useMainStateStore} from "./immer";
 import {useCallback} from "react";
 import {useIsParentHidden} from "../../../scene/InteractiveMesh.context";
+import {StoreState} from "./types";
+import {PropState} from "../main/types";
+
+const selectedComponentsSelector = (state: StoreState) => state.selectedComponents
 
 export const useSelectedComponents = () => {
-    return useMainStateStore(state => state.selectedComponents)
+    return useMainStateStore(selectedComponentsSelector)
 }
 
 export const useSoleSelectedComponent = () => {
@@ -12,27 +16,41 @@ export const useSoleSelectedComponent = () => {
 }
 
 export const useComponentState = (id: string) => {
-    return useMainStateStore(state => state.components[id]) ?? {}
+    return useMainStateStore(useCallback(state => state.components[id], [id])) ?? {}
+}
+
+export const useComponentModifiedStateProp = (id: string, propKey: string) => {
+    return useMainStateStore(useCallback(state => state.components[id]?.modifiedState?.[propKey], [id]))
+}
+
+export const useComponentOverriddenStateProp = (id: string, propKey: string) => {
+    return useMainStateStore(useCallback(state => state.components[id]?.overriddenState?.[propKey], [id])) ?? false
 }
 
 export const useComponentModifiedState = (id: string) => {
-    return useMainStateStore(state => state.components[id]?.modifiedState) ?? {}
+    return useMainStateStore(useCallback(state => state.components[id]?.modifiedState, [id])) ?? {}
 }
 
 export const useSharedComponent = (id: string) => {
-    return useMainStateStore(state => state.sharedComponents[id]) ?? {}
+    return useMainStateStore(useCallback(state => state.sharedComponents[id], [id])) ?? {}
 }
 
+export const useSharedComponentAppliedStateProp = (id: string, propKey: string) => {
+    return useMainStateStore(useCallback(state => state.sharedComponents[id]?.appliedState?.[propKey], [id]))
+}
+
+const unsavedComponentsSelector = (state: StoreState) => state.unsavedComponents
+
 export const useUnsavedComponents = () => {
-    return useMainStateStore(state => state.unsavedComponents) ?? {}
+    return useMainStateStore(unsavedComponentsSelector) ?? {}
 }
 
 export const useUnsavedComponent = (id: string) => {
-    return useMainStateStore(state => state.unsavedComponents[id])
+    return useMainStateStore(useCallback(state => state.unsavedComponents[id], [id]))
 }
 
 export const useIsDeactivated = (id: string) => {
-    return useMainStateStore(state => state.deactivatedComponents[id]) ?? false
+    return useMainStateStore(useCallback(state => state.deactivatedComponents[id], [id])) ?? false
 }
 
 export const useComponentName = (id: string) => {
@@ -61,4 +79,9 @@ export const useIsHidden = (id: string) => {
     const parentHidden = useIsParentHidden()
     const componentVisible = useIsComponentVisible(id)
     return parentGroupHidden || parentHidden || !componentVisible
+}
+
+export const useIsItemSelected = (id: string) => {
+    const selectedComponents = Object.keys(useSelectedComponents())
+    return selectedComponents.includes(id)
 }

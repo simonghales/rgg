@@ -1,11 +1,12 @@
-import {styled} from "./ui/sitches.config";
+import {styled} from "./ui/stitches.config";
 import React from "react";
 import {setEditMode, useIsEditMode} from "./state/editor";
-import {StyledPlainButton} from "./ManagerSidebar";
-import {getMainStateStoreState} from "./state/main/store";
-import {useComponentsStore} from "./state/components/store";
 import {redoState, undoState} from "./state/history/actions";
 import {FaRedo, FaUndo} from "react-icons/fa";
+import {StyledPlainButton} from "./ui/buttons";
+import {getStoreState} from "./state/immer/immer";
+import {useHistoryStore} from "./state/history/store";
+import {useCanRedo, useCanUndo} from "./state/history/hooks";
 
 const StyledHeader = styled('header', {
     backgroundColor: '$darkGrey',
@@ -40,6 +41,8 @@ const StyledHeaderOptions = styled(StyledHeaderSide, {
 
 export const Header: React.FC = () => {
     const isEditMode = useIsEditMode()
+    const canUndo = useCanUndo()
+    const canRedo = useCanRedo()
     return (
         <StyledHeader>
             <StyledHeaderSide>
@@ -56,18 +59,18 @@ export const Header: React.FC = () => {
             </StyledHeaderMiddle>
             <StyledHeaderOptions>
                 <StyledPlainButton shape="thinner" appearance="faint" onClick={() => {
-                    console.log(getMainStateStoreState())
-                    console.log(useComponentsStore.getState())
+                    console.log('history', useHistoryStore.getState().pastSnapshots)
+                    console.log('debug', getStoreState().components['player'].modifiedState)
                 }}>
                     Debug
                 </StyledPlainButton>
                 <StyledPlainButton shape="thinner" appearance="faint">
                     Discard
                 </StyledPlainButton>
-                <StyledPlainButton shape="round" appearance="faint" onClick={undoState}>
+                <StyledPlainButton disabled={!canUndo} shape="round" appearance="faint" onClick={undoState}>
                     <FaUndo size={9}/>
                 </StyledPlainButton>
-                <StyledPlainButton shape="round" appearance="faint" disabled onClick={redoState}>
+                <StyledPlainButton disabled={!canRedo} shape="round" appearance="faint" onClick={redoState}>
                     <FaRedo size={9}/>
                 </StyledPlainButton>
                 <StyledPlainButton shape="thinner">

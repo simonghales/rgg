@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react"
-import { styled } from "../../ui/sitches.config"
+import { styled } from "../../ui/stitches.config"
 
 export interface InputProps {
     inputId: string,

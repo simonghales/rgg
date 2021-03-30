@@ -1,17 +1,19 @@
 import React from "react"
 import OutsideClickHandler from 'react-outside-click-handler';
-import { styled } from "./ui/sitches.config"
+import { styled } from "./ui/stitches.config"
 import {
-    setAddingComponent,
+    // setAddingComponent,
     setDisplayAddingComponentParent,
     setDisplayAddingComponent,
     uiProxy,
     addComponent
 } from "./state/ui";
 import {useProxy} from "valtio";
-import {ItemIcon, SceneItemIcon, StyledClickable, StyledIcon} from "./SceneList";
-import {FaMousePointer} from "react-icons/fa";
+// import {ItemIcon, SceneItemIcon, StyledClickable, StyledIcon} from "./SceneList";
+import {FaCube, FaMousePointer} from "react-icons/fa";
 import {useAddableStore} from "../scene/addables";
+import { StyledRoundButton } from "./ui/buttons";
+import {StyledComponentContainer, StyledIconWrapper, StyledName, StyledNameWrapper} from "./sceneTree/ScreenTreeNode";
 
 const StyledContainer = styled('div', {
     position: 'absolute',
@@ -26,18 +28,18 @@ const StyledContainer = styled('div', {
     overflowY: 'auto',
 })
 
-const StyledAddableComponent = styled(StyledClickable, {
+const StyledAddableComponent = styled(StyledComponentContainer, {
     '&:not(:first-child)': {
-        marginTop: '$0b',
+        marginTop: '$2',
     }
 })
 
-const StyledIconWrapper = styled('span', {
+const StyledIcon = styled('span', {
     position: 'relative',
     left: '1px',
 })
 
-const closeAddingComponent = () => {
+export const closeAddingComponent = () => {
     setDisplayAddingComponent(false)
     setDisplayAddingComponentParent('')
 }
@@ -47,25 +49,23 @@ const AddableComponent: React.FC<{
     addableId: string,
 }> = ({label, addableId}) => {
     return (
-        <StyledAddableComponent onClick={() => {
+        <StyledAddableComponent theme={'default'} onClick={() => {
             addComponent(addableId, uiProxy.displayAddingComponentParent)
             closeAddingComponent()
         }}>
-            <StyledIcon>
-                <ItemIcon iconType={SceneItemIcon.component}/>
-            </StyledIcon>
-            <div>
-                {label}
-            </div>
-            <StyledIcon appearance="clickable" onClick={(event: any) => {
-                event.stopPropagation()
-                setAddingComponent(addableId)
-                closeAddingComponent()
-            }}>
-                <StyledIconWrapper>
-                    <FaMousePointer size={10} />
-                </StyledIconWrapper>
-            </StyledIcon>
+            <StyledIconWrapper>
+                <FaCube size={10}/>
+            </StyledIconWrapper>
+            <StyledNameWrapper>
+                <StyledName>
+                    {label}
+                </StyledName>
+            </StyledNameWrapper>
+            <StyledRoundButton>
+                <StyledIcon>
+                    <FaMousePointer size={9} />
+                </StyledIcon>
+            </StyledRoundButton>
         </StyledAddableComponent>
     )
 }

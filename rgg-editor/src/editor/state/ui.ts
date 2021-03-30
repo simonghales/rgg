@@ -1,6 +1,6 @@
 import {proxy, useProxy} from "valtio";
 import {getAddable} from "../../scene/addables";
-import {addUnsavedComponent, setSelectedComponents} from "./main/actions";
+import {addUnsavedComponent, setSelectedComponents} from "./immer/actions";
 import {predefinedPropKeys} from "../componentEditor/config";
 
 export const uiProxy = proxy<{
@@ -38,9 +38,7 @@ export const addComponent = (addableId: string, parent: string, position?: {x: n
     const id = addUnsavedComponent(addable, parent, {
         [predefinedPropKeys.position]: position,
     })
-    setSelectedComponents({
-        [id]: true,
-    })
+    setSelectedComponents([id])
 }
 
 export const addStoredComponent = (position: {x: number, y: number, z: number}) => {

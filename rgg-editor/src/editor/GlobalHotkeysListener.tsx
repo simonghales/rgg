@@ -1,6 +1,6 @@
 import React, {useRef} from "react"
 import {useShortcut} from "./shortcuts";
-import {handlePaste} from "./state/main/actions";
+import {handlePaste} from "./state/immer/actions";
 import {redoState, undoState} from "./state/history/actions";
 
 const delay = 100

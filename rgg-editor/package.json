@@ -1,5 +1,5 @@
 {
-  "version": "0.1.23-beta.0",
+  "version": "0.1.23-beta.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -18,8 +18,7 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "demo": "parcel example/index.html",
-    "postinstall": "patch-package"
+    "demo": "parcel example/index.html"
   },
   "husky": {
     "hooks": {
@@ -50,6 +49,7 @@
     "@react-three/drei": "^3.9.0",
     "@size-limit/preset-small-lib": "^4.9.2",
     "@types/lodash-es": "^4.17.4",
+    "@types/ramda": "^0.27.39",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "@types/react-sortable-tree": "^0.3.12",
@@ -76,19 +76,19 @@
     "three": "^0.124.0"
   },
   "dependencies": {
-    "@atlaskit/tree": "^8.2.0",
-    "@stitches/core": "^0.0.2",
-    "@stitches/react": "^0.0.2",
-    "frontend-collective-react-dnd-scrollzone": "1.0.2",
+    "@simonghales/react-sortable-tree": "^0.0.1",
+    "@stitches/react": "^0.1.4",
     "hotkeys-js": "^3.8.2",
+    "immer": "^9.0.1",
     "lodash-es": "^4.17.21",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
+    "ramda": "^0.27.1",
     "react-google-font-loader": "^1.1.0",
     "react-hotkeys": "^2.0.0",
     "react-icons": "^4.2.0",
     "react-outside-click-handler": "^1.3.0",
-    "react-sortable-tree": "^2.8.0",
+    "react-sortable-tree": "npm:@simonghales/react-sortable-tree",
     "reset.css": "^2.0.2",
     "shortcuts": "^1.6.2",
     "valtio": "^0.7.1",

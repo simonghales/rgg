@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from "react"
-import {styled} from "../ui/sitches.config"
+import {styled} from "../ui/stitches.config"
 import {Prop, PropOrigin, useComponentProps} from "../state/props";
-import {setComponentPropValue} from "../state/main/actions";
+import {setComponentPropValue} from "../state/immer/actions";
 import {useComponent} from "../state/components/hooks";
 import {
     modulesProp,
@@ -14,7 +14,8 @@ import {
 } from "./config";
 import {ComponentModules, Module} from "./ComponentModules";
 import {PropInputOptions} from "./inputs/Options";
-import {StyledPaddedBox, StyledPlainButton} from "../ManagerSidebar";
+import {StyledPaddedBox} from "../ManagerSidebar";
+import {StyledPlainButton} from "../ui/buttons";
 
 const StyledContainer = styled('div', {
     height: '100%',

@@ -1,7 +1,7 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from "react"
 import {Prop} from "../state/props";
 import {predefinedProps} from "./config";
-import {setComponentPropValue} from "../state/main/actions";
+import {setComponentPropValue} from "../state/immer/actions";
 import UnknownInput from "./inputs/UnknownInput";
 import {storeSnapshot} from "../state/history/actions";
 

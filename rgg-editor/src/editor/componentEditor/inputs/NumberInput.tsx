@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react"
-import {styled} from "../../ui/sitches.config";
+import {styled} from "../../ui/stitches.config";
 import {InputProps, StyledInput} from "./TextInput";
 import {parseNumber} from "../../../utils/math";
 

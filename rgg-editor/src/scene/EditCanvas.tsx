@@ -2,8 +2,8 @@ import React, {useCallback, useEffect, useMemo, useRef} from "react"
 import {TemporaryComponents} from "./TemporaryComponents";
 import EditFloor from "./EditFloor";
 import EditCamera from "./EditCamera";
-import {setComponentPropValue, setSelectedComponents} from "../editor/state/main/actions";
-import {useSelectedComponents} from "../editor/state/main/hooks";
+import {setComponentPropValue, setSelectedComponents} from "../editor/state/immer/actions";
+import {useSelectedComponents} from "../editor/state/immer/hooks";
 import {editorStateProxy, useIsEditMode} from "../editor/state/editor";
 import {ref} from "valtio";
 import {useMeshHelper} from "./InteractiveMesh";
@@ -29,7 +29,7 @@ export const useEditCanvasProps = () => {
             onPointerMissed: () => {
                 if (!isEditMode) return
                 if (componentsSelected) {
-                    setSelectedComponents({})
+                    setSelectedComponents([])
                 }
             }
         }

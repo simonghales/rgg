@@ -1,7 +1,6 @@
 import React, {useMemo, useState} from "react"
 import {FaCaretDown, FaCaretUp, FaTimes} from "react-icons/fa";
-import { styled } from "../../ui/sitches.config";
-import {StyledPlainButton} from "../../ManagerSidebar";
+import { styled } from "../../ui/stitches.config";
 import {NumberInput} from "./NumberInput";
 import {SelectInput} from "./SelectInput";
 import {InputProps} from "./TextInput";
@@ -9,6 +8,7 @@ import {PropOrigin} from "../../state/props";
 import {PropInputOptions} from "./Options";
 import {usePropContext} from "../ComponentModules";
 import { StyledBox } from "../../ui/generics";
+import {StyledPlainButton} from "../../ui/buttons";
 
 const StyledContainer = styled('div', {
     padding: '$3',

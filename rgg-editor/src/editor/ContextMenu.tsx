@@ -1,11 +1,11 @@
 import React, {useMemo} from "react"
 import OutsideClickHandler from 'react-outside-click-handler';
-import { styled } from "./ui/sitches.config"
+import { styled } from "./ui/stitches.config"
 import {useProxy} from "valtio";
 import {uiProxy} from "./state/ui";
-import {StyledButton} from "./SceneList";
-import {deleteSelectedComponents, groupComponents, removeDeactivatedComponents} from "./state/main/actions";
+import {deleteSelectedComponents, groupComponents, removeDeactivatedComponents} from "./state/immer/actions";
 import {useComponentsStore} from "./state/components/store";
+import {StyledButton} from "./ui/generics";
 
 const StyledContainer = styled('div', {
     zIndex: '$max',
