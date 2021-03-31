@@ -1,15 +1,18 @@
 import {Dispatch, SetStateAction, useEffect, useMemo, useRef, useState} from "react";
 import {TreeItem} from "react-sortable-tree";
-import {componentsSelector, useComponentsStore} from "../state/components/store";
+import useThrottledEffect from "use-throttled-effect";
+import {componentsSelector, useComponentsStore, useComponentsThatCanHaveChildren} from "../state/components/store";
 import {ComponentState} from "../state/components/types";
 import {useMainStateStore} from "../state/immer/immer";
 import {SceneTreeItem} from "../state/main/types";
+import {groupedComponentsSelector, sceneTreeSelector} from "../state/immer/selectors";
 
 export interface ExtendedTreeItem extends TreeItem {
     id: string,
     isGroup?: boolean,
     canHaveChildren?: boolean,
     directChildren?: string[],
+    restrictedParent?: string,
 }
 
 type Item = {
@@ -17,20 +20,24 @@ type Item = {
     children: Item[],
     isGroup?: boolean,
     directChildren?: string[],
+    restrictedParent?: string,
+    canHaveChildren?: boolean,
 }
 
-const getItem = (component: ComponentState, components: Record<string, ComponentState>): Item => {
+const getItem = (component: ComponentState, components: Record<string, ComponentState>, componentsThatCanHaveChildren: Record<string, boolean>): Item => {
     const children: Item[] = []
     component.children.forEach(childId => {
         const child = components[childId]
         if (child) {
-            children.push(getItem(child, components))
+            children.push(getItem(child, components, componentsThatCanHaveChildren))
         }
     })
     return {
         id: component.uid,
         children,
         directChildren: children.map(child => child.id),
+        restrictedParent: !component.unsaved ? component.parentId : '',
+        canHaveChildren: componentsThatCanHaveChildren[component.uid],
     }
 }
 
@@ -40,8 +47,9 @@ const mapItemToTreeItem = (item: Item): ExtendedTreeItem => {
         children: item.children.map(child => mapItemToTreeItem(child)),
         expanded: true,
         isGroup: item.isGroup,
-        canHaveChildren: !!item.isGroup,
+        canHaveChildren: !!item.isGroup || item.canHaveChildren,
         directChildren: item.directChildren,
+        restrictedParent: item.restrictedParent,
     }
 }
 
@@ -73,8 +81,9 @@ const getFlatAllItemsMap = (sceneTree: SceneTreeItem[]) => {
 const useSceneTreeData = (): TreeItem[] => {
 
     const components = useComponentsStore(componentsSelector)
-    const groupedComponents = useMainStateStore(state => state.groupedComponents)
-    const sceneTree = useMainStateStore(state => state.sceneTree)
+    const componentsThatCanHaveChildren = useComponentsThatCanHaveChildren()
+    const groupedComponents = useMainStateStore(groupedComponentsSelector)
+    const sceneTree = useMainStateStore(sceneTreeSelector)
     const [storedSceneTree, setStoredSceneTree] = useState(sceneTree)
     const sceneTreeRef = useRef(sceneTree)
 
@@ -91,12 +100,12 @@ const useSceneTreeData = (): TreeItem[] => {
 
         Object.values(components).forEach(component => {
             if (component.isRoot) {
-                items[component.uid] = getItem(component, components)
+                items[component.uid] = getItem(component, components, componentsThatCanHaveChildren)
             }
         })
 
         return Object.values(items)
-    }, [components])
+    }, [components, componentsThatCanHaveChildren])
 
     const groupedItems = useMemo(() => {
         const finalItems: Item[] = []
@@ -165,9 +174,9 @@ export const useTreeData = () => {
 
     const [data, setData] = useState<TreeItem[]>(treeData)
 
-    useEffect(() => {
+    useThrottledEffect(() => {
         setData(treeData)
-    }, [treeData])
+    }, 100, [treeData])
 
     return [data, setData] as [TreeItem[], Dispatch<SetStateAction<TreeItem[]>>]
 }

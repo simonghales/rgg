@@ -77,7 +77,7 @@ registerAddable('box', BoxWrapper, {
 const Scene = ({children}: any) => {
     const canvasProps = useEditCanvasProps()
     return (
-        <Canvas {...canvasProps}>
+        <Canvas {...canvasProps} concurrent>
             <RGGEngine>
                 <EditCanvas>
                     {children}

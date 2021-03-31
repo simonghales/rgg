@@ -198,7 +198,7 @@ const Component: React.FC<{
 
     const handle = useMemo(() => {
         const content = (
-            <StyledGrabHandle onClick={event => {
+            <StyledGrabHandle onClick={(event: any) => {
                 onIconClickRef.current()
                 event.stopPropagation()
             }}>

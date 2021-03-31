@@ -1,7 +1,7 @@
 import React from "react"
 import {Cylinder} from "@react-three/drei";
 import {SyncedComponent, useSyncBody} from "rgg-engine";
-import {useEditableSharedProp, useIsEditMode} from "../../src";
+import {Editable, useEditableSharedProp, useIsEditMode} from "../../src";
 
 const Physics: React.FC = () => {
     const meshRef = useEditableSharedProp('meshRef')
@@ -12,15 +12,23 @@ const Physics: React.FC = () => {
     )
 }
 
+const PlayerInner: React.FC = () => {
+    return (
+        <Cylinder args={[0.5, 0.5, 2]} position={[0, 0, 0]}>
+            <meshBasicMaterial color="blue" />
+        </Cylinder>
+    )
+}
+
 const Player: React.FC = () => {
 
     const isEditMode = useIsEditMode()
 
     return (
         <>
-            <Cylinder args={[0.5, 0.5, 2]} position={[0, 0, 0]}>
-                <meshBasicMaterial color="blue" />
-            </Cylinder>
+            <Editable id="player-inner">
+                <PlayerInner/>
+            </Editable>
             {
                 !isEditMode && (
                     <Physics/>

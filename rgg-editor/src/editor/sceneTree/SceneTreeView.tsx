@@ -11,10 +11,16 @@ import { styled } from "../ui/stitches.config";
 import {SceneNodeRenderer} from "./SceneNodeRenderer";
 import {ExtendedTreeItem, useTreeData} from "./useTreeData";
 import {isEqual, sortBy} from "lodash-es";
-import {groupComponents, setSceneTree, setSelectedComponents} from "../state/immer/actions";
+import {
+    addComponentsToNewParent,
+    removeComponentsFromParent,
+    setSceneTree,
+    setSelectedComponents
+} from "../state/immer/actions";
 import { Context } from "./SceneTreeView.context";
 import {sceneTreeViewState} from "./SceneTreeView.state";
 import {storeSnapshot} from "../state/history/actions";
+import {getSelectedComponents} from "../state/immer/getters";
 
 const canNodeHaveChildren = (node: any) => {
     return node.canHaveChildren ?? false
@@ -40,17 +46,30 @@ const findTreeNode = (id: string, data: TreeItem[]): TreeItem | undefined => {
     return matchedNode
 }
 
-const checkIfTreeIsValid = (data: TreeItem[]) => {
-    let valid = true
-    data.forEach(node => {
-        if (node.children && node.children.length > 0 && !node.canHaveChildren) {
-            if (node.directChildren) {
-                const children = (node.children as TreeItem[]).map(child => child.id)
-                if (isEqual(sortBy(children), sortBy(node.directChildren))) {
-                    return
-                }
+const checkIfTreeIsValid = (data: ExtendedTreeItem[], parent: string = '') => {
+    let valid = true;
+    data.forEach((node) => {
+        if (!valid) return
+        if (node.restrictedParent) {
+            if (node.restrictedParent !== parent) {
+                valid = false
+                return
             }
-            valid = false
+        }
+        if (node.children && node.children.length > 0) {
+            if (!node.canHaveChildren) {
+                if (node.directChildren) {
+                    const children = (node.children as TreeItem[]).map(child => child.id)
+                    if (isEqual(sortBy(children), sortBy(node.directChildren))) {
+                        return
+                    }
+                }
+                valid = false
+                return
+            } else {
+                valid = checkIfTreeIsValid(node.children as ExtendedTreeItem[], node.id)
+                return
+            }
         }
     })
     return valid
@@ -71,6 +90,14 @@ const StyledContainer = styled('div', {
     }
 })
 
+const getIdsToMove = (id: string): string[] => {
+    const selectedComponents = Object.keys(getSelectedComponents())
+    if (selectedComponents.includes(id)) {
+        return selectedComponents
+    }
+    return [id]
+}
+
 export const SceneTreeView: React.FC = () => {
 
     const [data, setData] = useTreeData()
@@ -88,18 +115,21 @@ export const SceneTreeView: React.FC = () => {
                 return
             }
 
+            const idsToMove = getIdsToMove(data.node.id)
+
             if (data.nextParentNode) {
                 const id = data.nextParentNode.id
-                groupComponents([data.node.id], id)
+                addComponentsToNewParent(idsToMove, id)
             } else {
-                // remove from previous group
+                storeSnapshot()
+                removeComponentsFromParent(idsToMove, true)
             }
         },
         onChange: (updatedData: TreeItem[]) => {
 
             storeSnapshot()
 
-            if (!checkIfTreeIsValid(updatedData)) {
+            if (!checkIfTreeIsValid(updatedData as ExtendedTreeItem[])) {
                 console.warn('Invalid tree.')
                 return
             }

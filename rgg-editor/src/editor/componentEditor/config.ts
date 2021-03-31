@@ -1,5 +1,6 @@
 import {MultiNumberInput} from "./inputs/MultiNumberInput";
 import {RigidBody3DInput} from "./inputs/RigidBody3DInput";
+import {RigidBody2DInput} from "./inputs/RigidBody2DInput";
 
 interface PredefinedProp {
     key: string,
@@ -22,6 +23,13 @@ export const rigidBody3dModuleProp: PredefinedProp = {
     key: '__rigidBody3dModule',
     label: 'RigidBody 3D',
     input: RigidBody3DInput,
+    defaultValue: undefined
+}
+
+export const rigidBody2dModuleProp: PredefinedProp = {
+    key: '__rigidBody2dModule',
+    label: 'RigidBody 2D',
+    input: RigidBody2DInput,
     defaultValue: undefined
 }
 
@@ -50,11 +58,13 @@ export const predefinedProps = {
     [positionProp.key]: positionProp,
     [rotationProp.key]: rotationProp,
     [scaleProp.key]: scaleProp,
+    [rigidBody2dModuleProp.key]: rigidBody2dModuleProp,
     [rigidBody3dModuleProp.key]: rigidBody3dModuleProp,
 }
 
 export const predefinedBottomProps = {
     [rigidBody3dModuleProp.key]: rigidBody3dModuleProp,
+    [rigidBody2dModuleProp.key]: rigidBody2dModuleProp,
 }
 
 export const predefinedPropKeys = {
@@ -62,6 +72,7 @@ export const predefinedPropKeys = {
     rotation: rotationProp.key,
     scale: scaleProp.key,
     rigidBody3d: rigidBody3dModuleProp.key,
+    rigidBody2d: rigidBody2dModuleProp.key,
     modules: modulesProp.key,
     children: childrenProp.key,
 }

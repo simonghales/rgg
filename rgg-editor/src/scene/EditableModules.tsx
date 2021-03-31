@@ -1,13 +1,13 @@
-import React, {MutableRefObject, useEffect} from "react"
+import React, {memo, MutableRefObject, useEffect} from "react"
 import {BodyStatus} from "@dimforge/rapier3d-compat";
 import {useEditableProp} from "./useEditableProp";
 import {modulesProp, predefinedPropKeys} from "../editor/componentEditor/config";
 import {useEditableContext, useEditableId, useEditableSharedProp} from "./Editable";
 import {
-    ColliderValue,
+    RigidBody3dColliderValue,
     RigidBody3dPropValue,
-    RigidBodyColliderShape,
-    RigidBodyType
+    RigidBody3dColliderShape,
+    RigidBody3dType
 } from "../editor/componentEditor/inputs/RigidBody3DInput";
 import {Euler, Object3D, Quaternion} from "three";
 import {AddBodyDef, ColliderDef } from "rgg-engine/dist/physics/helpers/rapier3d/types";
@@ -19,20 +19,20 @@ interface Props {
     value: RigidBody3dPropValue,
 }
 
-const getBodyType = (bodyType?: RigidBodyType): BodyStatus => {
+const getBodyType = (bodyType?: RigidBody3dType): BodyStatus => {
     switch (bodyType) {
-        case RigidBodyType.STATIC:
+        case RigidBody3dType.STATIC:
             return BodyStatus.Static;
-        case RigidBodyType.KINEMATIC:
+        case RigidBody3dType.KINEMATIC:
             return BodyStatus.Kinematic;
         default:
             return BodyStatus.Dynamic;
     }
 }
 
-const generateRigidBodyCollider = (collider: ColliderValue): ColliderDef => {
+const generateRigidBodyCollider = (collider: RigidBody3dColliderValue): ColliderDef => {
     switch (collider.colliderType) {
-        case RigidBodyColliderShape.BALL:
+        case RigidBody3dColliderShape.BALL:
             const {radius = 1} = collider
             return {
                 type: 'Ball',
@@ -119,16 +119,16 @@ const RigidBody3DModule: React.FC<Props & {
 }
 
 const ColliderVisualiser: React.FC<{
-    collider: ColliderValue,
+    collider: RigidBody3dColliderValue,
 }> = ({collider}) => {
-    if (collider.colliderType === RigidBodyColliderShape.BALL) {
+    if (collider.colliderType === RigidBody3dColliderShape.BALL) {
         const {radius = 1} = collider
         return (
             <Sphere args={[radius + 0.001]} layers={[31]}>
                 <meshPhongMaterial color="red" wireframe />
             </Sphere>
         )
-    } else if (collider.colliderType === RigidBodyColliderShape.CUBIOD) {
+    } else if (collider.colliderType === RigidBody3dColliderShape.CUBIOD) {
         const {hx = 0.5, hy = 0.5, hz = 0.5} = collider
         return (
             <Box args={[hx * 2, hy * 2, hz * 2]} layers={[31]}>
@@ -180,10 +180,11 @@ const RigidBody3DModuleWrapper: React.FC<Props> = ({value}) => {
     )
 }
 
-export const EditableModules: React.FC = ({children}) => {
+const EditableModulesInner: React.FC = ({children}) => {
 
     useEditableProp(modulesProp.key)
     const rigidBody3d = useEditableProp(predefinedPropKeys.rigidBody3d)
+    const rigidBody2d = useEditableProp(predefinedPropKeys.rigidBody2d)
 
     return (
         <>
@@ -196,3 +197,5 @@ export const EditableModules: React.FC = ({children}) => {
         </>
     )
 }
+
+export const EditableModules: React.FC = memo(EditableModulesInner)

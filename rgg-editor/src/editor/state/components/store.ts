@@ -11,12 +11,14 @@ export type ComponentsStore = {
     componentsThatCanHaveChildren: {
         [key: string]: boolean,
     },
+    componentsInitialProps: Record<string, AnyProps>
 }
 
 export const useComponentsStore = create<ComponentsStore>(() => ({
     components: {},
     deactivatedComponents: {},
     componentsThatCanHaveChildren: {},
+    componentsInitialProps: {},
 }))
 
 export const componentsSelector = (state: ComponentsStore) => state.components
@@ -26,12 +28,9 @@ export const setComponentInitialProps = (uid: string, initialProps: AnyProps) =>
     useComponentsStore.setState(state => {
         if (!state.components[uid]) return {}
         return {
-            components: {
-                ...state.components,
-                [uid]: {
-                    ...(state.components[uid] ?? {}),
-                    initialProps,
-                }
+            componentsInitialProps: {
+                ...state.componentsInitialProps,
+                [uid]: initialProps,
             }
         }
     })
@@ -57,6 +56,14 @@ export const setComponentCanHaveChildren = (id: string) => {
             }
         })
     }
+}
+
+const selectorComponentsThatCanHaveChildren = (state: ComponentsStore) => {
+    return state.componentsThatCanHaveChildren
+}
+
+export const useComponentsThatCanHaveChildren = () => {
+    return useComponentsStore(selectorComponentsThatCanHaveChildren)
 }
 
 export const setComponentChildren = (uid: string, children: string[]) => {
@@ -95,11 +102,15 @@ export const addComponent = (uid: string,
                     children,
                     isRoot,
                     unsaved,
-                    initialProps,
+                    initialProps, // todo - remove
                     componentId,
                     parentId,
                     rootParentId,
                 }
+            },
+            componentsInitialProps: {
+                ...state.componentsInitialProps,
+                [uid]: initialProps,
             }
         }
     })

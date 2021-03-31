@@ -4,14 +4,13 @@ import { TransformControls as OriginalTransformControls } from "three/examples/j
 // @ts-ignore
 import { TransformControls as CustomTransformControls } from "../custom/TransformControls"
 import {Object3D, Vector3} from "three";
-import {useHotkeys} from "../custom/hooks";
 import {setComponentPropValue} from "../editor/state/immer/actions";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
 import {useProxy} from "valtio";
 import {editorStateProxy, EditorTransformMode, useIsEditMode, useTransformMode} from "../editor/state/editor";
 import {EDITOR_LAYER} from "./InteractiveMesh";
-import {isShiftPressed} from "../editor/hotkeys";
 import {storeSnapshot} from "../editor/state/history/actions";
+import {useIsShiftPressed} from "../editor/state/inputs";
 
 const TransformControls: any = CustomTransformControls
 
@@ -41,25 +40,8 @@ export const useDraggableMesh = (id: string, isSelected: boolean, options: {
     const orbitRef = useProxy(editorStateProxy).orbitRef
     const [controls, setControls] = useState<OriginalTransformControls | null>(null)
     const isCanvasEnabled = useIsCanvasInteractable()
-    const [shiftIsPressed, setShiftIsPressed] = useState<boolean>(isShiftPressed())
+    const shiftIsPressed = useIsShiftPressed()
     const {updateValue, onChange, onDraggingChanged: passedOnDraggingChanged} = options
-
-    useHotkeys('*', () => {
-        setShiftIsPressed(isShiftPressed())
-    }, {
-        keyup: true,
-        keydown: true,
-    })
-
-    useEffect(() => {
-        const callback = () => {
-            setShiftIsPressed(isShiftPressed())
-        }
-        document.addEventListener('keyup', callback)
-        return () => {
-            document.removeEventListener('keyup', callback)
-        }
-    }, [])
 
     const active = isEditMode && isSelected && isCanvasEnabled
 
@@ -70,7 +52,7 @@ export const useDraggableMesh = (id: string, isSelected: boolean, options: {
         const currentRotationSnap = controls.rotationSnap
         if (shiftIsPressed) {
             controls.setTranslationSnap(1)
-            controls.setRotationSnap(1)
+            controls.setRotationSnap(Math.PI / 4)
             return () => {
                 controls.setTranslationSnap(currentTranslationSnap)
                 controls.setRotationSnap(currentRotationSnap)

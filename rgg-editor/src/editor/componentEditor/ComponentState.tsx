@@ -7,7 +7,7 @@ import {
     modulesProp,
     positionProp,
     predefinedBottomProps,
-    predefinedProps,
+    predefinedProps, rigidBody2dModuleProp,
     rigidBody3dModuleProp,
     rotationProp,
     scaleProp
@@ -150,8 +150,8 @@ export const ComponentState: React.FC<{
         addModule,
     } = useMemo(() => ({
         addModule: () => {
-            if (!componentProps[rigidBody3dModuleProp.key] || componentProps[rigidBody3dModuleProp.key].value === undefined) {
-                setComponentPropValue(id, rigidBody3dModuleProp.key, {
+            if (!componentProps[rigidBody2dModuleProp.key] || componentProps[rigidBody2dModuleProp.key].value === undefined) {
+                setComponentPropValue(id, rigidBody2dModuleProp.key, {
                     enabled: true,
                 })
             }

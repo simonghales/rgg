@@ -1,12 +1,11 @@
 import {useEditableContext, useEditableIsSoleSelected, useEditableSharedProp} from "./Editable";
 import {useLayoutEffect, useMemo, useState} from "react";
-import {useComponentInitialProp, useComponentInitialProps} from "../editor/state/components/hooks";
+import {useComponentInitialProp} from "../editor/state/components/hooks";
 import {Prop, PropOrigin, setComponentProps} from "../editor/state/props";
 import {
     useComponentModifiedStateProp,
     useComponentOverriddenStateProp,
-    useComponentState,
-    useSharedComponent, useSharedComponentAppliedStateProp
+    useSharedComponentAppliedStateProp
 } from "../editor/state/immer/hooks";
 import {predefinedPropKeys} from "../editor/componentEditor/config";
 import {setComponentCanHaveChildren} from "../editor/state/components/store";

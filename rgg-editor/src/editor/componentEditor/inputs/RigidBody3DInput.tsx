@@ -1,13 +1,13 @@
 import React, {useMemo, useState} from "react"
 import {FaCaretDown, FaCaretUp, FaTimes} from "react-icons/fa";
-import { styled } from "../../ui/stitches.config";
+import {styled} from "../../ui/stitches.config";
 import {NumberInput} from "./NumberInput";
 import {SelectInput} from "./SelectInput";
 import {InputProps} from "./TextInput";
 import {PropOrigin} from "../../state/props";
 import {PropInputOptions} from "./Options";
 import {usePropContext} from "../ComponentModules";
-import { StyledBox } from "../../ui/generics";
+import {StyledBox} from "../../ui/generics";
 import {StyledPlainButton} from "../../ui/buttons";
 
 const StyledContainer = styled('div', {
@@ -27,7 +27,7 @@ const StyledLabel = styled('label', {
     fontWeight: '$semi',
 })
 
-const StyledInputWrapper = styled('div', {
+export const StyledInputWrapper = styled('div', {
     display: 'grid',
     alignItems: 'center',
     gridTemplateColumns: 'auto 1fr',
@@ -35,7 +35,7 @@ const StyledInputWrapper = styled('div', {
     marginTop: '$2',
 })
 
-const StyledInputLabel = styled('label', {
+export const StyledInputLabel = styled('label', {
     minWidth: '60px',
     display: 'inline-grid',
     fontSize: '$1b',
@@ -45,7 +45,7 @@ const StyledBody = styled('div', {
     marginTop: '$3',
 })
 
-const StyledCollidersContainer = styled('div', {
+export const StyledCollidersContainer = styled('div', {
     border: '1px solid $faint',
     marginLeft: '-$2',
     marginRight: '-$2',
@@ -53,7 +53,7 @@ const StyledCollidersContainer = styled('div', {
     marginTop: '$2',
 })
 
-const StyledCollidersHeader = styled('header', {
+export const StyledCollidersHeader = styled('header', {
     padding: '$2',
     display: 'grid',
     gridTemplateColumns: 'auto 1fr',
@@ -61,12 +61,12 @@ const StyledCollidersHeader = styled('header', {
     alignItems: 'center',
 })
 
-export enum RigidBodyColliderShape {
+export enum RigidBody3dColliderShape {
     BALL = 'BALL',
     CUBIOD = 'CUBIOD',
 }
 
-export enum RigidBodyType {
+export enum RigidBody3dType {
     DYNAMIC = 'DYNAMIC',
     STATIC = 'STATIC',
     KINEMATIC = 'KINEMATIC',
@@ -74,22 +74,22 @@ export enum RigidBodyType {
 
 const options = [
     {
-        value: RigidBodyType.DYNAMIC,
+        value: RigidBody3dType.DYNAMIC,
         label: 'Dynamic',
     },
     {
-        value: RigidBodyType.STATIC,
+        value: RigidBody3dType.STATIC,
         label: 'Static',
     },
     {
-        value: RigidBodyType.KINEMATIC,
+        value: RigidBody3dType.KINEMATIC,
         label: 'Kinematic',
     },
 ]
 
-export type ColliderValue = {
+export type RigidBody3dColliderValue = {
     key: string,
-    colliderType: RigidBodyColliderShape,
+    colliderType: RigidBody3dColliderShape,
     hx?: number,
     hy?: number,
     hz?: number,
@@ -98,9 +98,9 @@ export type ColliderValue = {
 
 export type RigidBody3dPropValue = {
     enabled?: boolean,
-    bodyType?: RigidBodyType,
+    bodyType?: RigidBody3dType,
     mass?: number,
-    colliders?: ColliderValue[],
+    colliders?: RigidBody3dColliderValue[],
     customBodyDef?: {
         [key: string]: any,
     }
@@ -112,7 +112,7 @@ const StyledColliderContainer = styled('div', {
 })
 
 const RigidBody3DColliderInput: React.FC<{
-    collider: ColliderValue,
+    collider: RigidBody3dColliderValue,
     onChange: (newValue: any) => void,
     onDelete: () => void,
 }> = ({collider, onChange, onDelete}) => {
@@ -143,10 +143,10 @@ const RigidBody3DColliderInput: React.FC<{
                             colliderType: newValue,
                         })
                     }} options={[{
-                        value: RigidBodyColliderShape.BALL,
+                        value: RigidBody3dColliderShape.BALL,
                         label: 'Ball',
                     }, {
-                        value: RigidBodyColliderShape.CUBIOD,
+                        value: RigidBody3dColliderShape.CUBIOD,
                         label: 'Cubiod',
                     }]}/>
                 </div>
@@ -157,7 +157,7 @@ const RigidBody3DColliderInput: React.FC<{
                 </div>
             </StyledInputWrapper>
             {
-                colliderType === RigidBodyColliderShape.BALL && (
+                colliderType === RigidBody3dColliderShape.BALL && (
                     <>
                         <StyledInputWrapper>
                             <StyledInputLabel htmlFor={`${key}-radius`}>
@@ -173,7 +173,7 @@ const RigidBody3DColliderInput: React.FC<{
                 )
             }
             {
-                colliderType === RigidBodyColliderShape.CUBIOD && (
+                colliderType === RigidBody3dColliderShape.CUBIOD && (
                     <>
                         <StyledInputWrapper>
                             <StyledInputLabel htmlFor={`${key}-hx`}>
@@ -212,17 +212,121 @@ const RigidBody3DColliderInput: React.FC<{
     )
 }
 
-export const RigidBody3DInput: React.FC<InputProps> = ({
-    value,
-    inputId,
-    onChange: passedOnChange,
-                                                       }) => {
+export const RigidBodyInput: React.FC<{
+    label: string,
+    propKey: string,
+    propType: string,
+    componentId: string,
+    componentTypeId: string,
+    optionsInputValue: any,
+    inputId: string,
+    enabled: boolean,
+    onEnabledChanged: (event: any) => void,
+    setIsExpanded: (expanded: boolean) => void,
+    isExpanded: boolean,
+}> = ({
+            label,
+          children,
+          inputId, propKey, propType, componentId, componentTypeId, optionsInputValue,
+          enabled, onEnabledChanged, setIsExpanded, isExpanded,
+      }) => {
+    return (
+        <StyledContainer>
+            <StyledHeader>
+                <div>
+                    <input id={inputId} type="checkbox" checked={enabled} onChange={onEnabledChanged}/>
+                </div>
+                <StyledBox css={{
+                    display: 'grid',
+                    alignItems: 'center',
+                    gridTemplateColumns: 'auto 1fr',
+                    columnGap: '$0b',
+                }}>
+                    <StyledLabel htmlFor={inputId}>{label}</StyledLabel>
+                    <PropInputOptions propKey={propKey} propType={propType as PropOrigin} componentId={componentId}
+                                      componentTypeId={componentTypeId} inputValue={optionsInputValue}/>
+                </StyledBox>
+                <div>
+                    <button onClick={() => {
+                        setIsExpanded(!isExpanded)
+                    }}>
+                        {
+                            isExpanded ? (
+                                <FaCaretUp/>
+                            ) : (
+                                <FaCaretDown/>
+                            )
+                        }
+                    </button>
+                </div>
+            </StyledHeader>
+            {
+                isExpanded && (
+                    <StyledBody>
+                        {children}
+                    </StyledBody>
+                )
+            }
+        </StyledContainer>
+    )
+}
+
+export const useRigidBodyInput = ({
+                                    value,
+                                      onChange: passedOnChange,
+                                  }: InputProps) => {
 
     const [isExpanded, setIsExpanded] = useState(true)
 
     const {
         enabled = true,
-        bodyType = RigidBodyType.DYNAMIC,
+    } = value as RigidBody3dPropValue
+
+    const {
+        propKey,
+        propType,
+        componentTypeId,
+        componentId,
+    } = usePropContext()
+
+    return {
+        propKey,
+        propType,
+        componentId,
+        componentTypeId,
+        enabled,
+        onEnabledChanged: (event: any) => {
+            const updatedValue = {
+                ...value,
+                enabled: event.target.checked,
+            }
+            passedOnChange(updatedValue)
+        },
+        setIsExpanded,
+        isExpanded,
+    }
+
+}
+
+export const RigidBody3DInput: React.FC<InputProps> = ({
+                                                           value,
+                                                           inputId,
+                                                           onChange: passedOnChange,
+                                                       }) => {
+
+    const {
+        propKey,
+        propType,
+        componentId,
+        componentTypeId,
+        enabled,
+        onEnabledChanged,
+        setIsExpanded,
+        isExpanded,
+    } = useRigidBodyInput({value, inputId, onChange: passedOnChange})
+
+    const {
+        bodyType = RigidBody3dType.DYNAMIC,
         mass = 1,
         colliders = [],
     } = value as RigidBody3dPropValue
@@ -233,9 +337,9 @@ export const RigidBody3DInput: React.FC<InputProps> = ({
         deleteCollider,
     } = useMemo(() => ({
         addCollider: () => {
-            const newCollider: ColliderValue = {
+            const newCollider: RigidBody3dColliderValue = {
                 key: Date.now().toString(),
-                colliderType: RigidBodyColliderShape.BALL,
+                colliderType: RigidBody3dColliderShape.BALL,
             }
             const updatedValue = {
                 ...value,
@@ -263,113 +367,81 @@ export const RigidBody3DInput: React.FC<InputProps> = ({
         }
     }), [value, colliders])
 
-    const {
-        propKey,
-        propType,
-        componentTypeId,
-        componentId,
-    } = usePropContext()
-
     return (
-        <StyledContainer>
-            <StyledHeader>
-                <div>
-                    <input id={inputId} type="checkbox" checked={enabled} onChange={(event) => {
-                        const updatedValue = {
-                            ...value,
-                            enabled: event.target.checked,
-                        }
-                        passedOnChange(updatedValue)
-                    }}/>
-                </div>
-                <StyledBox css={{
-                    display: 'grid',
-                    alignItems: 'center',
-                    gridTemplateColumns: 'auto 1fr',
-                    columnGap: '$0b',
-                }}>
-                    <StyledLabel htmlFor={inputId}>RigidBody 3D</StyledLabel>
-                    <PropInputOptions propKey={propKey} propType={propType as PropOrigin} componentId={componentId} componentTypeId={componentTypeId} inputValue={value}/>
-                </StyledBox>
-                <div>
-                    <button onClick={() => {
-                        setIsExpanded(state => !state)
-                    }}>
-                        {
-                            isExpanded ? (
-                                <FaCaretUp/>
-                            ) : (
-                                <FaCaretDown/>
-                            )
-                        }
-                    </button>
-                </div>
-            </StyledHeader>
-            {
-                isExpanded && (
-                    <StyledBody>
+        <RigidBodyInput propKey={propKey} label="RigidBody 3D"
+                        propType={propType}
+                        componentId={componentId}
+                        componentTypeId={componentTypeId}
+                        optionsInputValue={value}
+                        inputId={inputId}
+                        enabled={enabled}
+                        onEnabledChanged={onEnabledChanged}
+                        setIsExpanded={setIsExpanded}
+                        isExpanded={isExpanded}>
+            <>
+                <StyledInputWrapper>
+                    <StyledInputLabel htmlFor="rigidBody3d-type">
+                        Type
+                    </StyledInputLabel>
+                    <div>
+                        <SelectInput inputId="rigidBody3d-type" value={bodyType} onChange={(newValue: any) => {
+                            const updatedValue = {
+                                ...value,
+                                bodyType: newValue,
+                            }
+                            passedOnChange(updatedValue)
+                        }} options={options}/>
+                    </div>
+                </StyledInputWrapper>
+                {
+                    (bodyType === RigidBody3dType.DYNAMIC) && (
                         <StyledInputWrapper>
-                            <StyledInputLabel htmlFor="rigidBody3d-type">
-                                Type
+                            <StyledInputLabel htmlFor="rigidBody3d-mass">
+                                Mass
                             </StyledInputLabel>
                             <div>
-                                <SelectInput inputId="rigidBody3d-type" value={bodyType} onChange={(newValue: any) => {
-                                    const updatedValue = {
-                                        ...value,
-                                        bodyType: newValue,
-                                    }
-                                    passedOnChange(updatedValue)
-                                }} options={options}/>
+                                <NumberInput inputId="rigidBody3d-mass" value={mass}
+                                             onChange={(newValue: any) => {
+                                                 const updatedValue = {
+                                                     ...value,
+                                                     mass: newValue,
+                                                 }
+                                                 passedOnChange(updatedValue)
+                                             }}/>
                             </div>
                         </StyledInputWrapper>
-                        {
-                            (bodyType === RigidBodyType.DYNAMIC) && (
-                                <StyledInputWrapper>
-                                    <StyledInputLabel htmlFor="rigidBody3d-mass">
-                                        Mass
-                                    </StyledInputLabel>
-                                    <div>
-                                        <NumberInput inputId="rigidBody3d-mass" value={mass} onChange={(newValue: any) => {
-                                            const updatedValue = {
-                                                ...value,
-                                                mass: newValue,
-                                            }
-                                            passedOnChange(updatedValue)
-                                        }}/>
-                                    </div>
-                                </StyledInputWrapper>
-                            )
-                        }
-                        <StyledCollidersContainer>
-                            <StyledCollidersHeader>
-                                <div>
-                                    <StyledInputLabel>
-                                        Colliders
-                                    </StyledInputLabel>
-                                </div>
-                                <StyledPlainButton shape="thinnerWide" onClick={addCollider}>Add Collider</StyledPlainButton>
-                            </StyledCollidersHeader>
-                            {
-                                colliders.length > 0 && (
-                                    <div>
-                                        {
-                                            colliders.map((collider, index) => (
-                                                <div key={collider.key}>
-                                                    <RigidBody3DColliderInput collider={collider} onChange={(newValue: any) => {
-                                                        updateCollider(index, newValue)
-                                                    }} onDelete={() => {
-                                                        deleteCollider(index)
-                                                    }}/>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                )
-                            }
-                        </StyledCollidersContainer>
-                    </StyledBody>
-                )
-            }
-        </StyledContainer>
+                    )
+                }
+                <StyledCollidersContainer>
+                    <StyledCollidersHeader>
+                        <div>
+                            <StyledInputLabel>
+                                Colliders
+                            </StyledInputLabel>
+                        </div>
+                        <StyledPlainButton shape="thinnerWide" onClick={addCollider}>Add
+                            Collider</StyledPlainButton>
+                    </StyledCollidersHeader>
+                    {
+                        colliders.length > 0 && (
+                            <div>
+                                {
+                                    colliders.map((collider, index) => (
+                                        <div key={collider.key}>
+                                            <RigidBody3DColliderInput collider={collider}
+                                                                      onChange={(newValue: any) => {
+                                                                          updateCollider(index, newValue)
+                                                                      }} onDelete={() => {
+                                                deleteCollider(index)
+                                            }}/>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        )
+                    }
+                </StyledCollidersContainer>
+            </>
+        </RigidBodyInput>
     )
 }

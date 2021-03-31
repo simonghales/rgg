@@ -15,10 +15,6 @@ export const StyledHeading = styled('h3', {
     fontSize: '$1b'
 })
 
-const StyledBox = styled('div', {
-    maxHeight: '100%',
-})
-
 export const StyledPaddedBox = styled('div', {
     padding: '$2b $3',
     variants: {

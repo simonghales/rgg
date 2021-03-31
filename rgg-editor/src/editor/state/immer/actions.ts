@@ -8,6 +8,8 @@ import {SceneTreeItem, StoredComponentState} from "../main/types";
 import {addToClipboard, clearClipboard, clipboardProxy, PendingPasteType} from "../editor";
 import {getSelectedComponents} from "./getters";
 import {ExtendedTreeItem} from "../../sceneTree/useTreeData";
+import {getComponents} from "../components/getters";
+import {ComponentState} from "../components/types";
 
 export const resetComponentProp = (componentId: string, propKey: string) => {
     setStoreState(draft => {
@@ -38,6 +40,9 @@ export const setSharedComponentPropValue = (componentTypeId: string, propKey: st
 export const setComponentPropValue = (componentId: string, propKey: string, propValue: any) => {
 
     setStoreState(draft => {
+        const isComponent = !!draft.components[componentId]
+        const isUnsaved = !!draft.unsavedComponents[componentId]
+        if (!isComponent && !isUnsaved) return
         const component = {
             ...(draft.components[componentId] ?? {}),
         }
@@ -109,6 +114,27 @@ export const setComponentTreeItemExpanded = (id: string, isExpanded: boolean) =>
         }
     })
 
+}
+
+export const updateUnsavedComponent = (id: string, update: Partial<ComponentState>) => {
+
+    setStoreState(draft => {
+        if (!draft.unsavedComponents[id]) return
+        draft.unsavedComponents[id] = {
+            ...draft.unsavedComponents[id],
+            ...update,
+        }
+        draft.unsavedComponents = {
+            ...draft.unsavedComponents,
+        }
+    })
+
+}
+
+export const setUnsavedComponentIsRoot = (id: string, isRoot: boolean) => {
+    updateUnsavedComponent(id, {
+        isRoot,
+    })
 }
 
 export const addUnsavedComponent = (addable: Addable, parent: string, initialProps?: any) => {
@@ -240,6 +266,83 @@ export const removeDeactivatedComponents = (ids: string[]) => {
 
 }
 
+export const removeComponentsFromParent = (ids: string[], setAsRoot: boolean = false) => {
+    ids.forEach(id => {
+        removeComponentFromParent(id, setAsRoot)
+    })
+}
+
+export const removeComponentFromParent = (id: string, setAsRoot: boolean = false) => {
+
+    removeComponentFromGroup(id)
+    removeComponentFromCurrentParent(id)
+
+    if (setAsRoot) {
+        setUnsavedComponentIsRoot(id, true)
+    }
+
+}
+
+export const removeComponentFromGroup = (id: string) => {
+
+    setStoreState(draft => {
+        delete draft.groupedComponents[id]
+        draft.groupedComponents = {
+            ...draft.groupedComponents,
+        }
+    })
+}
+
+const getComponentCurrentParent = (id: string) => {
+    const components = getComponents()
+    const component = components[id]
+    if (!component) return ''
+    return component.parentId
+}
+
+export const removeComponentFromCurrentParent = (id: string) => {
+
+    const currentParent = getComponentCurrentParent(id)
+
+    if (!currentParent) return
+
+    setComponentPropValue(currentParent, predefinedPropKeys.children, (value: any) => {
+        let newChildren: string[] = value ? value : []
+        return newChildren.filter(child => child != id)
+    })
+
+}
+
+export const addComponentsToComponent = (ids: string[], componentId: string) => {
+
+    ids.forEach(id => {
+        removeComponentFromParent(id)
+        setUnsavedComponentIsRoot(id, false)
+    })
+
+    setComponentPropValue(componentId, predefinedPropKeys.children, (value: any) => {
+        const newChildren: string[] = value ? value : []
+        newChildren.push(...ids)
+        return newChildren
+    })
+
+}
+
+export const addComponentsToNewParent = (ids: string[], parentId: string) => {
+
+    storeSnapshot()
+
+    const state = getStoreState()
+    const components = getComponents()
+
+    if (components[parentId]) {
+        addComponentsToComponent(ids, parentId)
+    } else if (state.groups[parentId]) {
+        groupComponents(ids, parentId)
+    }
+
+}
+
 export const groupComponents = (ids: string[], groupId?: string) => {
     let sameParent = true
     let currentParent = ''
@@ -272,6 +375,9 @@ export const groupComponents = (ids: string[], groupId?: string) => {
         ids.forEach(id => {
             draft.groupedComponents[id] = groupId as string
         })
+        draft.groupedComponents = {
+            ...draft.groupedComponents,
+        }
     })
 
 }

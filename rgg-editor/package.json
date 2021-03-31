@@ -1,5 +1,5 @@
 {
-  "version": "0.1.23-beta.1",
+  "version": "0.1.23-beta.2",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -91,6 +91,7 @@
     "react-sortable-tree": "npm:@simonghales/react-sortable-tree",
     "reset.css": "^2.0.2",
     "shortcuts": "^1.6.2",
+    "use-throttled-effect": "^0.0.7",
     "valtio": "^0.7.1",
     "zustand": "^3.3.3"
   }

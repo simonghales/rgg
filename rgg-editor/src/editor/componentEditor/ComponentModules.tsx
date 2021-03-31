@@ -56,6 +56,7 @@ export const Module: React.FC<{
     }, [propKey])
 
     const InputComponent = useMemo(() => {
+        console.log('propConfig', propConfig)
         return propConfig?.input ?? UnknownInput
     }, [propConfig])
 

@@ -1,4 +1,4 @@
-import {proxy} from "valtio";
+import {proxy, useProxy} from "valtio";
 import {copySelectedComponents, handlePaste} from "./immer/actions";
 import {KeyMap} from "react-hotkeys";
 import {redoState, undoState} from "./history/actions";
@@ -10,6 +10,10 @@ export const inputsProxy = proxy({
 
 export const isShiftPressed = () => {
     return inputsProxy.shift
+}
+
+export const useIsShiftPressed = () => {
+    return useProxy(inputsProxy).shift
 }
 
 export const isCommandPressed = () => {

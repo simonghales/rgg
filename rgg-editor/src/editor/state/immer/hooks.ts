@@ -2,7 +2,6 @@ import {useMainStateStore} from "./immer";
 import {useCallback} from "react";
 import {useIsParentHidden} from "../../../scene/InteractiveMesh.context";
 import {StoreState} from "./types";
-import {PropState} from "../main/types";
 
 const selectedComponentsSelector = (state: StoreState) => state.selectedComponents
 

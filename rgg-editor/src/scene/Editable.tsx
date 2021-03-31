@@ -117,9 +117,11 @@ export const Editable: React.FC<Props> = ({
         rootParentId
     } = useEditableContext()
 
+    const unsaved = config._unsaved ?? false
+
     const [name] = useState(() => config?.name || (children ? (children as any).type.displayName || (children as any).type.name || id : id))
     const [uid] = useState(() => {
-        return getCombinedId(parentPath.concat([id]))
+        return unsaved ? id : getCombinedId(parentPath.concat([id]))
     })
     const [componentId] = useState(() => getComponentId(config))
 
@@ -136,7 +138,7 @@ export const Editable: React.FC<Props> = ({
     }, [isSoleSelected])
 
     useLayoutEffect(() => {
-        registerWithParent(uid)
+        return registerWithParent(uid)
     }, [])
 
     useLayoutEffect(() => {
@@ -168,7 +170,6 @@ export const Editable: React.FC<Props> = ({
     }), [])
 
     const isDeactivated = useIsDeactivated(uid)
-    const unsaved = config._unsaved ?? false
 
     useEffect(() => {
         if (isDeactivated) {

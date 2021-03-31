@@ -7,7 +7,6 @@ import {ManagerSidebar} from "./ManagerSidebar";
 import {StateSidebar} from "./StateSidebar";
 import {AddingComponentMenu, closeAddingComponent} from "./AddingComponentMenu";
 import {ContextMenu} from "./ContextMenu";
-import {GlobalHotkeysListener} from "./GlobalHotkeysListener";
 import {Header} from "./TopBar";
 import {OverlayControls} from "./OverlayControls";
 import {hotkeysHandlers, keyMap} from "./state/inputs";

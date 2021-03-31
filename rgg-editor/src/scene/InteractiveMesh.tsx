@@ -1,4 +1,4 @@
-import React, {MutableRefObject, useEffect, useMemo, useRef, useState} from "react"
+import React, {memo, MutableRefObject, useEffect, useMemo, useRef, useState} from "react"
 import {useEditableProp} from "./useEditableProp";
 import {positionProp, predefinedPropKeys, rotationProp, scaleProp} from "../editor/componentEditor/config";
 import {setComponentHovered, useIsComponentHovered} from "../editor/state/ui";
@@ -34,7 +34,7 @@ export const useMeshHelper = (ref: MutableRefObject<Object3D>, active: boolean) 
     })
 }
 
-export const InteractiveMesh: React.FC = ({children}) => {
+const InteractiveMeshInner: React.FC = ({children}) => {
     const id = useEditableId()
     const {parentPath} = useEditableContext()
     const isSelected = useIsEditableSelected()
@@ -46,12 +46,13 @@ export const InteractiveMesh: React.FC = ({children}) => {
     const isHidden = useIsHidden(id)
 
     useEffect(() => {
-        if (!isMultipleSelected || !groupPortalRef) return
+        if (!isMultipleSelected || !groupPortalRef || !groupPortalRef.current) return
         const parent = groupRef.current.parent
         parent?.remove(groupRef.current)
-        groupPortalRef.current.add(groupRef.current)
+        const group = groupPortalRef.current
+        group.add(groupRef.current)
         return () => {
-            groupPortalRef.current.remove(groupRef.current)
+            group.remove(groupRef.current)
             parent?.add(groupRef.current)
         }
     }, [isMultipleSelected, groupPortalRef])
@@ -171,3 +172,5 @@ export const InteractiveMesh: React.FC = ({children}) => {
 
     return content
 }
+
+export const InteractiveMesh: React.FC = memo(InteractiveMeshInner)
